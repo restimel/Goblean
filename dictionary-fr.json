@@ -47,5 +47,11 @@
 	"leftArm": "bras gauche",
 	"rightArm": "bras droit",
 	"leftLeg": "jambe gauche",
-	"rightLeg": "jambe droite"
+	"rightLeg": "jambe droite",
+	"Ok": "Ok",
+	"Cancel": "Annuler",
+	"Take picture": "Prendre une photo",
+	"Take again": "Recommencer",
+	"Import an image": "Importer une image",
+	"Take picture from camera": "Prendre une photo depuis la caméra"
 }

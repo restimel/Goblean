@@ -1,13 +1,22 @@
 let rslt = document.getElementById('result');
 let img = '/image-001.png';
 let live = true;
-let dbg = 2;
+let dbg = 3;
+
+let canvas = document.querySelector('canvas');
+let button = document.querySelector('button');
+let imgEl = document.querySelector('img');
+
+
+/*
+navigator.mediaDevices.getUserMedia()
+*/
 
 function displayResult(rsult) {
     if (!rsult) {
         rsult = 'Code not found';
     }
-    rslt.textContent = rslut;
+    rslt.textContent = rsult;
 }
 
 if (!live) {
@@ -37,7 +46,7 @@ if (!live) {
                         console.log(err);
                         return;
                     }
-                    // App.attachListeners();
+                    App.attachListeners();
                     App.checkCapabilities();
                     Quagga.start();
                 });
@@ -286,18 +295,20 @@ if (!live) {
             }
         });
 } else if (dbg === 2) {
+    let element = document.querySelector('canvas');
+    console.log('canvas', element)
     Quagga.init({
         inputStream : {
             name : "Live",
             type : "LiveStream",
-            target: document.querySelector('canvas')    // Or '#yourElement' (optional)
+            target: element    // Or '#yourElement' (optional)
         },
         decoder : {
             readers : ["ean_reader"]
         }
     }, function(err) {
         if (err) {
-            console.log(err);
+            console.log('erreor', err);
             displayResult(err.name + ' ' + err.message);
             return
         }
@@ -347,4 +358,50 @@ if (!live) {
                 displayResult('not found')
             }
         });
+} else if (dbg === 3) {
+    var video = document.getElementById('webcam');
+    navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+        var video = document.getElementById('webcam');
+            video.autoplay = true;
+            video.src = window.URL.createObjectURL(stream);
+            setTimeout(() => stream.getVideoTracks().forEach(mediaStreamTrack=>mediaStreamTrack.stop()), 20000);
+    });
+
+    let takepicture = function() {
+        // canvas.width = width;
+        // canvas.height = height;
+        var width = video.width;
+        var height = video.height;
+        console.log(width, height)
+        canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+        var data = canvas.toDataURL('image/png');
+        imgEl.setAttribute('src', data);
+        test(data);
+      };
+
+      button.addEventListener('click', function(ev){
+          takepicture();
+        ev.preventDefault();
+      }, false);
+
+    let test = function(data) {
+        Quagga.decodeSingle({
+            decoder: {
+                readers: ["ean_reader"] // List of active readers
+            },
+            locate: true, // try to locate the barcode in the image
+            // src: img // or 'data:image/jpg;base64,' + data
+            // src: 'data:image/jpg;base64,' + data
+            src: data
+        }, function(result){
+            if(result && result.codeResult) {
+                console.log("result", result.codeResult.code);
+                displayResult(result.codeResult.code);
+            } else {
+                console.log("not detected");
+                displayResult();
+            }
+        });
+    };
+
 }

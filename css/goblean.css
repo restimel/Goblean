@@ -152,7 +152,7 @@ body > header {
 	display: block;
 }
 
-#fighter-creation img {
+#add-fighter img {
 	cursor: pointer;
 }
 
@@ -337,4 +337,30 @@ body > header {
 .attack-result.active2 {
 	display: block;
 	left: 75%;
+}
+
+#dialog-picture {
+	background-color: white;
+	border: 6px double gray;
+	/*z-index: 23;*/
+	text-align:	center;
+}
+
+#dialog-picture > header,
+#dialog-picture > img,
+#dialog-picture > label,
+#dialog-picture > video,
+#dialog-picture > canvas,
+#dialog-picture > .take-picture {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#dialog-picture > .picture-temp:not(.active),
+#dialog-picture > .take-picture:not(.active),
+#dialog-picture > .file-stream:not(.active),
+#dialog-picture > .stream-canvas:not(.active),
+#dialog-picture > .stream-video:not(.active) {
+	display: none;
 }

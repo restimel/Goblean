@@ -46,5 +46,11 @@
 	"leftArm": "left arm",
 	"rightArm": "right arm",
 	"leftLeg": "left leg",
-	"rightLeg": "right leg"
+	"rightLeg": "right leg",
+	"Ok": "Ok",
+	"Cancel": "Cancel",
+	"Take picture": "Take picture",
+	"Take again": "Take again",
+	"Import an image": "Import an image",
+	"Take picture from camera": "Take picture from camera"
 }

@@ -6,6 +6,6 @@
 	* work with single file
 	* work with cam
 * Support picture
-	* choose a file picture
-	* choose a picture from cam
 	* display it in the goblean
+
+* Animation de fin
