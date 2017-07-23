@@ -298,6 +298,7 @@ if (!live) {
     }, function(err) {
         if (err) {
             console.log(err);
+            displayResult(err.name + ' ' + err.message);
             return
         }
         console.log("Initialization finished. Ready to start");
@@ -335,6 +336,7 @@ if (!live) {
                 lastResult = code;
                 var canvas = Quagga.canvas.dom.image;
                 console.log('onDetected trouvé', code, result)
+                displayResult(code);
 
                 // $node = $('<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>');
                 // $node.find("img").attr("src", canvas.toDataURL());
@@ -342,6 +344,7 @@ if (!live) {
                 // $("#result_strip ul.thumbnails").prepend($node);
             } else {
                 console.log('onDetected', result);
+                displayResult('not found')
             }
         });
 }
