@@ -1,0 +1,28 @@
+{
+  "name": "goblean",
+  "version": "1.0.0",
+  "description": "Goblean game",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/restimel/Goblean.git"
+  },
+  "keywords": [
+    "Goblean",
+    "Game",
+    "Boardgame",
+    "ean"
+  ],
+  "author": "Restimel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/restimel/Goblean/issues"
+  },
+  "homepage": "https://github.com/restimel/Goblean#readme",
+  "dependencies": {
+    "quagga": "^0.12.1"
+  }
+}
