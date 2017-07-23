@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Goblean</title>
+	<link rel="stylesheet" type="text/css" href="css/goblean.css">
+</head>
+<body>
+<header>
+	<h1>Goblean></h1>
+</header>
+<section id="add-fighter" class="view">
+	<h2>Create your fighter</h2>
+	<h3 id="nb-fighter">First fighter</h3>
+	<form id="fighter-creation">
+		<label>Name: <input id="fighter-name"></label>
+		<label>Code:&nbps;<span class="required">*</span> <input id="fighter-code" required></label>
+		<img class="fighter-picture">
+		<button type="submit">Add it to the Gobl-aena</button>
+	</form>
+</section>
+<section id="battle" class="view">
+	<div class="fighter fighter1"></div>
+	<div class="fighter fighter2"></div>
+	<div class="attack-choice">
+		<div class="choice choice1"></div>
+		<div class="choice choice2"></div>
+		<div class="choice choice3"></div>
+		<div class="choice choice4"></div>
+	</div>
+	<div class="attack-result"></div>
+</section>
+<section id="fight-result" class="view">
+	<header>The winner is <span id="winner-fighter"></span></header>
+	<img id="winner-fighter-picture">
+</section>
+
+
+<script src="scripts/goblean.js"></script>
+</body>
+</html>
