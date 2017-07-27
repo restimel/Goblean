@@ -7,35 +7,81 @@
 </head>
 <body>
 <header>
-	<h1>Goblean></h1>
+	Goblean
 </header>
+<section id="main-view" class="view active">
+	<h1>Welcome to the great battle in the Goble-aena!</h1>
+	<nav>
+		<div class="menu4 gobleaena">Enter the Goble-aena</div>
+		<div class="menu1 goblean-stats">View stats</div>
+		<div class="menu2 rules">Rules</div>
+		<div class="menu1 credits">Credits</div>
+	</nav>
+</section>
 <section id="add-fighter" class="view">
 	<h2>Create your fighter</h2>
-	<h3 id="nb-fighter">First fighter</h3>
+	<h3 id="nb-fighter">First Goblean fighter</h3>
 	<form id="fighter-creation">
 		<label>Name: <input id="fighter-name"></label>
-		<label>Code:&nbps;<span class="required">*</span> <input id="fighter-code" required></label>
-		<img class="fighter-picture">
+		<label>Code:&nbsp;<span class="required">*</span> <input id="fighter-code" required></label>
+		<img class="fighter-picture" alt="picture of your Goblean" width="124px" height="124px">
 		<button type="submit">Add it to the Gobl-aena</button>
 	</form>
+	<aside id="ready-fight">This Goblean is ready to fight</aside>
 </section>
-<section id="battle" class="view">
-	<div class="fighter fighter1"></div>
-	<div class="fighter fighter2"></div>
-	<div class="attack-choice">
-		<div class="choice choice1"></div>
-		<div class="choice choice2"></div>
-		<div class="choice choice3"></div>
-		<div class="choice choice4"></div>
+<section id="battle" class="view preparation">
+	<div class="fighter fighter1">
+		<h3 class="fighter-name">?</h3>
+		<canvas class="fighter-picture" width="200px" height="200px"></canvas>
+		<div class="ready1">Ready</div>
+	</div>
+	<div class="fighter fighter2">
+		<h3 class="fighter-name">?</h3>
+		<canvas class="fighter-picture" width="200px" height="200px"></canvas>
+		<div class="ready2">Ready</div>
+	</div>
+	<div class="message">
+		<div class="text-message active"></div>
+		<div class="attack-choice">
+			<div class="choice choice1"></div>
+			<div class="choice choice2"></div>
+			<div class="choice choice3"></div>
+			<div class="choice choice4"></div>
+		</div>
 	</div>
 	<div class="attack-result"></div>
+	<div class="vs">VS</div>
+	<button id="battle-ready" class="battle-btn">Fight</button>
+	<button id="battle-end" class="battle-btn back-home">Great job!</button>
 </section>
-<section id="fight-result" class="view">
-	<header>The winner is <span id="winner-fighter"></span></header>
-	<img id="winner-fighter-picture">
+<section id="stats" class="view">
+	<div id="goblean-list" class="list"></div>
+	<div id="goblean-stat">
+		<h4 class="stat-title"></h4>
+		<label>Number of win: <span class="stat-nbw"></span></label>
+		<label>Number of fight: <span class="stat-nbf"></span></label>
+		<label>Ratio: <span class="stat-ratio"></span></label>
+	</div>
+	<button class="battle-btn back-home active">Back</button>
+</section>
+<section id="rules" class="view">
+	<h2>Rules</h2>
+	<p>Goblean are small creatures which live all around us. There are hidden and stay immobile while you are watching them. But they have one default! They all have a tatoo which looks like a bar code (which is called EAN13).</p><br>
+	<p>Enter the EAN code of the creature you have catched in this application and it will reveal its original form.</p>
+	<p>Enter the EAN code of a second creature (catched by a friend) and let them fight</p>
+	<p>At each round you can select an attack which will be more or less powerful depending of your goblean stats and the defense of your opponent.</p>
+	<p>If your goblean survive, it will be decalred champion of the Goble-aena. (Then it can be defied by another challenger)</p>
+	<button class="battle-btn back-home active">Back</button>
+</section>
+<section id="credits" class="view">
+	<h2>Credits</h2>
+	<p>Thanks for playing!</p>
+	<p>Goblean is a funny game built by Gilles Masclef (Le Gobelin) and Benoît Mariat</p>
+	<p>You are free to share this game around you.</p>
+	<button class="battle-btn back-home active">Back</button>
 </section>
 
-
+<script src="scripts/fighter.js"></script>
 <script src="scripts/goblean.js"></script>
 </body>
 </html>

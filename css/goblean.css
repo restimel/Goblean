@@ -1,16 +1,274 @@
 body > header {
 	height: 30px;
+	background-color: black;
+	color: gold;
+	text-align: center;
 }
 
 .view {
-	display: none;
 	position: absolute;
 	top: 30px;
 	bottom: 0;
 	left: 0;
 	right: 0;
+	background-color: white;
+}
+.view:not(.active) {
+	display: none;
+}
+
+.view.active {
+	z-index: 10;
+}
+
+.view.old-active {
+	z-index: 20;
 }
 
 .active {
 	display: block;
+}
+
+#main-view,
+#rules,
+#credits,
+#stats {
+	background-color: black;
+	color: white;
+	text-align: center;
+}
+
+#goblean-list {
+	position: absolute;
+	top: 20px;
+	bottom: 50px;
+	left: 0;
+	right: 50%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#goblean-list > div {
+	width: 90%;
+	padding: 10px;
+	border: 3px ridge gray;
+	cursor: pointer;
+}
+#goblean-list > div:hover {
+	color: yellow;
+	border: 3px ridge yellow;
+}
+#goblean-list > div.selected {
+	background-color: #FFFFAA;
+	color: black;
+	border: 3px ridge yellow;
+	cursor: default;
+}
+#goblean-stat {
+	position: absolute;
+	top: 20px;
+	bottom: 50px;
+	left: 50%;
+	right: 0;
+}
+#goblean-stat label {
+	display: block;
+}
+
+#main-view > nav{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+	flex-wrap: wrap;
+}
+.menu1, .menu2, .menu4 {
+	border: 10px outset gray;
+	margin: 1em;
+	padding: 1em;
+	cursor: pointer;
+	font-size: 30px;
+}
+.menu1 {
+	flex-grow: 1;
+}
+.menu2 {
+	flex-grow: 2;
+}
+.menu4 {
+	flex-basis: 100%;
+	flex-grow: 4;
+}
+.menu1:hover, .menu2:hover, .menu4:hover {
+	border: 10px outset orange;
+	color: orange;
+}
+
+#fighter-creation label,
+#fighter-creation img,
+#fighter-creation button {
+	display: block;
+}
+
+#fighter-creation img {
+	cursor: pointer;
+}
+
+#fighter-creation button[disabled] {
+	cursor: not-allowed;
+}
+#fighter-creation button:not([disabled]) {
+	cursor: pointer;
+}
+
+#ready-fight {
+	position: absolute;
+	font-size: 50px;
+	transform: rotate(-10deg);
+	top: 70px;
+	bottom: auto;
+	left: 70px;
+	right: auto;
+	z-index: 25;
+}
+#ready-fight:not(.active) {
+	display: none;
+}
+
+.preparation .fighter:not(.ready) {
+	cursor: pointer;
+}
+
+.fighter {
+	position: absolute;
+	top: 0;
+	bottom: 80px;
+	text-align: center;
+}
+
+.fighter1 {
+	left: 0;
+	right: 50%;
+	background-color: rgba(150, 150, 200, 0.5);
+}
+
+.fighter2 {
+	left: 50%;
+	right: 0;
+	background-color: rgba(150, 200, 150, 0.5);
+}
+
+.fighter.currentFighter {
+	border: 5px ridge gold;
+}
+
+.fighter.winner {
+	border: 10px dotted gold;
+	background-color: rgba(200, 200, 0, 0.8);
+}
+
+.fighter.loser {
+	background-color: rgba(250, 0, 0, 0.4);
+}
+
+.ready1, .ready2 {
+	color: red;
+	font-size: 30px;
+	position: absolute;
+	top: 100px;
+	left: 50%;
+}
+
+.ready1:not(.active),
+.ready2:not(.active) {
+	display: none;
+}
+
+.ready1 {
+	transform: translate(-50%, -50%)  rotate(-10deg);
+}
+
+.ready2 {
+	transform: translate(-50%, -50%)  rotate(10deg);
+}
+
+.ready .ready1,
+.ready .ready2 {
+	display: block;
+}
+
+.message {
+	position: absolute;
+	height: 80px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(200, 200, 100, 0.5);
+	text-align: center;
+}
+
+.text-message {}
+.text-message:not(.active) {
+	display: none;
+}
+
+.attack-choice {}
+.attack-choice:not(.active) {
+	display: none;
+}
+
+.vs {
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%) skewX(-35deg);
+	font-size: 90px;
+	color: red;
+}
+
+.battle-btn {
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translate(-50%, 0);
+	font-size: 30px;
+	cursor: pointer;
+}
+.battle-btn:not(.active) {
+	display: none;
+}
+
+.choice {
+	display: inline-block;
+	width: 48%;
+	margin: 1px;
+	border: 4px gray outset;
+	cursor: pointer;
+}
+
+.choice:hover {
+	border: 4px orange outset;
+}
+
+.attack-result {
+	display: none;
+	position: absolute;
+	top: 110px;
+	transform: translate(-50%, -50%);
+	background-color: red;
+	color: white;
+	padding: 10px;
+	border-radius: 50px;
+}
+.attack-result.active1 {
+	display: block;
+	left: 25%;
+}
+.attack-result.active2 {
+	display: block;
+	left: 75%;
 }
