@@ -44,25 +44,27 @@ body > header {
 	bottom: 50px;
 	left: 0;
 	right: 50%;
+}
+
+.list {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-around;
-	align-items: center;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
 
-#goblean-list > div {
+.list > div {
 	width: 90%;
 	padding: 10px;
 	border: 3px ridge gray;
 	cursor: pointer;
+	margin: auto;
 }
-#goblean-list > div:hover {
+.list > div:hover {
 	color: yellow;
 	border: 3px ridge yellow;
 }
-#goblean-list > div.selected {
+.list > div.selected {
 	background-color: #FFFFAA;
 	color: black;
 	border: 3px ridge yellow;
@@ -108,9 +110,14 @@ body > header {
 	color: orange;
 }
 
-#fighter-creation label,
-#fighter-creation img,
-#fighter-creation button {
+#add-fighter h2,
+#add-fighter h3 {
+	text-align: center;
+}
+
+#add-fighter label,
+#add-fighter img,
+#add-fighter button {
 	display: block;
 }
 
@@ -118,11 +125,33 @@ body > header {
 	cursor: pointer;
 }
 
-#fighter-creation button[disabled] {
+#add-fighter button[disabled] {
 	cursor: not-allowed;
 }
-#fighter-creation button:not([disabled]) {
+#add-fighter button:not([disabled]) {
 	cursor: pointer;
+}
+
+.fighter-selection {
+	position: absolute;
+	top: 50px;
+	bottom: 0;
+	left: 0;
+	right: 50%;
+}
+
+.fighter-stats,
+.fighter-creation {
+	position: absolute;
+	top: 50px;
+	bottom: 0;
+	left: 50%;
+	right: 0;
+}
+
+.fighter-stats:not(.active),
+.fighter-creation:not(.active) {
+	display: none;
 }
 
 #ready-fight {

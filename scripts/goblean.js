@@ -12,11 +12,18 @@
 
 	const mainEls = {
 		creationForm: document.getElementById('fighter-creation'),
+		creationSection: document.querySelector('.fighter-creation'),
+		creationStat: document.querySelector('.fighter-stats'),
 		creationTitle: document.getElementById('nb-fighter'),
 		creationBtnForm: document.querySelector('#fighter-creation button'),
+		gobleanBtnForm: document.querySelector('.fighter-stats button'),
 		creationPicture: document.querySelector('#fighter-creation img'),
 		creationName: document.getElementById('fighter-name'),
 		creationCode: document.getElementById('fighter-code'),
+		fighterSelection: document.querySelector('.fighter-selection'),
+		gobleanName: document.querySelector('.goblean-name'),
+		gobleanCode: document.querySelector('.goblean-code'),
+		gobleanPicture: document.querySelector('.goblean-picture'),
 		readyFight: document.getElementById('ready-fight'),
 		messageText: document.querySelector('.text-message'),
 		attackChoice: document.querySelector('.attack-choice'),
@@ -123,8 +130,41 @@
 		mainEls.choice4.textContent = list[4];
 	}
 
-	function initialize() {
-		// initializeBattle();
+	function fillList(element, options) {
+		let {callback, selected, addFirstItem} = options;
+
+		let list = JSON.parse(localStorage.getItem('fighters') || '[]');
+		list.sort((a, b) => b.nbw - a.nbw);
+
+		if (addFirstItem) {
+			list.unshift(addFirstItem);
+		}
+
+		if (list.length === 0) {
+			list.push({name: 'no Goblean fighters yet', nbw: 0, nbf: 0, code: 0, picture: ''});
+		}
+
+		if (selected === true) {
+			selected = list[0];
+		}
+		if (typeof selected !== 'object') {
+			selected = {};
+		}
+
+		element.innerHTML = '';
+
+		for (let goblean of list) {
+			let el = document.createElement('div');
+			el.textContent = goblean.name;
+			el.onclick = callback(goblean);
+
+			if (selected.code === goblean.code) {
+				//select the first item
+				el.onclick();
+			}
+
+			element.appendChild(el);
+		}
 	}
 
 	function initializeFighter(nb) {
@@ -132,13 +172,42 @@
 		currentFighter = fighter;
 
 		mainEls.creationTitle = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
-		mainEls.creationName.value = fighter.name || '';
-		mainEls.creationCode.value = fighter.code || '';
-		mainEls.creationPicture.src = fighter.picture || '';
-		mainEls.creationBtnForm.disabled = true;
-		setView('addFighter', true);
 
 		mainEls.creationBtnForm.disabled = !fighter.isValid();
+		fillList(mainEls.fighterSelection, {
+			addFirstItem: {name: '+ Create a new Goblean'},
+			callback: function(goblean) { return function() {
+				document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+				this.classList.add('selected');
+
+				if (!goblean.code) {
+					mainEls.creationSection.classList.add('active');
+					mainEls.creationStat.classList.remove('active');
+
+					currentFighter = new Fighter(nb);
+
+					mainEls.creationName.value = '';
+					mainEls.creationCode.value = '';
+					mainEls.creationPicture.src = '';
+					mainEls.creationBtnForm.disabled = true;
+				} else {
+					mainEls.creationSection.classList.remove('active');
+					mainEls.creationStat.classList.add('active');
+
+					currentFighter = new Fighter(nb, goblean);
+
+					mainEls.gobleanName.textContent = currentFighter.name || '';
+					mainEls.gobleanCode.textContent = currentFighter.code || '';
+					mainEls.gobleanPicture.src = currentFighter.picture || '';
+
+				}
+
+				fighters[nb-1] = currentFighter;
+			};},
+			selected: currentFighter
+		});
+
+		setView('addFighter', true);
 	}
 
 	function updateFighter(fighter) {
@@ -156,6 +225,22 @@
 				mainEls.readyBtn.classList.add('active');
 			}
 		}
+	}
+
+	function addToBattle(evt) {
+		evt.preventDefault();
+		if (this.disabled) {
+			return;
+		}
+
+		mainEls.readyFight.classList.add('active');
+		animationElement(mainEls.readyFight, 1, () => {
+			setTimeout(() => {
+				mainEls.readyFight.classList.remove('active');
+				updateFighter(currentFighter);
+				setView('battle', true);
+			}, 1000);
+		});
 	}
 
 	function initializeBattle() {
@@ -244,37 +329,23 @@
 	function initializeStats() {
 		setView('stats', true);
 
-		let list = JSON.parse(localStorage.getItem('fighters') || [{name: 'no Goblean fighters yet', nbw: 0, nbf: 0, picture: ''}]);
-		let first = true;
+		fillList(mainEls.gobleanList, {
+			callback: function(goblean) {
+				return function() {
+					document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+					this.classList.add('selected');
 
-		list.sort((a, b) => b.nbw - a.nbw);
+					let ratio = goblean.nbw / goblean.nbf;
+					ratio = Math.round(ratio * 10000) / 100;
 
-		mainEls.gobleanList.innerHTML = '';
-
-		for (let goblean of list) {
-			let el = document.createElement('div');
-			el.textContent = goblean.name;
-			el.onclick = function selectGoblean() {
-				document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-				this.classList.add('selected');
-
-				let ratio = goblean.nbw / goblean.nbf;
-				ratio = Math.round(ratio * 10000) / 100;
-
-				mainEls.statTitle.textContent = goblean.name;
-				mainEls.statNbf.textContent = goblean.nbf;
-				mainEls.statNbw.textContent = goblean.nbw;
-				mainEls.statRatio.textContent = ratio + '%';
-			};
-
-			if (first) {
-				//select the first item
-				el.onclick();
-				first = false;
-			}
-
-			mainEls.gobleanList.appendChild(el);
-		}
+					mainEls.statTitle.textContent = goblean.name;
+					mainEls.statNbf.textContent = goblean.nbf;
+					mainEls.statNbw.textContent = goblean.nbw;
+					mainEls.statRatio.textContent = ratio + '%';
+				};
+			},
+			selected: true
+		});
 	}
 
 	(function prepareEvents() {
@@ -292,21 +363,9 @@
 			});
 			mainEls.creationBtnForm.disabled = !isValid;
 		};
-		mainEls.creationBtnForm.onclick = function(evt) {
-			evt.preventDefault();
-			if (this.disabled) {
-				return;
-			}
 
-			mainEls.readyFight.classList.add('active');
-			animationElement(mainEls.readyFight, 1, () => {
-				setTimeout(() => {
-					mainEls.readyFight.classList.remove('active');
-					updateFighter(currentFighter);
-					setView('battle', true);
-				}, 1000);
-			});
-		};
+		mainEls.creationBtnForm.onclick = addToBattle;
+		mainEls.gobleanBtnForm.onclick = addToBattle;
 
 		mainEls.choice1.onclick = attackChoice.bind(null, 0);
 		mainEls.choice2.onclick = attackChoice.bind(null, 1);
@@ -320,5 +379,4 @@
 		document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, 'main', true));
 	})();
 
-	initialize();
 })();

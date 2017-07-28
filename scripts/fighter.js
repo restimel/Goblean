@@ -8,7 +8,9 @@ class Fighter {
 		this.numberOfWin = 0;
 
 		if (json) {
-			json = JSON.parse(json);
+			if (typeof json === 'string') {
+				json = JSON.parse(json);
+			}
 			this.setAttributes(json);
 		}
 	}
@@ -115,12 +117,11 @@ class Fighter {
 			return;
 		}
 
-		if (!this.canvas) {
+		if (!this.canvas || !this.ctx) {
 			this.canvas = canvas;
 			this.ctx = canvas.getContext('2d');
-		} else {
-			this.ctx.clearRect(0, 0, 200, 200);
 		}
+		this.ctx.clearRect(0, 0, 200, 200);
 
 		let setWidth = (part) => {
 			var value = this.stats[part];

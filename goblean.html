@@ -19,14 +19,23 @@
 	</nav>
 </section>
 <section id="add-fighter" class="view">
-	<h2>Create your fighter</h2>
-	<h3 id="nb-fighter">First Goblean fighter</h3>
-	<form id="fighter-creation">
-		<label>Name: <input id="fighter-name"></label>
-		<label>Code:&nbsp;<span class="required">*</span> <input id="fighter-code" required></label>
-		<img class="fighter-picture" alt="picture of your Goblean" width="124px" height="124px">
-		<button type="submit">Add it to the Gobl-aena</button>
-	</form>
+	<h2 id="nb-fighter">First Goblean fighter</h2>
+	<div class="list fighter-selection"></div>
+	<div class="fighter-creation">
+		<h3>Create your fighter</h3>
+		<form id="fighter-creation">
+			<label><span>Name:</span> <input id="fighter-name"></label>
+			<label><span>Code:</span> <input id="fighter-code" required></label>
+			<img class="fighter-picture" alt="picture of your Goblean" width="124px" height="124px">
+			<button type="submit">Add it to the Gobl-aena</button>
+		</form>
+	</div>
+	<div class="fighter-stats">
+		<label><span>Name:</span> <span class="goblean-name"></span></label>
+		<label><span>Code:</span> <span class="goblean-code"></span></label>
+		<img class="goblean-picture" alt="picture of your Goblean" width="124px" height="124px">
+		<button type="submit" class="active">Add it to the Gobl-aena</button>
+	</div>
 	<aside id="ready-fight">This Goblean is ready to fight</aside>
 </section>
 <section id="battle" class="view preparation">
@@ -58,9 +67,9 @@
 	<div id="goblean-list" class="list"></div>
 	<div id="goblean-stat">
 		<h4 class="stat-title"></h4>
-		<label>Number of win: <span class="stat-nbw"></span></label>
-		<label>Number of fight: <span class="stat-nbf"></span></label>
-		<label>Ratio: <span class="stat-ratio"></span></label>
+		<label><span>Number of win:</span> <span class="stat-nbw"></span></label>
+		<label><span>Number of fight:</span> <span class="stat-nbf"></span></label>
+		<label><span>Ratio:</span> <span class="stat-ratio"></span></label>
 	</div>
 	<button class="battle-btn back-home active">Back</button>
 </section>

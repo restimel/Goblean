@@ -1,9 +1,7 @@
 # TODO list
 
 * goblean creation
-	* allow to choose an existing goblean
-	* edit a goblean
-	* bug: create a new goblean (and not duplicate an existing one)
+	* edit a goblean (should we?)
 * support multi-language
 	* add library
 	* add change language icon
