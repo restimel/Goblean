@@ -249,6 +249,12 @@ body > header {
 .attack-choice:not(.active) {
 	display: none;
 }
+.mode-options {
+	text-align: left;
+}
+.mode-options:not(.active) {
+	display: none;
+}
 
 .vs {
 	position: absolute;

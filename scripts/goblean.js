@@ -27,6 +27,8 @@
 		readyFight: document.getElementById('ready-fight'),
 		messageText: document.querySelector('.text-message'),
 		attackChoice: document.querySelector('.attack-choice'),
+		modeOptions: document.querySelector('.mode-options'),
+		modeAuto: document.getElementById('mode-auto'),
 		readyBtn: document.getElementById('battle-ready'),
 		endBtn: document.getElementById('battle-end'),
 		fighter1: document.querySelector('.fighter1'),
@@ -43,6 +45,10 @@
 		statNbf: document.querySelector('.stat-nbf'),
 		statNbw: document.querySelector('.stat-nbw'),
 		statRatio: document.querySelector('.stat-ratio'),
+	};
+
+	const mode = {
+		auto: false
 	};
 
 	const fighters = [];
@@ -115,7 +121,7 @@
 	}
 
 	function setChoice(list) {
-		mainEls.attackChoice.classList.add('active');
+		mainEls.modeOptions.classList.remove('active');
 
 		if (!list[0]) {
 			mainEls.messageText.classList.remove('active');
@@ -124,6 +130,16 @@
 			mainEls.messageText.textContent = list[0];
 		}
 
+		if (mode.auto) {
+			let choice = Math.ceil(Math.random() * 4);
+			setMessage(`${currentFighter.name} will attack with ${list[choice]}`);
+			setTimeout(() => {
+				mainEls['choice' + choice].onclick();
+			}, 1000);
+			return;
+		}
+
+		mainEls.attackChoice.classList.add('active');
 		mainEls.choice1.textContent = list[1];
 		mainEls.choice2.textContent = list[2];
 		mainEls.choice3.textContent = list[3];
@@ -225,6 +241,8 @@
 				mainEls.readyBtn.classList.add('active');
 			}
 		}
+
+		setMessage('Awaiting for goblean fighters');
 	}
 
 	function addToBattle(evt) {
@@ -251,6 +269,9 @@
 		mainEls.fighter2.className = 'fighter fighter2';
 		mainEls.endBtn.classList.remove('active');
 		views.battle.classList.add('preparation');
+
+		mainEls.modeOptions.classList.add('active');
+		mainEls.modeAuto.checked = mode.auto;
 
 		fighters.forEach(updateFighter);
 
@@ -348,7 +369,14 @@
 		});
 	}
 
-	(function prepareEvents() {
+	function changeModeAuto() {
+		mode.auto = this.checked;
+		let message = mode.auto ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
+		setMessage(message);
+		localStorage.setItem('mode', JSON.stringify(mode));
+	}
+
+	function prepareEvents() {
 		mainEls.readyBtn.onclick = startFight;
 
 		mainEls.creationName.oninput = function() {
@@ -377,6 +405,24 @@
 		document.querySelector('.rules').onclick = setView.bind(null, 'rules', true);
 		document.querySelector('.credits').onclick = setView.bind(null, 'credits', true);
 		document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, 'main', true));
-	})();
 
+		mainEls.modeAuto.onchange = changeModeAuto;
+	}
+
+	function initialize() {
+		i18n.configuration({
+			alias: '_',
+			locales: ['en', 'fr'],
+			dictionary: 'dictionary.json',
+			storage: ['localStorage', 'cookie'],
+			onLocaleReady: changeLanguage
+		});
+
+		const options = JSON.parse(localStorage.getItem('mode') || '{}');
+		Object.assign(mode, options);
+
+		prepareEvents();
+	}
+
+	initialize();
 })();
