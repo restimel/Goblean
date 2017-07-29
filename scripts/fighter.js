@@ -219,7 +219,11 @@ class Fighter {
 			this.createNextChoice();
 		}
 
-		return this.choice.map(choice => `${choice[0]} + ${choice[1]} vs ${choice[2]}`);
+		return this.choice.map(choice => _('%(attack)s + %(support)s vs %(defense)s', {
+			attack: _(choice[0]),
+			support: _(choice[1]),
+			defense: _(choice[2])
+		}));
 	}
 
 	chooseAttack(idx) {

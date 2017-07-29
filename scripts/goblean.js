@@ -45,6 +45,8 @@
 		statNbf: document.querySelector('.stat-nbf'),
 		statNbw: document.querySelector('.stat-nbw'),
 		statRatio: document.querySelector('.stat-ratio'),
+		localeChooser: document.querySelector('.locale-chooser'),
+		locale: document.querySelector('.locale'),
 	};
 
 	const mode = {
@@ -114,9 +116,15 @@
 		}
 	}
 
-	function setMessage(text) {
+	function setMessage(text, keepI18n = false) {
 		mainEls.attackChoice.classList.remove('active');
 		mainEls.messageText.classList.add('active');
+		if (keepI18n) {
+			mainEls.messageText.dataset.i18n = text;
+			text = _(text);
+		} else {
+			mainEls.messageText.dataset.i18n = undefined;
+		}
 		mainEls.messageText.textContent = text;
 	}
 
@@ -132,7 +140,10 @@
 
 		if (mode.auto) {
 			let choice = Math.ceil(Math.random() * 4);
-			setMessage(`${currentFighter.name} will attack with ${list[choice]}`);
+			setMessage(_('%(name)s will attack with %(choice)s', {
+				name: currentFighter.name,
+				choice: list[choice]
+			}));
 			setTimeout(() => {
 				mainEls['choice' + choice].onclick();
 			}, 1000);
@@ -187,11 +198,13 @@
 		let fighter = fighters[nb-1];
 		currentFighter = fighter;
 
-		mainEls.creationTitle = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
+		let title = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
+		mainEls.creationTitle.textContent = _(title);
+		mainEls.creationTitle.dataset.i18n = title;
 
 		mainEls.creationBtnForm.disabled = !fighter.isValid();
 		fillList(mainEls.fighterSelection, {
-			addFirstItem: {name: '+ Create a new Goblean'},
+			addFirstItem: {name: _('+ Create a new Goblean')},
 			callback: function(goblean) { return function() {
 				document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
 				this.classList.add('selected');
@@ -242,7 +255,7 @@
 			}
 		}
 
-		setMessage('Awaiting for goblean fighters');
+		setMessage('Awaiting for goblean fighters', true);
 	}
 
 	function addToBattle(evt) {
@@ -278,7 +291,7 @@
 		setView('battle', true);
 		mainEls.fighter1.onclick = initializeFighter.bind(null, 1);
 		mainEls.fighter2.onclick = initializeFighter.bind(null, 2);
-		setMessage('Awaiting for goblean fighters');
+		setMessage('Awaiting for goblean fighters', true);
 	}
 
 	function startFight() {
@@ -291,7 +304,7 @@
 
 		fighters.forEach(f => f.numberOfFight++);
 
-		if (fighters[0].stats.init < fighters[1].stats.init) {
+		if (fighters[0].stats.initiative < fighters[1].stats.initiative) {
 			attackRound(2);
 		} else {
 			attackRound(1);
@@ -312,7 +325,7 @@
 
 		mainEls['fighter' + position].classList.add('currentFighter');
 
-		setChoice([currentFighter.name + ' will attack', ...currentFighter.getChoice()])
+		setChoice([_('%s will attack', currentFighter.name), ...currentFighter.getChoice()])
 	}
 
 	function finishAttack() {
@@ -328,7 +341,10 @@
 			let dmg = otherFighter.setDamage(attack);
 			mainEls.attackResult.textContent = -dmg;
 			mainEls.attackResult.classList.add('active' + otherFighter.position);
-			setMessage(`${otherFighter.name} has lost ${dmg} hp`);
+			setMessage(_('%(name)s has lost %(dmg)i hp', {
+				name: otherFighter.name,
+				dmg: dmg
+			}));
 			setTimeout(finishAttack, 500);
 		});
 	}
@@ -341,7 +357,13 @@
 
 		save();
 
-		setMessage(`The champion is ${otherFighter.name}`);
+		let messages = ['The champion is %(name)s', '%(name)s kicks off %(nameLoser)s', 'The victory is for %(name)s'];
+		let message = messages[Math.floor(Math.random() * messages.length)];
+
+		setMessage(_(message, {
+			name: otherFighter.name,
+			nameLoser: currentFighter.name
+		}));
 
 		mainEls.endBtn.classList.add('active');
 		return;
@@ -372,8 +394,27 @@
 	function changeModeAuto() {
 		mode.auto = this.checked;
 		let message = mode.auto ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
-		setMessage(message);
+		setMessage(message, true);
 		localStorage.setItem('mode', JSON.stringify(mode));
+	}
+
+	function localeChanged() {
+		mainEls.locale.src = 'img/locale-' + _.getLocale() + '.png';
+		_.html();
+	}
+
+	function chooseLocale() {
+		if (mainEls.localeChooser.classList.contains('active')) {
+			mainEls.localeChooser.classList.remove('active');
+		} else {
+			mainEls.localeChooser.classList.add('active');
+		}
+	}
+
+	function changeLocale(evt) {
+		let locale = evt.target.dataset.locale;
+		mainEls.localeChooser.classList.remove('active');
+		_.setLocale(locale);
 	}
 
 	function prepareEvents() {
@@ -407,19 +448,55 @@
 		document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, 'main', true));
 
 		mainEls.modeAuto.onchange = changeModeAuto;
+
+		mainEls.locale.onclick = chooseLocale;
+		mainEls.localeChooser.onclick = changeLocale;
 	}
 
 	function initialize() {
 		i18n.configuration({
 			alias: '_',
-			locales: ['en', 'fr'],
-			dictionary: 'dictionary.json',
+			localeSet: [
+				{
+					key: 'en',
+					name: 'English',
+					data: 'dictionary-en.json',
+					formatRules: {
+						number: {
+							thousandSeparator: ',',
+							decimalSeparator: '.'
+						}
+					}
+				}, {
+					key: 'fr',
+					name: 'Français',
+					data: 'dictionary-fr.json',
+					formatRules: {
+						number: {
+							thousandSeparator: ' ',
+							decimalSeparator: ','
+						}
+					}
+				}
+
+			],
 			storage: ['localStorage', 'cookie'],
-			onLocaleReady: changeLanguage
+			onLocaleReady: localeChanged
 		});
 
 		const options = JSON.parse(localStorage.getItem('mode') || '{}');
 		Object.assign(mode, options);
+
+		let locales = _.getLocales({key: true, name: true});
+		locales.forEach(l => {
+			let el = document.createElement('img');
+			el.src = 'img/locale-' + l.key + '.png';
+			el.width = '32';
+			el.height = '32';
+			el.dataset.locale = l.key;
+			el.title = l.name;
+			mainEls.localeChooser.appendChild(el);
+		});
 
 		prepareEvents();
 	}

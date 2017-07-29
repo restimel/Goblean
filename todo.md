@@ -2,10 +2,6 @@
 
 * goblean creation
 	* edit a goblean (should we?)
-* support multi-language
-	* add library
-	* add change language icon
-	* translate
 * add EAN reader (quagga)
 	* work with single file
 	* work with cam

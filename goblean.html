@@ -7,47 +7,49 @@
 </head>
 <body>
 <header>
-	Goblean
+	<span class="title" data-i18n="Goblean">Goblean</span>
+	<img class="locale" src="img/locale-en.png" width="32px" height="32px">
+	<div class="locale-chooser"></div>
 </header>
 <section id="main-view" class="view active">
-	<h1>Welcome to the great battle in the Goble-aena!</h1>
+	<h1 data-i18n="Welcome to the great battle in the Goble-aena!"></h1>
 	<nav>
-		<div class="menu4 gobleaena">Enter the Goble-aena</div>
-		<div class="menu1 goblean-stats">View stats</div>
-		<div class="menu2 rules">Rules</div>
-		<div class="menu1 credits">Credits</div>
+		<div class="menu4 gobleaena" data-i18n="Enter the Goble-aena"></div>
+		<div class="menu1 goblean-stats" data-i18n="Statistics"></div>
+		<div class="menu2 rules" data-i18n="Rules"></div>
+		<div class="menu1 credits" data-i18n="Credits"></div>
 	</nav>
 </section>
 <section id="add-fighter" class="view">
-	<h2 id="nb-fighter">First Goblean fighter</h2>
+	<h2 id="nb-fighter" data-i18n="First Goblean fighter"></h2>
 	<div class="list fighter-selection"></div>
 	<div class="fighter-creation">
-		<h3>Create your fighter</h3>
+		<h3 data-i18n="Create your fighter"></h3>
 		<form id="fighter-creation">
-			<label><span>Name:</span> <input id="fighter-name"></label>
-			<label><span>Code:</span> <input id="fighter-code" required></label>
+			<label><span data-i18n="Name:"></span> <input id="fighter-name"></label>
+			<label><span data-i18n="Code:"></span> <input id="fighter-code" required></label>
 			<img class="fighter-picture" alt="picture of your Goblean" width="124px" height="124px">
-			<button type="submit">Add it to the Gobl-aena</button>
+			<button type="submit" data-i18n="Add it to the Goble-aena"></button>
 		</form>
 	</div>
 	<div class="fighter-stats">
-		<label><span>Name:</span> <span class="goblean-name"></span></label>
-		<label><span>Code:</span> <span class="goblean-code"></span></label>
+		<label><span data-i18n="Name:"></span> <span class="goblean-name"></span></label>
+		<label><span data-i18n="Code:"></span> <span class="goblean-code"></span></label>
 		<img class="goblean-picture" alt="picture of your Goblean" width="124px" height="124px">
-		<button type="submit" class="active">Add it to the Gobl-aena</button>
+		<button type="submit" class="active" data-i18n="Add it to the Goble-aena"></button>
 	</div>
-	<aside id="ready-fight">This Goblean is ready to fight</aside>
+	<aside id="ready-fight" data-i18n="This Goblean is ready to fight"></aside>
 </section>
 <section id="battle" class="view preparation">
 	<div class="fighter fighter1">
 		<h3 class="fighter-name">?</h3>
 		<canvas class="fighter-picture" width="200px" height="200px"></canvas>
-		<div class="ready1">Ready</div>
+		<div class="ready1" data-i18n="Ready"></div>
 	</div>
 	<div class="fighter fighter2">
 		<h3 class="fighter-name">?</h3>
 		<canvas class="fighter-picture" width="200px" height="200px"></canvas>
-		<div class="ready2">Ready</div>
+		<div class="ready2" data-i18n="Ready"></div>
 	</div>
 	<div class="message">
 		<div class="text-message active"></div>
@@ -58,41 +60,43 @@
 			<div class="choice choice4"></div>
 		</div>
 		<div class="mode-options">
-			<label><input id="mode-auto" type="checkbox"> <span>auto-fight</span></label>
+			<label><input id="mode-auto" type="checkbox"> <span data-i18n="auto-fight"></span></label>
 		</div>
 	</div>
 	<div class="attack-result"></div>
-	<div class="vs">VS</div>
-	<button id="battle-ready" class="battle-btn">Fight</button>
-	<button id="battle-end" class="battle-btn back-home">Great job!</button>
+	<div class="vs" data-i18n="VS"></div>
+	<button id="battle-ready" class="battle-btn" data-i18n="Fight"></button>
+	<button id="battle-end" class="battle-btn back-home" data-i18n="Great job!"></button>
 </section>
 <section id="stats" class="view">
 	<div id="goblean-list" class="list"></div>
 	<div id="goblean-stat">
 		<h4 class="stat-title"></h4>
-		<label><span>Number of win:</span> <span class="stat-nbw"></span></label>
-		<label><span>Number of fight:</span> <span class="stat-nbf"></span></label>
-		<label><span>Ratio:</span> <span class="stat-ratio"></span></label>
+		<label><span data-i18n="Number of win:"></span> <span class="stat-nbw"></span></label>
+		<label><span data-i18n="Number of fight:"></span> <span class="stat-nbf"></span></label>
+		<label><span data-i18n="Ratio:"></span> <span class="stat-ratio"></span></label>
 	</div>
-	<button class="battle-btn back-home active">Back</button>
+	<button class="battle-btn back-home active" data-i18n="Back"></button>
 </section>
 <section id="rules" class="view">
-	<h2>Rules</h2>
-	<p>Goblean are small creatures which live all around us. There are hidden and stay immobile while you are watching them. But they have one default! They all have a tatoo which looks like a bar code (which is called EAN13).</p><br>
-	<p>Enter the EAN code of the creature you have catched in this application and it will reveal its original form.</p>
-	<p>Enter the EAN code of a second creature (catched by a friend) and let them fight</p>
-	<p>At each round you can select an attack which will be more or less powerful depending of your goblean stats and the defense of your opponent.</p>
-	<p>If your goblean survive, it will be decalred champion of the Goble-aena. (Then it can be defied by another challenger)</p>
-	<button class="battle-btn back-home active">Back</button>
+	<h2 data-i18n="Rules"></h2>
+	<p data-i18n="Goblean are small creatures which live all around us. There are hidden and stay immobile while you are watching them. But they have one default! They all have a tatoo which looks like a bar code (which is called EAN13)."></p>
+	<br>
+	<p data-i18n="Enter the EAN code of the creature you have catched in this application and it will reveal its original form."></p>
+	<p data-i18n="Enter the EAN code of a second creature (catched by a friend) and let them fight"></p>
+	<p data-i18n="At each round you can select an attack which will be more or less powerful depending of your goblean stats and the defense of your opponent."></p>
+	<p data-i18n="If your Goblean survive, it will be declared champion of the Goble-aena. (Then it can be defied by another challenger)"></p>
+	<button class="battle-btn back-home active" data-i18n="Back"></button>
 </section>
 <section id="credits" class="view">
-	<h2>Credits</h2>
-	<p>Thanks for playing!</p>
-	<p>Goblean is a funny game built by Gilles Masclef (Le Gobelin) and Benoît Mariat</p>
-	<p>You are free to share this game around you.</p>
-	<button class="battle-btn back-home active">Back</button>
+	<h2 data-i18n="Credits"></h2>
+	<p data-i18n="Thanks for playing!"></p>
+	<p data-i18n="Goblean is a funny game built by Gilles Masclef (Le Gobelin) and Benoît Mariat"></p>
+	<p data-i18n="You are free to share this game around you."></p>
+	<button class="battle-btn back-home active" data-i18n="Back"></button>
 </section>
 
+<script src="libs/i18n-js-formatter.full.min.js"></script>
 <script src="scripts/fighter.js"></script>
 <script src="scripts/goblean.js"></script>
 </body>

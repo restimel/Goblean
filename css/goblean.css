@@ -5,6 +5,31 @@ body > header {
 	text-align: center;
 }
 
+.locale {
+	position: absolute;
+	top: 0;
+	right: 0;
+	cursor: pointer;
+	z-index: 25;
+}
+
+.locale-chooser {
+	position: absolute;
+	top: 30px;
+	right: 0;
+	z-index: 30;
+	cursor: pointer;
+}
+.locale-chooser:not(.active) {
+	display: none;
+}
+.locale-chooser img {
+	margin: 5px;
+}
+.locale-chooser img:hover {
+	border: 1px dotted yellow;
+}
+
 .view {
 	position: absolute;
 	top: 30px;
