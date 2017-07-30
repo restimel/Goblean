@@ -41,10 +41,12 @@
 		choice4: document.querySelector('.choice4'),
 		attackResult: document.querySelector('.attack-result'),
 		gobleanList: document.getElementById('goblean-list'),
+		statCode: document.querySelector('.stat-code'),
 		statTitle: document.querySelector('.stat-title'),
 		statNbf: document.querySelector('.stat-nbf'),
 		statNbw: document.querySelector('.stat-nbw'),
 		statRatio: document.querySelector('.stat-ratio'),
+		statPicture: document.querySelector('.stat-picture'),
 		localeChooser: document.querySelector('.locale-chooser'),
 		locale: document.querySelector('.locale'),
 	};
@@ -168,7 +170,7 @@
 		}
 
 		if (list.length === 0) {
-			list.push({name: 'no Goblean fighters yet', nbw: 0, nbf: 0, code: 0, picture: ''});
+			list.push({name: _('no Goblean fighters yet'), nbw: 0, nbf: 0, code: 0, picture: ''});
 		}
 
 		if (selected === true) {
@@ -270,7 +272,7 @@
 				mainEls.readyFight.classList.remove('active');
 				updateFighter(currentFighter);
 				setView('battle', true);
-			}, 1000);
+			}, 600);
 		});
 	}
 
@@ -378,12 +380,16 @@
 					document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
 					this.classList.add('selected');
 
+					let fighter = new Fighter(0, goblean);
+
 					let ratio = goblean.nbw / goblean.nbf;
 					ratio = Math.round(ratio * 10000) / 100;
 
 					mainEls.statTitle.textContent = goblean.name;
-					mainEls.statNbf.textContent = goblean.nbf;
-					mainEls.statNbw.textContent = goblean.nbw;
+					mainEls.statCode.textContent = goblean.code;
+					mainEls.statNbf.textContent = _.parse('%i', goblean.nbf);
+					mainEls.statNbw.textContent = _.parse('%i', goblean.nbw);
+					fighter.drawPicture(mainEls.statPicture);
 					mainEls.statRatio.textContent = ratio + '%';
 				};
 			},

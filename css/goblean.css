@@ -63,6 +63,12 @@ body > header {
 	text-align: center;
 }
 
+.stat-picture {
+	width: 100px;
+	height: 100px;
+	background-color: white;
+}
+
 #goblean-list {
 	position: absolute;
 	top: 20px;
