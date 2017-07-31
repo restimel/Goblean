@@ -131,6 +131,7 @@ class Fighter {
 				value = 1;
 			}
 			this.ctx.lineWidth = value;
+			return value;
 		};
 
 		let setScale = (part) => {
@@ -143,13 +144,35 @@ class Fighter {
 			this.ctx.scale(value, value);
 		};
 
-		this.ctx.beginPath();
-		this.ctx.strokeStyle = '#000000';
-		this.ctx.fillStyle = '#000000';
-		this.ctx.ellipse(100, 100, 20, 50, 0, 0, 2*Math.PI);
-		setWidth('body');
-		this.ctx.stroke();
-		this.ctx.fill();
+		this.ctx.save();
+
+		let drawBody = (clip=false) => {
+			this.ctx.beginPath();
+			this.ctx.strokeStyle = '#000000';
+			this.ctx.fillStyle = '#000000';
+			let w = setWidth('body');
+			if (!clip) {
+				w = 0;
+			}
+			this.ctx.ellipse(100, 100, 20+w/2, 50+w/2, 0, 0, 2*Math.PI);
+		}
+		
+		if (this.picture) {
+			let h = 50 + this.stats.body;
+			let img = new Image();
+			img.src = this.picture;
+			img.onload = () => {
+				this.ctx.save();
+				drawBody(true);
+				this.ctx.clip();
+				this.ctx.drawImage(img, 100-h, 100-h, 2*h, 2*h);
+				this.ctx.restore();
+			}
+		} else {
+			drawBody();
+			this.ctx.stroke();
+			this.ctx.fill();
+		}
 
 		this.ctx.beginPath();
 		this.ctx.ellipse(100, 30, 19, 19, 0, 0, 2*Math.PI);
@@ -193,6 +216,8 @@ class Fighter {
 		this.ctx.lineTo(0, 15);
 		this.ctx.closePath();
 		this.ctx.fill();
+		this.ctx.restore();
+
 		this.ctx.restore();
 	}
 

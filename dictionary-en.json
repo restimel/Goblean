@@ -19,6 +19,7 @@
 	"Add it to the Goble-aena": "Add it to the Goble-aena",
 	"This Goblean is ready to fight": "This Goblean is ready to fight",
 	"Ready": "Ready",
+	"Winner": "Winner",
 	"auto-fight": "auto-fight",
 	"VS": "VS",
 	"Fight": "Fight",
@@ -52,5 +53,6 @@
 	"Take picture": "Take picture",
 	"Take again": "Take again",
 	"Import an image": "Import an image",
-	"Take picture from camera": "Take picture from camera"
+	"Take picture from camera": "Take picture from camera",
+	"picture of your Goblean": "picture of your Goblean"
 }

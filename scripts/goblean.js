@@ -31,6 +31,7 @@
         modeAuto: document.getElementById('mode-auto'),
         readyBtn: document.getElementById('battle-ready'),
         endBtn: document.getElementById('battle-end'),
+        winner: document.getElementById('winner'),
         fighter1: document.querySelector('.fighter1'),
         fighter2: document.querySelector('.fighter2'),
         fighter1Ready: document.querySelector('.ready1'),
@@ -320,7 +321,7 @@
 
         if (fighter.isValid()) {
             mainEls['fighter' + fighter.position + 'Ready'].classList.add('active');
-            fighter.drawPicture(el.querySelector('.fighter-picture'));
+            fighter.drawPicture(el.querySelector('.fighter-canvas'));
 
             localStorage.setItem('fighter' + fighter.position, JSON.stringify(fighter));
 
@@ -354,6 +355,7 @@
 
         mainEls.fighter1.className = 'fighter fighter1';
         mainEls.fighter2.className = 'fighter fighter2';
+        mainEls.winner.className = '';
         mainEls.endBtn.classList.remove('active');
         views.battle.classList.add('preparation');
 
@@ -440,6 +442,8 @@
         }));
 
         mainEls.endBtn.classList.add('active');
+        mainEls.winner.classList.add('active' + otherFighter.position);
+        animationElement(mainEls.winner, 1);
         return;
     }
 
@@ -479,6 +483,7 @@
     function localeChanged() {
         mainEls.locale.src = 'img/locale-' + _.getLocale() + '.png';
         _.html();
+        document.querySelectorAll('.fighter-picture,.goblean-picture').forEach(el => el.title = el.alt = _('picture of your Goblean'));
     }
 
     function chooseLocale() {

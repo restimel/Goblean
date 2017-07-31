@@ -185,6 +185,28 @@ body > header {
 	display: none;
 }
 
+#winner {
+	position: absolute;
+	font-size: 50px;
+	color: red;
+	display: none;
+	top: 80px;
+	bottom: auto;
+	z-index: 15;
+}
+#winner.active1 {
+	display: block;
+	left: 70px;
+	right: auto;
+	transform: rotate(-10deg);
+}
+#winner.active2 {
+	display: block;
+	right: 70px;
+	left: auto;
+	transform: rotate(10deg);
+}
+
 #ready-fight {
 	position: absolute;
 	font-size: 50px;
