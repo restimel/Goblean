@@ -1,6 +1,10 @@
 (function() {
     'use strict';
 
+    const supportMediaDevice = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+
+    const videoSize = 300;
+
     const views = {
         main: document.getElementById('main-view'),
         addFighter: document.getElementById('add-fighter'),
@@ -51,6 +55,7 @@
         localeChooser: document.querySelector('.locale-chooser'),
         locale: document.querySelector('.locale'),
         dialogPicture: document.getElementById('dialog-picture'),
+        streamHeader: document.querySelector('#dialog-picture header'),
         btnCancel: document.querySelector('.btn-cancel'),
         btnOk: document.querySelector('.btn-valid'),
         streamVideo: document.querySelector('.stream-video'),
@@ -58,6 +63,8 @@
         streamPicture: document.querySelector('.picture-temp'),
         takePicture: document.querySelector('.take-picture'),
         fileStream: document.querySelector('.file-stream'),
+        codeStream: document.querySelector('.code-stream'),
+        streamCode: document.querySelector('.code-stream input'),
     };
 
     const mode = {
@@ -209,75 +216,12 @@
         let fighter = fighters[nb-1];
         currentFighter = fighter;
 
-        let mediaStream = [];
-        let takeScreenshot = true;
-        let changePicture = function() {
-            mainEls.dialogPicture.showModal();
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                mainEls.streamVideo.classList.add('active');
-                mainEls.takePicture.classList.add('active');
-                mainEls.takePicture.textContent = _('Take picture');
-                takeScreenshot = true;
-                navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
-                    mainEls.streamVideo.src = window.URL.createObjectURL(stream);
-                    mediaStream = stream.getVideoTracks();
-                });
-            } else {
-                mainEls.streamVideo.classList.remove('active');
-                mainEls.takePicture.classList.remove('active');
-            }
-            mainEls.fileStream.classList.add('active');
-            mainEls.streamPicture.classList.remove('active');
-        };
-
-        mainEls.btnCancel.onclick = function() {
-            mainEls.dialogPicture.close();
-            mediaStream.forEach(mediaStreamTrack => mediaStreamTrack.stop());
-        };
-
-        mainEls.btnOk.onclick = function() {
-            currentFighter.picture = mainEls.streamPicture.src;
-            mainEls.creationPicture.src = mainEls.gobleanPicture.src = currentFighter.picture;
-            mainEls.btnCancel.onclick();
-        };
-
-        mainEls.takePicture.onclick = function() {
-            if (takeScreenshot) {
-                takeScreenshot = false;
-                mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, 200, 200);
-                let data = mainEls.streamCanvas.toDataURL('image/png');
-                mainEls.streamPicture.src = data;
-                mainEls.takePicture.textContent = _('Take again');
-                mainEls.streamVideo.classList.remove('active');
-                mainEls.streamPicture.classList.add('active');
-            } else {
-                takeScreenshot = true;
-                mainEls.streamVideo.classList.add('active');
-                mainEls.streamPicture.classList.remove('active');
-                mainEls.takePicture.textContent = _('Take picture');
-            }
-        };
-
-        mainEls.fileStream.querySelector('input').onchange = function(evt) {
-            console.log('evt', evt)
-            var reader = new FileReader();
-            reader.onloadend = function(data) {
-                mainEls.streamPicture.src = data.target.result;
-                mainEls.streamVideo.classList.remove('active');
-                mainEls.streamPicture.classList.add('active');
-                takeScreenshot = false;
-                mainEls.takePicture.textContent = _('Take picture from camera');
-            };
-            reader.readAsDataURL(evt.target.files[0]);
-        };
-
         let title = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
         mainEls.creationTitle.textContent = _(title);
         mainEls.creationTitle.dataset.i18n = title;
 
         mainEls.creationBtnForm.disabled = !fighter.isValid();
-        mainEls.creationPicture.onclick = changePicture;
-        mainEls.gobleanPicture.onclick = changePicture;
+
         fillList(mainEls.fighterSelection, {
             addFirstItem: {name: _('+ Create a new Goblean')},
             callback: function(goblean) { return function() {
@@ -312,6 +256,161 @@
         });
 
         setView('addFighter', true);
+
+        mainEls.creationPicture.onclick = prepareClickPicture;
+        mainEls.gobleanPicture.onclick = prepareClickPicture;
+        mainEls.creationCode.onfocus = prepareScanCode;
+    }
+
+    function prepareClickPicture() {
+        let mediaStream = [];
+        let takeScreenshot = true;
+        let changePicture = function() {
+            mainEls.streamHeader.dataset.i18n = 'Picture';
+            mainEls.streamHeader.textContent = _('Picture');
+            mainEls.dialogPicture.showModal();
+            if (supportMediaDevice) {
+                mainEls.streamVideo.classList.add('active');
+                mainEls.takePicture.classList.add('active');
+                mainEls.takePicture.textContent = _('Take picture');
+                takeScreenshot = true;
+                navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+                    mainEls.streamVideo.src = window.URL.createObjectURL(stream);
+                    mediaStream = stream.getVideoTracks();
+                });
+            } else {
+                mainEls.streamVideo.classList.remove('active');
+                mainEls.takePicture.classList.remove('active');
+            }
+            mainEls.codeStream.classList.remove('active');
+            mainEls.fileStream.classList.add('active');
+            mainEls.streamPicture.classList.remove('active');
+        };
+
+        mainEls.btnCancel.onclick = function() {
+            mainEls.dialogPicture.close();
+            mediaStream.forEach(mediaStreamTrack => mediaStreamTrack.stop());
+        };
+
+        mainEls.btnOk.onclick = function() {
+            currentFighter.picture = mainEls.streamPicture.src;
+            mainEls.creationPicture.src = mainEls.gobleanPicture.src = currentFighter.picture;
+            mainEls.btnCancel.onclick();
+        };
+
+        mainEls.takePicture.onclick = function() {
+            if (takeScreenshot) {
+                takeScreenshot = false;
+                mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
+                let data = mainEls.streamCanvas.toDataURL('image/png');
+                mainEls.streamPicture.src = data;
+                mainEls.takePicture.textContent = _('Take again');
+                mainEls.streamVideo.classList.remove('active');
+                mainEls.streamPicture.classList.add('active');
+            } else {
+                takeScreenshot = true;
+                mainEls.streamVideo.classList.add('active');
+                mainEls.streamPicture.classList.remove('active');
+                mainEls.takePicture.textContent = _('Take picture');
+            }
+        };
+
+        mainEls.fileStream.querySelector('input').onchange = function(evt) {
+            var reader = new FileReader();
+            reader.onloadend = function(data) {
+                mainEls.streamPicture.src = data.target.result;
+                mainEls.streamVideo.classList.remove('active');
+                mainEls.streamPicture.classList.add('active');
+                takeScreenshot = false;
+                mainEls.takePicture.textContent = _('Take picture from camera');
+            };
+            reader.readAsDataURL(evt.target.files[0]);
+        };
+
+        changePicture();
+    }
+
+    function prepareScanCode() {
+        if (!supportMediaDevice) {
+            return;
+        }
+
+        let mediaStream = [];
+        let takeScreenshot = true;
+
+        function getCode() {
+            mainEls.dialogPicture.showModal();
+            mainEls.streamHeader.dataset.i18n = 'EAN code';
+            mainEls.streamHeader.textContent = _('EAN code');
+            if (supportMediaDevice) {
+                mainEls.streamVideo.classList.add('active');
+                mainEls.takePicture.classList.add('active');
+                mainEls.takePicture.textContent = _('Scan picture');
+                takeScreenshot = true;
+                navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+                    mainEls.streamVideo.src = window.URL.createObjectURL(stream);
+                    mediaStream = stream.getVideoTracks();
+                });
+            } else {
+                mainEls.streamVideo.classList.remove('active');
+                mainEls.takePicture.classList.remove('active');
+            }
+            mainEls.codeStream.classList.add('active');
+            mainEls.streamCode.value = mainEls.creationCode.value;
+            mainEls.fileStream.classList.remove('active');
+            mainEls.streamPicture.classList.remove('active');
+            mainEls.streamCode.focus();
+        }
+
+        function scanCode(img) {
+            Quagga.decodeSingle({
+                decoder: {
+                    readers: ["ean_reader"] // List of active readers
+                },
+                locate: true, // try to locate the barcode in the image
+                src: img // or 'data:image/jpg;base64,' + data
+            }, function(result){
+                if(result && result.codeResult) {
+                    console.log("result", result.codeResult.code);
+                    mainEls.streamCode.value = result.codeResult.code;
+                } else {
+                    console.log("not detected");
+                }
+            });
+        }
+
+        mainEls.btnCancel.onclick = function() {
+            mainEls.dialogPicture.close();
+            mediaStream.forEach(mediaStreamTrack => mediaStreamTrack.stop());
+        };
+
+        mainEls.btnOk.onclick = function() {
+            let code = mainEls.streamCode.value;
+            mainEls.creationCode.value = code;
+            currentFighter.setAttributes({code: code})
+            mainEls.creationBtnForm.disabled = !currentFighter.isValid();
+            mainEls.btnCancel.onclick();
+        };
+
+        mainEls.takePicture.onclick = function() {
+            if (takeScreenshot) {
+                takeScreenshot = false;
+                mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
+                let data = mainEls.streamCanvas.toDataURL('image/png');
+                mainEls.streamPicture.src = data;
+                mainEls.takePicture.textContent = _('Scan again');
+                mainEls.streamVideo.classList.remove('active');
+                mainEls.streamPicture.classList.add('active');
+                scanCode(data);
+            } else {
+                takeScreenshot = true;
+                mainEls.streamVideo.classList.add('active');
+                mainEls.streamPicture.classList.remove('active');
+                mainEls.takePicture.textContent = _('Scan picture');
+            }
+        };
+
+        getCode();
     }
 
     function updateFighter(fighter) {

@@ -1,371 +1,376 @@
 body > header {
-	height: 30px;
-	background-color: black;
-	color: gold;
-	text-align: center;
+    height: 30px;
+    background-color: black;
+    color: gold;
+    text-align: center;
 }
 
 .locale {
-	position: absolute;
-	top: 0;
-	right: 0;
-	cursor: pointer;
-	z-index: 25;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    z-index: 25;
 }
 
 .locale-chooser {
-	position: absolute;
-	top: 30px;
-	right: 0;
-	z-index: 30;
-	cursor: pointer;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    z-index: 30;
+    cursor: pointer;
 }
 .locale-chooser:not(.active) {
-	display: none;
+    display: none;
 }
 .locale-chooser img {
-	margin: 5px;
+    margin: 5px;
 }
 .locale-chooser img:hover {
-	border: 1px dotted yellow;
+    border: 1px dotted yellow;
 }
 
 .view {
-	position: absolute;
-	top: 30px;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background-color: white;
+    position: absolute;
+    top: 30px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
 }
 .view:not(.active) {
-	display: none;
+    display: none;
 }
 
 .view.active {
-	z-index: 10;
+    z-index: 10;
 }
 
 .view.old-active {
-	z-index: 20;
+    z-index: 20;
 }
 
 .active {
-	display: block;
+    display: block;
 }
 
 #main-view,
 #rules,
 #credits,
 #stats {
-	background-color: black;
-	color: white;
-	text-align: center;
+    background-color: black;
+    color: white;
+    text-align: center;
 }
 
 .stat-picture {
-	width: 100px;
-	height: 100px;
-	background-color: white;
+    width: 100px;
+    height: 100px;
+    background-color: white;
 }
 
 #goblean-list {
-	position: absolute;
-	top: 20px;
-	bottom: 50px;
-	left: 0;
-	right: 50%;
+    position: absolute;
+    top: 20px;
+    bottom: 50px;
+    left: 0;
+    right: 50%;
 }
 
 .list {
-	display: flex;
-	flex-direction: column;
-	overflow-x: hidden;
-	overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .list > div {
-	width: 90%;
-	padding: 10px;
-	border: 3px ridge gray;
-	cursor: pointer;
-	margin: auto;
+    width: 90%;
+    padding: 10px;
+    border: 3px ridge gray;
+    cursor: pointer;
+    margin: auto;
 }
 .list > div:hover {
-	color: yellow;
-	border: 3px ridge yellow;
+    color: yellow;
+    border: 3px ridge yellow;
 }
 .list > div.selected {
-	background-color: #FFFFAA;
-	color: black;
-	border: 3px ridge yellow;
-	cursor: default;
+    background-color: #FFFFAA;
+    color: black;
+    border: 3px ridge yellow;
+    cursor: default;
 }
 #goblean-stat {
-	position: absolute;
-	top: 20px;
-	bottom: 50px;
-	left: 50%;
-	right: 0;
+    position: absolute;
+    top: 20px;
+    bottom: 50px;
+    left: 50%;
+    right: 0;
 }
 #goblean-stat label {
-	display: block;
+    display: block;
 }
 
 #main-view > nav{
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-	align-items: center;
-	flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
 }
 .menu1, .menu2, .menu4 {
-	border: 10px outset gray;
-	margin: 1em;
-	padding: 1em;
-	cursor: pointer;
-	font-size: 30px;
+    border: 10px outset gray;
+    margin: 1em;
+    padding: 1em;
+    cursor: pointer;
+    font-size: 30px;
 }
 .menu1 {
-	flex-grow: 1;
+    flex-grow: 1;
 }
 .menu2 {
-	flex-grow: 2;
+    flex-grow: 2;
 }
 .menu4 {
-	flex-basis: 100%;
-	flex-grow: 4;
+    flex-basis: 100%;
+    flex-grow: 4;
 }
 .menu1:hover, .menu2:hover, .menu4:hover {
-	border: 10px outset orange;
-	color: orange;
+    border: 10px outset orange;
+    color: orange;
+}
+
+#fighter-creation img,
+.goblean-picture {
+    border: 1px solid light-gray;
 }
 
 #add-fighter h2,
 #add-fighter h3 {
-	text-align: center;
+    text-align: center;
 }
 
 #add-fighter label,
 #add-fighter img,
 #add-fighter button {
-	display: block;
+    display: block;
 }
 
 #add-fighter img {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 #add-fighter button[disabled] {
-	cursor: not-allowed;
+    cursor: not-allowed;
 }
 #add-fighter button:not([disabled]) {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .fighter-selection {
-	position: absolute;
-	top: 50px;
-	bottom: 0;
-	left: 0;
-	right: 50%;
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    right: 50%;
 }
 
 .fighter-stats,
 .fighter-creation {
-	position: absolute;
-	top: 50px;
-	bottom: 0;
-	left: 50%;
-	right: 0;
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    left: 50%;
+    right: 0;
 }
 
 .fighter-stats:not(.active),
 .fighter-creation:not(.active) {
-	display: none;
+    display: none;
 }
 
 #winner {
-	position: absolute;
-	font-size: 50px;
-	color: red;
-	display: none;
-	top: 80px;
-	bottom: auto;
-	z-index: 15;
+    position: absolute;
+    font-size: 50px;
+    color: red;
+    display: none;
+    top: 80px;
+    bottom: auto;
+    z-index: 15;
 }
 #winner.active1 {
-	display: block;
-	left: 70px;
-	right: auto;
-	transform: rotate(-10deg);
+    display: block;
+    left: 70px;
+    right: auto;
+    transform: rotate(-10deg);
 }
 #winner.active2 {
-	display: block;
-	right: 70px;
-	left: auto;
-	transform: rotate(10deg);
+    display: block;
+    right: 70px;
+    left: auto;
+    transform: rotate(10deg);
 }
 
 #ready-fight {
-	position: absolute;
-	font-size: 50px;
-	transform: rotate(-10deg);
-	top: 70px;
-	bottom: auto;
-	left: 70px;
-	right: auto;
-	z-index: 25;
+    position: absolute;
+    font-size: 50px;
+    transform: rotate(-10deg);
+    top: 70px;
+    bottom: auto;
+    left: 70px;
+    right: auto;
+    z-index: 25;
 }
 #ready-fight:not(.active) {
-	display: none;
+    display: none;
 }
 
 .preparation .fighter:not(.ready) {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .fighter {
-	position: absolute;
-	top: 0;
-	bottom: 80px;
-	text-align: center;
+    position: absolute;
+    top: 0;
+    bottom: 80px;
+    text-align: center;
 }
 
 .fighter1 {
-	left: 0;
-	right: 50%;
-	background-color: rgba(150, 150, 200, 0.5);
+    left: 0;
+    right: 50%;
+    background-color: rgba(150, 150, 200, 0.5);
 }
 
 .fighter2 {
-	left: 50%;
-	right: 0;
-	background-color: rgba(150, 200, 150, 0.5);
+    left: 50%;
+    right: 0;
+    background-color: rgba(150, 200, 150, 0.5);
 }
 
 .fighter.currentFighter {
-	border: 5px ridge gold;
+    border: 5px ridge gold;
 }
 
 .fighter.winner {
-	border: 10px dotted gold;
-	background-color: rgba(200, 200, 0, 0.8);
+    border: 10px dotted gold;
+    background-color: rgba(200, 200, 0, 0.8);
 }
 
 .fighter.loser {
-	background-color: rgba(250, 0, 0, 0.4);
+    background-color: rgba(250, 0, 0, 0.4);
 }
 
 .ready1, .ready2 {
-	color: red;
-	font-size: 30px;
-	position: absolute;
-	top: 100px;
-	left: 50%;
+    color: red;
+    font-size: 30px;
+    position: absolute;
+    top: 100px;
+    left: 50%;
 }
 
 .ready1:not(.active),
 .ready2:not(.active) {
-	display: none;
+    display: none;
 }
 
 .ready1 {
-	transform: translate(-50%, -50%)  rotate(-10deg);
+    transform: translate(-50%, -50%)  rotate(-10deg);
 }
 
 .ready2 {
-	transform: translate(-50%, -50%)  rotate(10deg);
+    transform: translate(-50%, -50%)  rotate(10deg);
 }
 
 .ready .ready1,
 .ready .ready2 {
-	display: block;
+    display: block;
 }
 
 .message {
-	position: absolute;
-	height: 80px;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background-color: rgba(200, 200, 100, 0.5);
-	text-align: center;
+    position: absolute;
+    height: 80px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(200, 200, 100, 0.5);
+    text-align: center;
 }
 
 .text-message {}
 .text-message:not(.active) {
-	display: none;
+    display: none;
 }
 
 .attack-choice {}
 .attack-choice:not(.active) {
-	display: none;
+    display: none;
 }
 .mode-options {
-	text-align: left;
+    text-align: left;
 }
 .mode-options:not(.active) {
-	display: none;
+    display: none;
 }
 
 .vs {
-	position: absolute;
-	top: 40%;
-	left: 50%;
-	transform: translate(-50%, -50%) skewX(-35deg);
-	font-size: 90px;
-	color: red;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) skewX(-35deg);
+    font-size: 90px;
+    color: red;
 }
 
 .battle-btn {
-	position: absolute;
-	bottom: 10px;
-	left: 50%;
-	transform: translate(-50%, 0);
-	font-size: 30px;
-	cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 30px;
+    cursor: pointer;
 }
 .battle-btn:not(.active) {
-	display: none;
+    display: none;
 }
 
 .choice {
-	display: inline-block;
-	width: 48%;
-	margin: 1px;
-	border: 4px gray outset;
-	cursor: pointer;
+    display: inline-block;
+    width: 48%;
+    margin: 1px;
+    border: 4px gray outset;
+    cursor: pointer;
 }
 
 .choice:hover {
-	border: 4px orange outset;
+    border: 4px orange outset;
 }
 
 .attack-result {
-	display: none;
-	position: absolute;
-	top: 110px;
-	transform: translate(-50%, -50%);
-	background-color: red;
-	color: white;
-	padding: 10px;
-	border-radius: 50px;
+    display: none;
+    position: absolute;
+    top: 110px;
+    transform: translate(-50%, -50%);
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 50px;
 }
 .attack-result.active1 {
-	display: block;
-	left: 25%;
+    display: block;
+    left: 25%;
 }
 .attack-result.active2 {
-	display: block;
-	left: 75%;
+    display: block;
+    left: 75%;
 }
 
 #dialog-picture {
-	background-color: white;
-	border: 6px double gray;
-	/*z-index: 23;*/
-	text-align:	center;
+    background-color: white;
+    border: 6px double gray;
+    /*z-index: 23;*/
+    text-align:    center;
 }
 
 #dialog-picture > header,
@@ -374,15 +379,16 @@ body > header {
 #dialog-picture > video,
 #dialog-picture > canvas,
 #dialog-picture > .take-picture {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #dialog-picture > .picture-temp:not(.active),
 #dialog-picture > .take-picture:not(.active),
 #dialog-picture > .file-stream:not(.active),
+#dialog-picture > .code-stream:not(.active),
 #dialog-picture > .stream-canvas:not(.active),
 #dialog-picture > .stream-video:not(.active) {
-	display: none;
+    display: none;
 }

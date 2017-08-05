@@ -55,5 +55,9 @@
 	"Take again": "Recommencer",
 	"Import an image": "Importer une image",
 	"Take picture from camera": "Prendre une photo depuis la caméra",
-	"picture of your Goblean": "photo de votre Goblean"
+	"picture of your Goblean": "photo de votre Goblean",
+	"Picture": "Photo",
+	"EAN code": "Code EAN",
+	"Scan picture": "Analyser la photo",
+	"Scan again": "Refaire l'analyse"
 }
