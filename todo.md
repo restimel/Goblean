@@ -3,7 +3,7 @@
 * goblean creation
 	* edit a goblean (should we?)
 * add EAN reader (quagga)
-	* work with single file
-	* work with cam
+	* streaming analysis
+	* use worker (?needed)
 
 * Animation de fin

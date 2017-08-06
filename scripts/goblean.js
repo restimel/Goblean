@@ -1,7 +1,13 @@
 (function() {
     'use strict';
 
-    const supportMediaDevice = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+    let supportMediaDevice = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+    if (supportMediaDevice) {
+        navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+            stream.getVideoTracks().forEach(mediaStreamTrack => mediaStreamTrack.stop());
+            supportMediaDevice = true;
+        }).catch(() => supportMediaDevice = false);
+    }
 
     const videoSize = 300;
 
@@ -284,7 +290,7 @@
             }
             mainEls.codeStream.classList.remove('active');
             mainEls.fileStream.classList.add('active');
-            mainEls.streamPicture.classList.remove('active');
+            mainEls.streamPicture.classList.remove('active', 'success', 'fail');
         };
 
         mainEls.btnCancel.onclick = function() {
@@ -358,7 +364,7 @@
             mainEls.codeStream.classList.add('active');
             mainEls.streamCode.value = mainEls.creationCode.value;
             mainEls.fileStream.classList.remove('active');
-            mainEls.streamPicture.classList.remove('active');
+            mainEls.streamPicture.classList.remove('active', 'success', 'fail');
             mainEls.streamCode.focus();
         }
 
@@ -373,8 +379,12 @@
                 if(result && result.codeResult) {
                     console.log("result", result.codeResult.code);
                     mainEls.streamCode.value = result.codeResult.code;
+                    mainEls.streamPicture.classList.add('success');
+                    mainEls.streamPicture.classList.remove('fail');
                 } else {
                     console.log("not detected");
+                    mainEls.streamPicture.classList.remove('success');
+                    mainEls.streamPicture.classList.add('fail');
                 }
             });
         }

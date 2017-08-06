@@ -392,3 +392,11 @@ body > header {
 #dialog-picture > .stream-video:not(.active) {
     display: none;
 }
+
+.picture-temp.success {
+	border: 3px solid green;
+}
+
+.picture-temp.fail {
+	border: 3px solid red;
+}
