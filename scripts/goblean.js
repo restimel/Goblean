@@ -280,7 +280,7 @@
                 mainEls.takePicture.classList.add('active');
                 mainEls.takePicture.textContent = _('Take picture');
                 takeScreenshot = true;
-                navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+                navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
                     mainEls.streamVideo.src = window.URL.createObjectURL(stream);
                     mediaStream = stream.getVideoTracks();
                 });
@@ -353,7 +353,7 @@
                 mainEls.takePicture.classList.add('active');
                 mainEls.takePicture.textContent = _('Scan picture');
                 takeScreenshot = true;
-                navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+                navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
                     mainEls.streamVideo.src = window.URL.createObjectURL(stream);
                     mediaStream = stream.getVideoTracks();
                 });
