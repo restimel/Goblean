@@ -304,7 +304,7 @@
             mainEls.btnCancel.onclick();
         };
 
-        mainEls.takePicture.onclick = function() {
+        function takePhoto() {
             if (takeScreenshot) {
                 takeScreenshot = false;
                 mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
@@ -320,6 +320,8 @@
                 mainEls.takePicture.textContent = _('Take picture');
             }
         };
+        mainEls.takePicture.onclick = takePhoto;
+        mainEls.streamVideo.onclick = takePhoto;
 
         mainEls.fileStream.querySelector('input').onchange = function(evt) {
             var reader = new FileReader();
@@ -402,7 +404,7 @@
             mainEls.btnCancel.onclick();
         };
 
-        mainEls.takePicture.onclick = function() {
+        function takePhoto() {
             if (takeScreenshot) {
                 takeScreenshot = false;
                 mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
@@ -419,6 +421,8 @@
                 mainEls.takePicture.textContent = _('Scan picture');
             }
         };
+        mainEls.takePicture.onclick = takePhoto;
+        mainEls.streamVideo.onclick = takePhoto;
 
         getCode();
     }
