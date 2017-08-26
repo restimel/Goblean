@@ -61,20 +61,27 @@ body > header {
     background-color: black;
     color: white;
     text-align: center;
+    padding: 1em;
+    font-size: 1.1em;
+}
+
+#credits p,
+#rules p {
+    text-align: justify;
+}
+
+@media (orientation: portrait) {
+    #stats,
+    #rules,
+    #credits {
+        font-size: 1.8em;
+    }
 }
 
 .stat-picture {
     width: 100px;
     height: 100px;
     background-color: white;
-}
-
-#goblean-list {
-    position: absolute;
-    top: 20px;
-    bottom: 50px;
-    left: 0;
-    right: 50%;
 }
 
 .list {
@@ -101,12 +108,33 @@ body > header {
     border: 3px ridge yellow;
     cursor: default;
 }
-#goblean-stat {
-    position: absolute;
-    top: 20px;
-    bottom: 50px;
-    left: 50%;
-    right: 0;
+
+#stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+@media (orientation: landscape) {
+    #stats {
+        flex-direction: row;
+    }
+
+    #goblean-list, #goblean-stat {
+        flex-basis: 40%;
+        flex-grow: 2;
+    }
+}
+@media (orientation: portrait) {
+    #stats {
+        flex-direction: column-reverse;
+    }
+
+    #goblean-stat, #goblean-list {
+        width: 100%;
+        flex-grow: 2;
+    }
 }
 #goblean-stat label {
     display: block;
@@ -126,15 +154,25 @@ body > header {
     cursor: pointer;
     font-size: 30px;
 }
-.menu1 {
-    flex-grow: 1;
+@media (orientation: portrait) {
+    .menu1,
+    .menu2,
+    .menu4 {
+        flex-basis: 100%;
+        flex-grow: 4;
+    }
 }
-.menu2 {
-    flex-grow: 2;
-}
-.menu4 {
-    flex-basis: 100%;
-    flex-grow: 4;
+@media (orientation: landscape) {
+    .menu1 {
+        flex-grow: 1;
+    }
+    .menu2 {
+        flex-grow: 2;
+    }
+    .menu4 {
+        flex-basis: 100%;
+        flex-grow: 4;
+    }
 }
 .menu1:hover, .menu2:hover, .menu4:hover {
     border: 10px outset orange;
@@ -232,21 +270,70 @@ body > header {
 
 .fighter {
     position: absolute;
-    top: 0;
-    bottom: 160px;
     text-align: center;
+    padding-top: 2em;
 }
-
 .fighter1 {
-    left: 0;
-    right: 50%;
     background-color: rgba(150, 150, 200, 0.5);
 }
-
 .fighter2 {
-    left: 50%;
-    right: 0;
     background-color: rgba(150, 200, 150, 0.5);
+}
+
+@media (orientation:landscape) {
+    .fighter {
+        top: 0;
+        bottom: 160px;
+    }
+
+    .fighter1 {
+        left: 0;
+        right: 50%;
+    }
+
+    .fighter2 {
+        left: 50%;
+        right: 0;
+    }
+
+    .vs {
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%) skewX(-35deg);
+        font-size: 90px;
+        color: red;
+    }
+}
+
+@media (orientation:portrait) {
+    .fighter {
+        left: 0;
+        right: 0;
+    }
+
+    .fighter1 {
+        top: 0;
+        bottom: 50%;
+    }
+
+    .fighter2 {
+        top: 50%;
+        bottom: 160px;
+    }
+
+    .vs {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) skewX(-35deg);
+        font-size: 90px;
+        color: red;
+    }
+}
+
+.fighter-canvas {
+    height: 50%;
 }
 
 .fighter.currentFighter {
@@ -264,9 +351,9 @@ body > header {
 
 .ready1, .ready2 {
     color: red;
-    font-size: 30px;
+    font-size: 40px;
     position: absolute;
-    top: 100px;
+    top: 37%;
     left: 50%;
 }
 
@@ -304,10 +391,6 @@ body > header {
     display: none;
 }
 
-.attack-choice {}
-.attack-choice:not(.active) {
-    display: none;
-}
 .mode-options {
     text-align: left;
 }
@@ -340,15 +423,6 @@ body > header {
     display: none;
 }
 
-.vs {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%) skewX(-35deg);
-    font-size: 90px;
-    color: red;
-}
-
 .battle-btn {
     position: absolute;
     bottom: 10px;
@@ -361,10 +435,22 @@ body > header {
     display: none;
 }
 
+.attack-choice {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.attack-choice:not(.active) {
+    display: none;
+}
+
 .choice {
     display: inline-block;
-    width: 46%;
-    margin: 1px;
+    margin: 2px;
+    flex-basis: 40%;
+    flex-grow: 2;
     border: 4px gray outset;
     padding: 0.5em;
     cursor: pointer;
@@ -377,20 +463,37 @@ body > header {
 .attack-result {
     display: none;
     position: absolute;
-    top: 110px;
-    transform: translate(-50%, -50%);
     background-color: red;
     color: white;
     padding: 10px;
     border-radius: 50px;
 }
-.attack-result.active1 {
-    display: block;
-    left: 25%;
+.attack-result.active1, .attack-result.active2 {
+        display: block;
 }
-.attack-result.active2 {
-    display: block;
-    left: 75%;
+@media (orientation: landscape) {
+    .attack-result {
+        transform: translate(-50%, -50%);
+        top: 110px;
+    }
+    .attack-result.active1 {
+        left: 25%;
+    }
+    .attack-result.active2 {
+        left: 75%;
+    }
+}
+@media (orientation: portrait) {
+    .attack-result {
+        transform: translate(-50%, -50%) scale(1.8);
+        left: 50%;
+    }
+    .attack-result.active1 {
+        top: 10%;
+    }
+    .attack-result.active2 {
+        top: 59%;
+    }
 }
 
 #dialog-picture {

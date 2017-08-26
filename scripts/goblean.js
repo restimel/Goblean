@@ -10,7 +10,6 @@
     }
 
     const videoSize = 300;
-    const scrollBottom = 10000000;
 
     const views = {
         main: document.getElementById('main-view'),
@@ -229,7 +228,7 @@
         var li = document.createElement('li');
         li.textContent = text;
         mainEls.lastLogs.appendChild(li);
-        mainEls.lastLogs.scrollTop = scrollBottom;
+        li.scrollIntoView();
     }
 
     function initializeFighter(nb) {
