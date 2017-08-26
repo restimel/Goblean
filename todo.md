@@ -1,6 +1,5 @@
 # TODO list
 
-* historic of battle
 * Gobl-aena
 * Team
 * Adventure mode

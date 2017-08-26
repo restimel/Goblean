@@ -10,6 +10,7 @@
     }
 
     const videoSize = 300;
+    const scrollBottom = 10000000;
 
     const views = {
         main: document.getElementById('main-view'),
@@ -36,6 +37,8 @@
         gobleanPicture: document.querySelector('.goblean-picture'),
         readyFight: document.getElementById('ready-fight'),
         messageText: document.querySelector('.text-message'),
+        battleHistoric: document.querySelector('.battle-historic'),
+        lastLogs: document.querySelector('.last-logs'),
         attackChoice: document.querySelector('.attack-choice'),
         modeOptions: document.querySelector('.mode-options'),
         modeAuto: document.getElementById('mode-auto'),
@@ -140,16 +143,20 @@
         }
     }
 
-    function setMessage(text, keepI18n = false) {
+    function setMessage(text, addHistoricLog = false, keepI18n = false) {
         mainEls.attackChoice.classList.remove('active');
         mainEls.messageText.classList.add('active');
         if (keepI18n) {
             mainEls.messageText.dataset.i18n = text;
             text = _(text);
         } else {
-            mainEls.messageText.dataset.i18n = undefined;
+            delete mainEls.messageText.dataset.i18n;
         }
         mainEls.messageText.textContent = text;
+
+        if (addHistoricLog) {
+            addHistoric(text);
+        }
     }
 
     function setChoice(list) {
@@ -216,6 +223,13 @@
 
             element.appendChild(el);
         }
+    }
+
+    function addHistoric(text) {
+        var li = document.createElement('li');
+        li.textContent = text;
+        mainEls.lastLogs.appendChild(li);
+        mainEls.lastLogs.scrollTop = scrollBottom;
     }
 
     function initializeFighter(nb) {
@@ -443,7 +457,7 @@
             }
         }
 
-        setMessage('Awaiting for goblean fighters', true);
+        setMessage('Awaiting for goblean fighters', false, true);
     }
 
     function addToBattle(evt) {
@@ -472,6 +486,10 @@
         mainEls.endBtn.classList.remove('active');
         views.battle.classList.add('preparation');
 
+        mainEls.battleHistoric.classList.remove('active');
+        mainEls.lastLogs.classList.remove('active');
+        mainEls.lastLogs.innerHTML = '';
+
         mainEls.modeOptions.classList.add('active');
         mainEls.modeAuto.checked = mode.auto;
 
@@ -480,7 +498,7 @@
         setView('battle', true);
         mainEls.fighter1.onclick = initializeFighter.bind(null, 1);
         mainEls.fighter2.onclick = initializeFighter.bind(null, 2);
-        setMessage('Awaiting for goblean fighters', true);
+        setMessage('Awaiting for goblean fighters', false, true);
     }
 
     function startFight() {
@@ -490,6 +508,9 @@
         mainEls.readyBtn.classList.remove('active');
         mainEls.fighter1Ready.classList.remove('active');
         mainEls.fighter2Ready.classList.remove('active');
+        mainEls.battleHistoric.classList.add('active');
+
+        addHistoric(_('Start battle between %s and %s', fighters[0].name, fighters[1].name));
 
         fighters.forEach(f => f.numberOfFight++);
 
@@ -525,6 +546,11 @@
 
     function attackChoice(choice) {
         animationElement(mainEls.attackResult, -1, function() {
+            let list = currentFighter.getChoice();
+            addHistoric(_('%(name)s will attack with %(choice)s', {
+                name: currentFighter.name,
+                choice: list[choice]
+            }));
             let otherFighter = fighters[currentFighter.position % 2];
             let attack = currentFighter.chooseAttack(choice);
             let dmg = otherFighter.setDamage(attack);
@@ -533,7 +559,7 @@
             setMessage(_('%(name)s has lost %(dmg)i hp', {
                 name: otherFighter.name,
                 dmg: dmg
-            }));
+            }), true);
             setTimeout(finishAttack, 500);
         });
     }
@@ -549,10 +575,12 @@
         let messages = ['The champion is %(name)s', '%(name)s kicks off %(nameLoser)s', 'The victory is for %(name)s'];
         let message = messages[Math.floor(Math.random() * messages.length)];
 
-        setMessage(_(message, {
+        message = _(message, {
             name: otherFighter.name,
             nameLoser: currentFighter.name
-        }));
+        });
+
+        setMessage(message, true);
 
         mainEls.endBtn.classList.add('active');
         mainEls.winner.classList.add('active' + otherFighter.position);
@@ -589,7 +617,7 @@
     function changeModeAuto() {
         mode.auto = this.checked;
         let message = mode.auto ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
-        setMessage(message, true);
+        setMessage(message, false, true);
         localStorage.setItem('mode', JSON.stringify(mode));
     }
 
@@ -644,6 +672,14 @@
         document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, 'main', true));
 
         mainEls.modeAuto.onchange = changeModeAuto;
+
+        document.querySelector('.show-historic').onclick = function() {
+            if (mainEls.lastLogs.classList.contains('active')) {
+                mainEls.lastLogs.classList.remove('active');
+            } else {
+                mainEls.lastLogs.classList.add('active');
+            }
+        };
 
         mainEls.locale.onclick = chooseLocale;
         mainEls.localeChooser.onclick = changeLocale;

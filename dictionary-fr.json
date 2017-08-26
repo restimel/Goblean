@@ -59,5 +59,7 @@
 	"Picture": "Photo",
 	"EAN code": "Code EAN",
 	"Scan picture": "Analyser la photo",
-	"Scan again": "Refaire l'analyse"
+	"Scan again": "Refaire l'analyse",
+	"see last actions": "voir les dernières actions",
+	"Start battle between %s and %s": "Début de la battaille entre %s et %s"
 }

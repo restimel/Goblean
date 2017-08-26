@@ -58,5 +58,7 @@
 	"Picture": "Picture",
 	"EAN code": "EAN code",
 	"Scan picture": "Scan picture",
-	"Scan again": "Scan again"
+	"Scan again": "Scan again",
+	"see last actions": "see last actions",
+	"Start battle between %s and %s": "Start battle between %s and %s"
 }

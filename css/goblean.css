@@ -233,7 +233,7 @@ body > header {
 .fighter {
     position: absolute;
     top: 0;
-    bottom: 80px;
+    bottom: 160px;
     text-align: center;
 }
 
@@ -290,12 +290,13 @@ body > header {
 
 .message {
     position: absolute;
-    height: 80px;
+    height: 160px;
     bottom: 0;
     left: 0;
     right: 0;
     background-color: rgba(200, 200, 100, 0.5);
     text-align: center;
+    font-size: 25px;
 }
 
 .text-message {}
@@ -311,6 +312,31 @@ body > header {
     text-align: left;
 }
 .mode-options:not(.active) {
+    display: none;
+}
+
+.battle-historic:not(.active) {
+    display: none;
+}
+.show-historic {
+    position: absolute;
+    right: 1em;
+    bottom: 160px;
+    cursor: pointer;
+}
+.last-logs {
+    position: absolute;
+    right: 1em;
+    bottom: 190px;
+    padding: 1em;
+    padding-left: 2em;
+    background-color: rgba(245, 245, 225, 0.5);
+    box-shadow: -3px 3px 10px 2px #8a897f;
+    max-height: 50%;
+    max-width: 50%;
+    overflow: auto;
+}
+.last-logs:not(.active) {
     display: none;
 }
 
@@ -337,9 +363,10 @@ body > header {
 
 .choice {
     display: inline-block;
-    width: 48%;
+    width: 46%;
     margin: 1px;
     border: 4px gray outset;
+    padding: 0.5em;
     cursor: pointer;
 }
 
