@@ -7,7 +7,7 @@ Goblean is a funny game where you play with real object. You use EAN code of obj
 ## The game
 
 You can play it at
-https://restimel.github.io/Goblean/test/goblean.html
+https://restimel.github.io/Goblean/goblean.html
 
 ## Techonology
 
