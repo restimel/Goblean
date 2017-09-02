@@ -1,9 +1,11 @@
 (function() {
     'use strict';
 
+    const authors = ['Gilles Masclef (Le Gobelin)', 'Benoît Mariat'];
+
     let supportMediaDevice = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
     if (supportMediaDevice) {
-        navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+        navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
             stream.getVideoTracks().forEach(mediaStreamTrack => mediaStreamTrack.stop());
             supportMediaDevice = true;
         }).catch(() => supportMediaDevice = false);
@@ -13,11 +15,12 @@
 
     const views = {
         main: document.getElementById('main-view'),
-        addFighter: document.getElementById('add-fighter'),
+    // addFighter: document.getElementById('add-fighter'),
         battle: document.getElementById('battle'),
         rules: document.getElementById('rules'),
         credits: document.getElementById('credits'),
         stats: document.getElementById('stats'),
+        createGoblean: document.getElementById('step-creation'),
     };
 
     const mainEls = {
@@ -62,22 +65,31 @@
         statPicture: document.querySelector('.stat-picture'),
         localeChooser: document.querySelector('.locale-chooser'),
         locale: document.querySelector('.locale'),
-        dialogPicture: document.getElementById('dialog-picture'),
-        streamHeader: document.querySelector('#dialog-picture header'),
-        btnCancel: document.querySelector('.btn-cancel'),
-        btnOk: document.querySelector('.btn-valid'),
-        streamVideo: document.querySelector('.stream-video'),
-        streamCanvas: document.querySelector('.stream-canvas'),
-        streamPicture: document.querySelector('.picture-temp'),
-        takePicture: document.querySelector('.take-picture'),
-        fileStream: document.querySelector('.file-stream'),
-        codeStream: document.querySelector('.code-stream'),
-        streamCode: document.querySelector('.code-stream input'),
+        // dialogPicture: document.getElementById('dialog-picture'),
+        // streamHeader: document.querySelector('#dialog-picture header'),
+        // btnCancel: document.querySelector('.btn-cancel'),
+        // btnOk: document.querySelector('.btn-valid'),
+        videoSection: document.getElementById('video-section'),
+    streamVideo: document.querySelector('.stream-video'),
+    streamCanvas: document.querySelector('.stream-canvas'),
+    streamPicture: document.querySelector('.picture-temp'),
+    takePicture: document.querySelector('.take-picture'),
+    fileStream: document.querySelector('.file-stream'),
+    codeStream: document.querySelector('.code-stream'),
+    streamCode: document.querySelector('.code-stream input'),
+        createGobleanSection: document.querySelector('#step-creation'),
+        createGobleanTitle: document.querySelector('#step-creation .title'),
+        createGobleanMessage: document.querySelector('#step-creation .message'),
+        gobleanCreationName: document.querySelector('.name-goblean-creation'),
+        gobleanCreationCode: document.querySelector('.code-goblean-creation'),
+        gobleanCreationSideContent: document.querySelector('.side-content'),
     };
 
     const mode = {
         auto: false
     };
+
+    const viewStack = [];
 
     const fighters = [];
     let currentFighter;
@@ -118,8 +130,10 @@
         animation();
     }
 
-    function setView(view, animate) {
+    function setView(view, animate, stack = false) {
+console.log('viewStack:', viewStack);
         const elViews = document.querySelectorAll('.view.active');
+        const oldView = viewStack[viewStack.length - 2];
         let opacity = 1;
 
         function hide() {
@@ -127,6 +141,18 @@
                 elView.classList.remove('active');
                 elView.classList.remove('old-active');
                 elView.style.opacity = '';
+            }
+        }
+
+        if (!view) {
+            view = oldView;
+            viewStack.pop();
+            if (!view) view = 'main';
+        } else {
+            if (stack || !viewStack.length) {
+                viewStack.push( view);
+            } else {
+                viewStack[viewStack.length - 1] = view;
             }
         }
 
@@ -193,10 +219,6 @@
         let list = JSON.parse(localStorage.getItem('fighters') || '[]');
         list.sort((a, b) => b.nbw - a.nbw);
 
-        if (addFirstItem) {
-            list.unshift(addFirstItem);
-        }
-
         if (list.length === 0) {
             list.push({name: _('no Goblean fighters yet'), nbw: 0, nbf: 0, code: 0, picture: ''});
         }
@@ -204,6 +226,11 @@
         if (selected === true) {
             selected = list[0];
         }
+
+        if (addFirstItem) {
+            list.unshift(addFirstItem);
+        }
+
         if (typeof selected !== 'object') {
             selected = {};
         }
@@ -236,122 +263,133 @@
         currentFighter = fighter;
 
         let title = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
-        mainEls.creationTitle.textContent = _(title);
-        mainEls.creationTitle.dataset.i18n = title;
+        // mainEls.creationTitle.textContent = _(title);
+        // mainEls.creationTitle.dataset.i18n = title;
 
-        mainEls.creationBtnForm.disabled = !fighter.isValid();
+        // mainEls.creationBtnForm.disabled = !fighter.isValid();
 
-        fillList(mainEls.fighterSelection, {
-            addFirstItem: {name: _('+ Create a new Goblean')},
-            callback: function(goblean) { return function() {
-                document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-                this.classList.add('selected');
+        // fillList(mainEls.fighterSelection, {
+        //     addFirstItem: {name: _('+ Create a new Goblean')},
+        //     callback: function(goblean) { return function() {
+        //         document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+        //         this.classList.add('selected');
 
-                if (!goblean.code) {
-                    mainEls.creationSection.classList.add('active');
-                    mainEls.creationStat.classList.remove('active');
+        //         if (!goblean.code) {
+        //             mainEls.creationSection.classList.add('active');
+        //             mainEls.creationStat.classList.remove('active');
 
-                    currentFighter = new Fighter(nb);
+        //             currentFighter = new Fighter(nb);
 
-                    mainEls.creationName.value = '';
-                    mainEls.creationCode.value = '';
-                    mainEls.creationPicture.src = '';
-                    mainEls.creationBtnForm.disabled = true;
-                } else {
-                    mainEls.creationSection.classList.remove('active');
-                    mainEls.creationStat.classList.add('active');
+        //             mainEls.creationName.value = '';
+        //             mainEls.creationCode.value = '';
+        //             mainEls.creationPicture.src = '';
+        //             mainEls.creationBtnForm.disabled = true;
+        //         } else {
+        //             mainEls.creationSection.classList.remove('active');
+        //             mainEls.creationStat.classList.add('active');
 
-                    currentFighter = new Fighter(nb, goblean);
+        //             currentFighter = new Fighter(nb, goblean);
 
-                    mainEls.gobleanName.textContent = currentFighter.name || '';
-                    mainEls.gobleanCode.textContent = currentFighter.code || '';
-                    mainEls.gobleanPicture.src = currentFighter.picture || '';
+        //             mainEls.gobleanName.textContent = currentFighter.name || '';
+        //             mainEls.gobleanCode.textContent = _.parse('%§', currentFighter.code || '');
+        //             mainEls.gobleanPicture.src = currentFighter.picture || '';
 
-                }
+        //         }
 
-                fighters[nb-1] = currentFighter;
-            };},
-            selected: currentFighter
+        //         fighters[nb-1] = currentFighter;
+        //     };},
+        //     selected: currentFighter
+        // });
+
+        initializeStats({
+            title: title,
+            selected: currentFighter,
+            btnOk: _('Select'),
+            callback: function(goblean) {
+                console.log(goblean);
+                fighters[nb-1] = goblean;
+                goblean.position = nb;
+                updateFighter(goblean);
+            }
         });
+        // setView('stats', true);
 
-        setView('addFighter', true);
-
-        mainEls.creationPicture.onclick = prepareClickPicture;
-        mainEls.gobleanPicture.onclick = prepareClickPicture;
-        mainEls.creationCode.onfocus = prepareScanCode;
+        // mainEls.creationPicture.onclick = prepareClickPicture;
+        // mainEls.gobleanPicture.onclick = prepareClickPicture;
+        // mainEls.creationCode.onfocus = prepareScanCode;
     }
 
-    function prepareClickPicture() {
-        let mediaStream = [];
-        let takeScreenshot = true;
-        let changePicture = function() {
-            mainEls.streamHeader.dataset.i18n = 'Picture';
-            mainEls.streamHeader.textContent = _('Picture');
-            mainEls.dialogPicture.showModal();
-            if (supportMediaDevice) {
-                mainEls.streamVideo.classList.add('active');
-                mainEls.takePicture.classList.add('active');
-                mainEls.takePicture.textContent = _('Take picture');
-                takeScreenshot = true;
-                navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
-                    mainEls.streamVideo.src = window.URL.createObjectURL(stream);
-                    mediaStream = stream.getVideoTracks();
-                });
-            } else {
-                mainEls.streamVideo.classList.remove('active');
-                mainEls.takePicture.classList.remove('active');
-            }
-            mainEls.codeStream.classList.remove('active');
-            mainEls.fileStream.classList.add('active');
-            mainEls.streamPicture.classList.remove('active', 'success', 'fail');
-        };
+    // function prepareClickPicture() {
+    //     let mediaStream = [];
+    //     let takeScreenshot = true;
+    //     let changePicture = function() {
+    //         mainEls.streamHeader.dataset.i18n = 'Picture';
+    //         mainEls.streamHeader.textContent = _('Picture');
+    //         mainEls.dialogPicture.showModal();
+    //         if (supportMediaDevice) {
+    //             mainEls.streamVideo.classList.add('active');
+    //             mainEls.takePicture.classList.add('active');
+    //             mainEls.takePicture.textContent = _('Take picture');
+    //             takeScreenshot = true;
+    //             navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
+    //                 mainEls.streamVideo.src = window.URL.createObjectURL(stream);
+    //                 mediaStream = stream.getVideoTracks();
+    //             });
+    //         } else {
+    //             mainEls.streamVideo.classList.remove('active');
+    //             mainEls.takePicture.classList.remove('active');
+    //         }
+    //         mainEls.codeStream.classList.remove('active');
+    //         mainEls.fileStream.classList.add('active');
+    //         mainEls.streamPicture.classList.remove('active', 'success', 'fail');
+    //     };
 
-        mainEls.btnCancel.onclick = function() {
-            mainEls.dialogPicture.close();
-            mediaStream.forEach(mediaStreamTrack => mediaStreamTrack.stop());
-        };
+    //     mainEls.btnCancel.onclick = function() {
+    //         mainEls.dialogPicture.close();
+    //         mediaStream.forEach(mediaStreamTrack => mediaStreamTrack.stop());
+    //     };
 
-        mainEls.btnOk.onclick = function() {
-            currentFighter.picture = mainEls.streamPicture.src;
-            mainEls.creationPicture.src = mainEls.gobleanPicture.src = currentFighter.picture;
-            mainEls.btnCancel.onclick();
-        };
+    //     mainEls.btnOk.onclick = function() {
+    //         currentFighter.picture = mainEls.streamPicture.src;
+    //         mainEls.creationPicture.src = mainEls.gobleanPicture.src = currentFighter.picture;
+    //         mainEls.btnCancel.onclick();
+    //     };
 
-        function takePhoto() {
-            if (takeScreenshot) {
-                takeScreenshot = false;
-                mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
-                let data = mainEls.streamCanvas.toDataURL('image/png');
-                mainEls.streamPicture.src = data;
-                mainEls.takePicture.textContent = _('Take again');
-                mainEls.streamVideo.classList.remove('active');
-                mainEls.streamPicture.classList.add('active');
-            } else {
-                takeScreenshot = true;
-                mainEls.streamVideo.classList.add('active');
-                mainEls.streamPicture.classList.remove('active');
-                mainEls.takePicture.textContent = _('Take picture');
-            }
-        };
-        mainEls.takePicture.onclick = takePhoto;
-        mainEls.streamVideo.onclick = takePhoto;
+    //     function takePhoto() {
+    //         if (takeScreenshot) {
+    //             takeScreenshot = false;
+    //             mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
+    //             let data = mainEls.streamCanvas.toDataURL('image/png');
+    //             mainEls.streamPicture.src = data;
+    //             mainEls.takePicture.textContent = _('Take again');
+    //             mainEls.streamVideo.classList.remove('active');
+    //             mainEls.streamPicture.classList.add('active');
+    //         } else {
+    //             takeScreenshot = true;
+    //             mainEls.streamVideo.classList.add('active');
+    //             mainEls.streamPicture.classList.remove('active');
+    //             mainEls.takePicture.textContent = _('Take picture');
+    //         }
+    //     };
+    //     mainEls.takePicture.onclick = takePhoto;
+    //     mainEls.streamVideo.onclick = takePhoto;
 
-        mainEls.fileStream.querySelector('input').onchange = function(evt) {
-            var reader = new FileReader();
-            reader.onloadend = function(data) {
-                mainEls.streamPicture.src = data.target.result;
-                mainEls.streamVideo.classList.remove('active');
-                mainEls.streamPicture.classList.add('active');
-                takeScreenshot = false;
-                mainEls.takePicture.textContent = _('Take picture from camera');
-            };
-            reader.readAsDataURL(evt.target.files[0]);
-        };
+    //     mainEls.fileStream.querySelector('input').onchange = function(evt) {
+    //         var reader = new FileReader();
+    //         reader.onloadend = function(data) {
+    //             mainEls.streamPicture.src = data.target.result;
+    //             mainEls.streamVideo.classList.remove('active');
+    //             mainEls.streamPicture.classList.add('active');
+    //             takeScreenshot = false;
+    //             mainEls.takePicture.textContent = _('Take picture from camera');
+    //         };
+    //         reader.readAsDataURL(evt.target.files[0]);
+    //     };
 
-        changePicture();
-    }
+    //     changePicture();
+    // }
 
-    function prepareScanCode() {
+   /* function prepareScanCode() {
         if (!supportMediaDevice) {
             return;
         }
@@ -439,6 +477,7 @@
 
         getCode();
     }
+    */
 
     function updateFighter(fighter) {
         var el = mainEls['fighter' + fighter.position];
@@ -454,26 +493,28 @@
             if (fighters.every(f => f.isValid())) {
                 mainEls.readyBtn.classList.add('active');
             }
+        } else {
+            mainEls['fighter' + fighter.position + 'Ready'].classList.remove('active');
         }
 
         setMessage('Awaiting for goblean fighters', false, true);
     }
 
-    function addToBattle(evt) {
-        evt.preventDefault();
-        if (this.disabled) {
-            return;
-        }
+    // function addToBattle(evt) {
+    //     evt.preventDefault();
+    //     if (this.disabled) {
+    //         return;
+    //     }
 
-        mainEls.readyFight.classList.add('active');
-        animationElement(mainEls.readyFight, 1, () => {
-            setTimeout(() => {
-                mainEls.readyFight.classList.remove('active');
-                updateFighter(currentFighter);
-                setView('battle', true);
-            }, 600);
-        });
-    }
+    //     mainEls.readyFight.classList.add('active');
+    //     animationElement(mainEls.readyFight, 1, () => {
+    //         setTimeout(() => {
+    //             mainEls.readyFight.classList.remove('active');
+    //             updateFighter(currentFighter);
+    //             setView('battle', true);
+    //         }, 600);
+    //     });
+    // }
 
     function initializeBattle() {
         fighters[0] = new Fighter(1, localStorage.getItem('fighter1'));
@@ -494,7 +535,7 @@
 
         fighters.forEach(updateFighter);
 
-        setView('battle', true);
+        setView('battle', true, true);
         mainEls.fighter1.onclick = initializeFighter.bind(null, 1);
         mainEls.fighter2.onclick = initializeFighter.bind(null, 2);
         setMessage('Awaiting for goblean fighters', false, true);
@@ -587,11 +628,29 @@
         return;
     }
 
-    function initializeStats() {
-        setView('stats', true);
+    function initializeStats(options) {
+        let {
+            title = _('Your team'), refresh, selected = true, callback,
+            btnOk = _('Ok')
+        } = options;
+
+        let currentSelected = null;
+
+        if (refresh !== true) {
+            setView('stats', true, true);
+        }
+
+console.debug('TODO title', title);
 
         fillList(mainEls.gobleanList, {
             callback: function(goblean) {
+                if (goblean.code === -1) {
+                    initializeGobleanCreation.callback = (goblean) => {
+                        initializeStats({refresh: true, selected: goblean});
+                    };
+                    return initializeGobleanCreation;
+                }
+
                 return function() {
                     document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
                     this.classList.add('selected');
@@ -602,15 +661,272 @@
                     ratio = Math.round(ratio * 10000) / 100;
 
                     mainEls.statTitle.textContent = goblean.name;
-                    mainEls.statCode.textContent = goblean.code;
+                    mainEls.statCode.textContent = _.parse('%§', goblean.code);
                     mainEls.statNbf.textContent = _.parse('%i', goblean.nbf);
                     mainEls.statNbw.textContent = _.parse('%i', goblean.nbw);
                     fighter.drawPicture(mainEls.statPicture);
                     mainEls.statRatio.textContent = ratio + '%';
+
+                    currentSelected = fighter;
                 };
             },
-            selected: true
+            selected: selected,
+            addFirstItem: {name: _('+ Enrole a new Goblean'), code: -1}
         });
+
+        let okButton = views.stats.querySelector('.select-goblean');
+        if (typeof callback === 'function') {
+            okButton.classList.add('active');
+            okButton.onclick = () => {
+                callback(currentSelected);
+                setView('', true, false);
+            };
+            okButton.textContent = btnOk;
+        } else {
+            okButton.classList.remove('active');
+        }
+    }
+
+    function prepareVideo(options = {}) {
+        let videoActive = true;
+
+        let elem = options.el;
+        let btnActiveTitle = options.btnActiveTitle || _('Take picture');
+        let btnInactiveTitle = options.btnInactiveTitle || _('Take again');
+        let btnFromCameraTitle = options.btnFromCameraTitle || _('Take picture from camera');
+
+        let streamVideo = elem.querySelector('.stream-video');
+        let streamCanvas = elem.querySelector('.stream-canvas');
+        let streamPicture = elem.querySelector('.picture-temp');
+        let takePicture = elem.querySelector('.take-picture');
+        let fileStream = elem.querySelector('.file-stream');
+        let codeStream = elem.querySelector('.code-stream');
+        let streamCode = elem.querySelector('.code-stream input');
+
+        function initializeVideo() {
+            prepareVideo.stopVideo();
+
+            streamVideo.classList.toggle('active', supportMediaDevice);
+            takePicture.classList.toggle('active', supportMediaDevice);
+
+            if (supportMediaDevice) {
+                takePicture.textContent = btnActiveTitle;
+                takePicture.dataset.i18n = btnActiveTitle;
+                videoActive = true;
+                navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
+                    streamVideo.src = window.URL.createObjectURL(stream);
+                    mediaStream = stream.getVideoTracks();
+                });
+            }
+
+            fileStream.classList.toggle('active', !options.hideFile);
+            streamPicture.classList.remove('active', 'success', 'fail');
+        };
+
+        function result() {
+            var isOk;
+            if (typeof options.callback === 'function') {
+                isOk = options.callback(streamPicture.src);
+            }
+
+            streamPicture.classList.remove('success', 'fail');
+            if (isOk === true) {
+                streamPicture.classList.add('success');
+            } else
+            if (isOk === false) {
+                streamPicture.classList.add('fail');
+            }
+        }
+
+        function takePhoto() {
+            if (videoActive) {
+                videoActive = false;
+                streamCanvas.getContext('2d').drawImage(streamVideo, 0, 0, videoSize, videoSize);
+                let data = mainEls.streamCanvas.toDataURL('image/png');
+                streamPicture.src = data;
+                takePicture.textContent = btnInactiveTitle;
+                takePicture.dataset.i18n = btnInactiveTitle;
+                streamVideo.classList.remove('active');
+                streamPicture.classList.add('active');
+            } else {
+                videoActive = true;
+                streamVideo.classList.add('active');
+                streamPicture.classList.remove('active');
+                takePicture.textContent = btnActiveTitle;
+                takePicture.dataset.i18n = btnActiveTitle;
+            }
+        };
+        takePicture.onclick = takePhoto;
+        streamVideo.onclick = takePhoto;
+
+        fileStream.querySelector('input').onchange = function(evt) {
+            let reader = new FileReader();
+            reader.onloadend = function(data) {
+                streamPicture.src = data.target.result;
+                streamVideo.classList.remove('active');
+                streamPicture.classList.add('active');
+                videoActive = false;
+                takePicture.textContent = btnFromCameraTitle;
+                takePicture.dataset.i18n = btnFromCameraTitle;
+            };
+            reader.readAsDataURL(evt.target.files[0]);
+        };
+
+        initializeVideo();
+    }
+    prepareVideo.mediaStream = [];
+    prepareVideo.stopVideo = function() {
+        prepareVideo.mediaStream.forEach(mediaStreamTrack => mediaStreamTrack.stop());
+        prepareVideo.mediaStream = [];
+    };
+
+    function scanCode(img, callback) {
+        Quagga.decodeSingle({
+            decoder: {
+                readers: ["ean_reader"] // List of active readers
+            },
+            locate: true, // try to locate the barcode in the image
+            src: img // or 'data:image/jpg;base64,' + data
+        }, callback);
+    }
+
+    const stepActions = {
+        '1': {
+            el: null,
+            div: document.querySelector('.step-code'),
+            title: 'Enter the Goblean\'s EAN code',
+            action: function() {
+                views.createGoblean.classList.toggle('camera-on', supportMediaDevice);
+                mainEls.gobleanCreationCode.oninput = () => {
+                    this.result = mainEls.gobleanCreationCode.value;
+                };
+                mainEls.gobleanCreationSideContent.innerHTML = '';
+                if (!this.el) {
+                    this.el = mainEls.videoSection.cloneNode(true);
+                    this.el.id = 'step1';
+                    this.el.classList.add('video-stream');
+                    prepareVideo({
+                        el: this.el,
+                        hideFile: true,
+                        btnActiveTitle: _('Scan picture'),
+                        btnInactiveTitle: _('Scan again'),
+                        callback: function(src) {
+                            scanCode(src, (result) => {
+                                if (result && result.codeResult) {
+                                    mmainEls.gobleanCreationCode.value = result.codeResult.code;
+                                    this.result = result.codeResult.code;
+                                    return true;
+                                } else {
+                                    return false
+                                }
+                            });
+                        }
+                    });
+                }
+                mainEls.gobleanCreationSideContent.appendChild(this.el);
+
+                if (!supportMediaDevice) {
+                    setTimeout(() => {
+                        mainEls.gobleanCreationCode.focus();
+                    }, 10);
+                }
+            },
+            result: ''
+        },
+        '2': {
+            el: null,
+            div: document.querySelector('.step-picture'),
+            title: 'Add a picture of your Goblean',
+            action: function() {
+                views.createGoblean.classList.toggle('camera-on', supportMediaDevice);
+                mainEls.gobleanCreationSideContent.innerHTML = '';
+                if (!this.el) {
+                    this.el = mainEls.videoSection.cloneNode(true);
+                    this.el.id = 'step2';
+                    this.el.classList.add('video-stream');
+                    prepareVideo({
+                        el: this.el,
+                        hideFile: false,
+                        callback: function(src) {
+                            this.result = src;
+                            return true;
+                        }
+                    });
+                }
+                mainEls.gobleanCreationSideContent.appendChild(this.el);
+            },
+            result: null
+        },
+        '3': {
+            div: document.querySelector('.step-name'),
+            title: 'Give a name to the Goblean',
+            action: function() {
+                views.createGoblean.classList.remove('camera-on');
+                prepareVideo.stopVideo();
+                mainEls.gobleanCreationSideContent.innerHTML = '';
+                mainEls.gobleanCreationName.oninput = () => {
+                    this.result = mainEls.gobleanCreationName.value;
+                };
+                setTimeout(() => {
+                    mainEls.gobleanCreationName.focus();
+                }, 10);
+            },
+            result: ''
+        }
+    };
+
+    function gotoStep(nb = '1') {
+        initializeGobleanCreation.step = +nb;
+        views.createGoblean.querySelector('.step-breadcrumb.active').classList.remove('active');
+        views.createGoblean.querySelector('.step-breadcrumb.step-' + nb).classList.add('active');
+
+        mainEls.createGobleanSection.querySelector('.content > .active').classList.remove('active');
+        mainEls.createGobleanTitle.textContent = _(stepActions[nb].title);
+        stepActions[nb].action();
+        stepActions[nb].div.classList.add('active');
+        mainEls.createGobleanMessage.classList.remove('active');
+    }
+
+    function initializeGobleanCreation() {
+        function removeElement(step) {
+            if (step.el) {
+                step.el.parentNode.removeChild(step.el);
+                step.el = null;
+            }
+        }
+        removeElement(stepActions['1']);
+        stepActions['1'].result = '';
+        removeElement(stepActions['2']);
+        stepActions['2'].result = null;
+        stepActions['3'].result = '';
+        gotoStep(1);
+        setView('createGoblean', true, true);
+    }
+
+    function validateGobleanCreation() {
+        if (initializeGobleanCreation.step < 3) {
+            gotoStep(initializeGobleanCreation.step + 1);
+            return;
+        }
+
+        const name = stepActions['3'].result;
+        const picture = stepActions['2'].result;
+        const code = stepActions['1'].result;
+        const goblean = new Fighter(0, {
+            name, picture, code
+        });
+        if (goblean.isValid()) {
+            goblean.save();
+            if (typeof initializeGobleanCreation.callback === 'function') {
+                initializeGobleanCreation.callback(goblean);
+                initializeGobleanCreation.callback = null;
+            }
+            setView('', true, false);
+        } else {
+            gotoStep(1);
+            mainEls.createGobleanMessage.classList.add('active');
+            mainEls.createGobleanMessage.textContent = _('Please enter an EAN code');
+        }
     }
 
     function changeModeAuto() {
@@ -624,6 +940,7 @@
         mainEls.locale.src = 'img/locale-' + _.getLocale() + '.png';
         _.html();
         document.querySelectorAll('.fighter-picture,.goblean-picture').forEach(el => el.title = el.alt = _('picture of your Goblean'));
+        document.querySelector('.credit-authors').textContent = _('The Goblean game exists with the help of %L.', authors);
     }
 
     function chooseLocale() {
@@ -656,8 +973,8 @@
             mainEls.creationBtnForm.disabled = !isValid;
         };
 
-        mainEls.creationBtnForm.onclick = addToBattle;
-        mainEls.gobleanBtnForm.onclick = addToBattle;
+        // mainEls.creationBtnForm.onclick = addToBattle;
+        // mainEls.gobleanBtnForm.onclick = addToBattle;
 
         mainEls.choice1.onclick = attackChoice.bind(null, 0);
         mainEls.choice2.onclick = attackChoice.bind(null, 1);
@@ -666,9 +983,16 @@
 
         document.querySelector('.gobleaena').onclick = initializeBattle;
         document.querySelector('.goblean-stats').onclick = initializeStats;
-        document.querySelector('.rules').onclick = setView.bind(null, 'rules', true);
-        document.querySelector('.credits').onclick = setView.bind(null, 'credits', true);
-        document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, 'main', true));
+        document.querySelector('.rules').onclick = setView.bind(null, 'rules', true, true);
+        document.querySelector('.credits').onclick = setView.bind(null, 'credits', true, true);
+        document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, '', true, false));
+        document.querySelector('.validate-create-goblean').onclick = validateGobleanCreation;
+
+        document.querySelector('.breadcrumb').onclick = function (evt) {
+            const clList = evt.target.classList;
+            const nb = clList.contains('step-3') ? 3 : clList.contains('step-2') ? 2 : 1;
+            gotoStep(nb);
+        };
 
         mainEls.modeAuto.onchange = changeModeAuto;
 
@@ -679,6 +1003,17 @@
                 mainEls.lastLogs.classList.add('active');
             }
         };
+
+        document.onkeydown = function(evt) {
+            switch (viewStack[viewStack.length -1]) {
+                case 'createGoblean':
+                    switch (evt.keyCode) {
+                        case 13: validateGobleanCreation(); break;
+                        case 27: setView('', true, false); break;
+                    }
+                    break;
+            }
+        }
 
         mainEls.locale.onclick = chooseLocale;
         mainEls.localeChooser.onclick = changeLocale;
@@ -713,6 +1048,18 @@
             ],
             storage: ['localStorage', 'cookie'],
             onLocaleReady: localeChanged
+        });
+        _.addRule('§', function(params) {
+            var value = params.value.slice(0, 13).split('');
+            value.splice(7, 0, ' ');
+            value.splice(1, 0, ' ');
+            return value.join('');
+        });
+        _.addRule('L', function(params) {
+            var values = params.value.slice(0, -1);
+            var lastValue = params.value.slice(-1);
+
+            return values.join(', ') + ' ' + _('and') + ' ' + lastValue;
         });
 
         const options = JSON.parse(localStorage.getItem('mode') || '{}');

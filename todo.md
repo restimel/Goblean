@@ -3,7 +3,6 @@
 * Gobl-aena
 * Team
 * Adventure mode
-* responsive on small screen
 
 * goblean creation
 	* edit a goblean (should we?)
@@ -12,3 +11,4 @@
 	* use worker (?needed)
 
 * Animation de fin
+* Add user name (to author)

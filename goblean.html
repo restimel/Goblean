@@ -15,7 +15,7 @@
     <h1 data-i18n="Welcome to the great battle in the Goble-aena!">Welcome to the great battle in the Goble-aena!</h1>
     <nav>
         <div class="menu4 gobleaena" data-i18n="Enter the Goble-aena">Enter the Goble-aena</div>
-        <div class="menu1 goblean-stats" data-i18n="Statistics">Statistics</div>
+        <div class="menu1 goblean-stats" data-i18n="Your Gobleans">Your Gobleans</div>
         <div class="menu2 rules" data-i18n="Rules">Rules</div>
         <div class="menu1 credits" data-i18n="Credits">Credits</div>
     </nav>
@@ -83,7 +83,10 @@
         <label><span data-i18n="Ratio:">Ratio:</span> <span class="stat-ratio"></span></label>
         <canvas class="stat-picture" width="200px" height="200px"></canvas>
     </div>
-    <button class="battle-btn back-home active" data-i18n="Back">Back</button>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+        <button class="select-goblean ok" data-i18n="Ok">Ok</button>
+    </footer>
 </section>
 <section id="rules" class="view">
     <h2 data-i18n="Rules">Rules</h2>
@@ -93,16 +96,55 @@
     <p data-i18n="Enter the EAN code of a second creature (catched by a friend) and let them fight"></p>
     <p data-i18n="At each round you can select an attack which will be more or less powerful depending of your goblean stats and the defense of your opponent."></p>
     <p data-i18n="If your Goblean survive, it will be declared champion of the Goble-aena. (Then it can be defied by another challenger)"></p>
-    <button class="battle-btn back-home active" data-i18n="Back">Back</button>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+    </footer>
 </section>
 <section id="credits" class="view">
     <h2 data-i18n="Credits">Credits</h2>
     <p data-i18n="Thanks for playing!"></p>
-    <p data-i18n="Goblean is a funny game built by Gilles Masclef (Le Gobelin) and Benoît Mariat"></p>
+    <p class="credit-authors"></p>
     <p data-i18n="You are free to share this game around you."></p>
-    <button class="battle-btn back-home active" data-i18n="Back">Back</button>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+    </footer>
 </section>
-<dialog id="dialog-picture">
+<section id="step-creation" class="view default-view">
+    <h2 class="title"></h2>
+    <div class="content">
+        <div class="step-code active">
+            <label><span data-i18n="EAN code">EAN code</span><input class="code-goblean-creation" type="text"></label>
+            <div class="video"></div>
+        </div>
+        <div class="step-picture">
+            <div class="video"></div>
+        </div>
+        <div class="step-name">
+            <label><span data-i18n="Goblean name">Goblean Name</span><input class="name-goblean-creation" type="text" placeholder="name"></label>
+        </div>
+    </div>
+    <p class="message"></p>
+    <ol class="breadcrumb">
+        <li class="step-breadcrumb step-1 active" data-i18n="EAN code">EAN code</li>
+        <li class="step-arrow step-2"></li>
+        <li class="step-breadcrumb step-2" data-i18n="Picture">Picture</li>
+        <li class="step-arrow step-3"></li>
+        <li class="step-breadcrumb step-3" data-i18n="Name">Name</li>
+    </ol>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+        <button class="validate-create-goblean ok" data-i18n="Ok">Ok</button>
+    </footer>
+    <aside class="side-content"></aside>
+</section>
+<aside id="video-section">
+    <label class="file-stream"><span data-i18n="Import an image">Import an image</span><input type="file" class=""></label>
+    <video class="stream-video" width="300" height="300" autoplay="true"></video>
+    <canvas class="stream-canvas" width="300" height="300"></canvas>
+    <img class="picture-temp" width="300" height="300">
+    <button class="take-picture" data-i18n="Take picture">Take picture</button>
+</aside>
+<!-- <dialog id="dialog-picture">
     <header data-i18n="Picture">Picture</header>
     <label class="file-stream"><span data-i18n="Import an image">Import an image</span><input type="file" class=""></label>
     <label class="code-stream"><span data-i18n="EAN code">EAN code</span><input type="text"></label>
@@ -112,7 +154,7 @@
     <button class="take-picture" data-i18n="Take picture">Take picture</button>
     <button class="btn-valid" data-i18n="Ok">Ok</button>
     <button class="btn-cancel" data-i18n="Cancel">Cancel</button>
-</dialog>
+</dialog> -->
 
 <script src="libs/quagga.min.js"></script>
 <script src="libs/i18n-js-formatter.full.min.js"></script>

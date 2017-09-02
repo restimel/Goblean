@@ -37,6 +37,7 @@ body > header {
     left: 0;
     right: 0;
     background-color: white;
+    overflow: auto;
 }
 .view:not(.active) {
     display: none;
@@ -54,6 +55,7 @@ body > header {
     display: block;
 }
 
+.default-view,
 #main-view,
 #rules,
 #credits,
@@ -62,6 +64,7 @@ body > header {
     color: white;
     text-align: center;
     padding: 1em;
+    padding-bottom: 80px;
     font-size: 1.1em;
 }
 
@@ -72,6 +75,7 @@ body > header {
 
 @media (orientation: portrait) {
     #stats,
+    #step-creation,
     #rules,
     #credits {
         font-size: 1.8em;
@@ -138,6 +142,132 @@ body > header {
 }
 #goblean-stat label {
     display: block;
+}
+
+.select-goblean:not(.active) {
+    display: none;
+}
+
+#step-creation .message {
+    position: absolute;
+    bottom: 149px;
+    margin: 0;
+    height: 30px;
+    text-align: center;
+    color: black;
+    background-color: rgb(134, 34, 34);
+}
+#step-creation .content > div:not(.active),
+#step-creation .message:not(.active) {
+    display: none;
+}
+
+.footer-view {
+    position: fixed;
+    bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.footer-view button {
+    font-size: 40px;
+    flex-grow: 5;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+button.ok {
+    background-color: rgb(29, 134, 34);
+}
+
+.breadcrumb {
+    position: absolute;
+    bottom: 50px;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: nowrap;
+    list-style-type: none;
+    background-color: #325961;
+    color: #5598a5;
+    cursor: pointer;
+}
+.step-breadcrumb {
+    flex-grow: 5;
+    flex-basis: 25%;
+}
+.step-arrow {
+    flex-grow: 1;
+    border-top: 1.2em solid transparent;
+    border-bottom: 1.2em solid transparent;
+    border-left: 3em solid #5598a5;
+}
+.step-breadcrumb.active {
+    border: 4px solid #caeff7;
+    border-radius: 2em;
+    color: #caeff7;
+}
+/*.step-1, .step-3 {
+    background-color: #f1f6f7;
+    border-color: #f1f6f7;;
+}
+.step-2 {
+    background-color: #e1e6e7;
+    border-color: #e1e6e7;;
+}*/
+
+.video-stream {
+    z-index: 20;
+    position: absolute;
+    color: white;
+    text-align: center;
+}
+#step-creation .message,
+.footer-view,
+.breadcrumb {
+    left: 0;
+    right: 0;
+}
+
+.video-stream {
+    bottom: 180px;
+    top: 200px;
+    left: 1em;
+    right: 1em;
+}
+
+@media (max-height: 680px) {
+    .camera-on .video-stream {
+        bottom: 0;
+        top: 0px;
+        left: 50%;
+        right: 1em;
+    }
+    #step-creation.camera-on .message,
+    .camera-on .footer-view,
+    .camera-on .breadcrumb {
+        left: 0;
+        right: 50%;
+    }
+
+    #step-creation.camera-on > h2,
+    #step-creation.camera-on .content > div {
+        width: 50%;
+    }
+
+}
+.video-stream > * {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#video-section {
+    display: none;
 }
 
 #main-view > nav{
@@ -330,6 +460,20 @@ body > header {
         font-size: 90px;
         color: red;
     }
+
+    #winner.active1 {
+        left: 50%;
+        right: auto;
+        top: 10%;
+        transform: translate(-50%, -50%) rotate(-10deg);
+    }
+
+    #winner.active2 {
+        left: 50%;
+        right: auto;
+        top: 59%;
+        transform: translate(-50%, -50%) rotate(10deg);
+    }
 }
 
 .fighter-canvas {
@@ -375,7 +519,7 @@ body > header {
     display: block;
 }
 
-.message {
+#battle .message {
     position: absolute;
     height: 160px;
     bottom: 0;
@@ -418,6 +562,7 @@ body > header {
     max-height: 50%;
     max-width: 50%;
     overflow: auto;
+    z-index: 21;
 }
 .last-logs:not(.active) {
     display: none;
@@ -514,19 +659,19 @@ body > header {
     margin-right: auto;
 }
 
-#dialog-picture > .picture-temp:not(.active),
-#dialog-picture > .take-picture:not(.active),
-#dialog-picture > .file-stream:not(.active),
-#dialog-picture > .code-stream:not(.active),
-#dialog-picture > .stream-canvas:not(.active),
-#dialog-picture > .stream-video:not(.active) {
+.picture-temp:not(.active),
+.take-picture:not(.active),
+.file-stream:not(.active),
+.code-stream:not(.active),
+.stream-canvas:not(.active),
+.stream-video:not(.active) {
     display: none;
 }
 
 .picture-temp.success {
-	border: 3px solid green;
+	border: 5px solid green;
 }
 
 .picture-temp.fail {
-	border: 3px solid red;
+	border: 5px solid red;
 }

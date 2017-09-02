@@ -26,7 +26,6 @@ class Fighter {
 	}
 
 	save() {
-		console.debug('TODO save json in localstorage')
 		let list = JSON.parse(localStorage.getItem('fighters') || '[]');
 		let idx = list.findIndex(f => f.code === this.code);
 
@@ -41,15 +40,18 @@ class Fighter {
 
 	isValid() {
 		if (!this.code || this.code.length < 13) {
+			this._error = 'code:invalid';
 			return false;
 		}
 
 		if (['initiative', 'kind', 'hp', 'head', 'body', 'rightArm', 'rightLeg', 'leftArm', 'leftLeg', 'seed']
 			.some(a => typeof this.stats[a] !== 'number'))
 		{
+			this._error = 'stats:notNumber';
 			return false;
 		}
 
+		this._error = '';
 		return true;
 	}
 
@@ -63,7 +65,7 @@ class Fighter {
 			return false;
 		}
 
-		let value = code.split('').map(v => +v);
+		let value = code.replace(/[^\d]+/, '').split('').map(v => +v);
 		this.code = code;
 
 		this.stats = {
@@ -117,7 +119,7 @@ class Fighter {
 			return;
 		}
 
-		if (!this.canvas || !this.ctx) {
+		if (!this.canvas !== canvas || !this.ctx) {
 			this.canvas = canvas;
 			this.ctx = canvas.getContext('2d');
 		}
