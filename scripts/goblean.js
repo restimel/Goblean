@@ -646,7 +646,7 @@ console.debug('TODO title', title);
             callback: function(goblean) {
                 if (goblean.code === -1) {
                     initializeGobleanCreation.callback = (goblean) => {
-                        initializeStats({refresh: true, selected: goblean});
+                        initializeStats({refresh: true, selected: goblean, callback, btnOk, title});
                     };
                     return initializeGobleanCreation;
                 }
