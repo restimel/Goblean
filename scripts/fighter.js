@@ -1,3 +1,5 @@
+const minLength = 6;
+
 class Fighter {
 	constructor(position, json) {
 		this.stats = {};
@@ -39,7 +41,7 @@ class Fighter {
 	}
 
 	isValid() {
-		if (!this.code || this.code.length < 13) {
+		if (!this.code || this.code.length < minLength) {
 			this._error = 'code:invalid';
 			return false;
 		}
@@ -59,18 +61,46 @@ class Fighter {
 		return this.dmg >= this.stats.hp;
 	}
 
+	checkKey() {
+		let code = this.code.split('').map(v => +v);
+		let key = code.slice(-1)[0];
+		let offset = code.length % 2;
+		let cKey = (10 - (code.slice(0, -1).reduce((sum, val, k) => {
+			let m = (k + offset) % 2 ? 1 : 3;
+			return sum + m * val; 
+		}, 0) % 10)) % 10;
+		return key === cKey;
+	}
+
 	setCode(code) {
-		if (code.length < 13) {
+		let malus = 0;
+
+		code = code.replace(/[^\d]+/, '');
+		let value = code.split('').map(v => +v);
+		if (value.length < minLength) {
 			this.code = '';
 			return false;
 		}
-
-		let value = code.replace(/[^\d]+/, '').split('').map(v => +v);
 		this.code = code;
+		if (value.length === 8) {
+			value.unshift(0);
+			[7, 6, 5, 4].forEach((i) => {
+				value.splice(i, 0, value[i]);
+			});
+		} else
+		if (value.length < 13) {
+			malus = 13 - value.length;
+			[0, 5, 1, 2, 3, 5, 10].slice(0, 13 - value.length).forEach((i) => {
+				value.splice(i, 0, 0);
+			});
+		} else
+		if (value.length > 13) {
+			malus = value.length - 13;
+		}
 
 		this.stats = {
-			initiative: value[0],
-			kind: (value[1] + value[5]) % 2, // nb of kind
+			initiative: value[0] + value[3],
+			kind: (value[1] + value[5]) % 3, // nb of kind
 			hp: (value[12] + value[4]) * 1.5,
 			head: value[11],
 			body: value[10],
@@ -83,6 +113,29 @@ class Fighter {
 
 		if (this.stats.hp <= 0) {
 			this.stats.hp = 30;
+		}
+
+		if (this.checkKey()) {
+			this.stats.hp += 2;
+			this.stats.initiative += 20;
+
+			if (this.stats.head + this.stats.body === 0) {
+				this.stats.head = 10;
+				this.stats.body = 3;
+			}
+			if (this.stats.body + this.stats.leftArm + this.stats.leftLeg + this.stats.rightLeg + this.stats.rightArm <= 2) {
+				this.stats.body += 10;
+				this.stats.hp += 5;
+			}
+		} else {
+			malus += 2;
+		}
+
+		if (malus) {
+			malus = malus > 7 ? 7 : malus;
+			['hp', 'hp', 'initiative', 'body', 'hp', 'head', 'initiative'].slice(0, malus).forEach((carac) => {
+				this.stats[carac] = Math.max(1, this.stats[carac] - 1);
+			});
 		}
 
 		this.stats.currentHp = this.stats.hp;

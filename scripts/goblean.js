@@ -1050,9 +1050,16 @@ console.debug('TODO title', title);
             onLocaleReady: localeChanged
         });
         _.addRule('§', function(params) {
-            var value = params.value.slice(0, 13).split('');
-            value.splice(7, 0, ' ');
-            value.splice(1, 0, ' ');
+            let value = params.value;
+
+            if (value.length > 8) {
+                value = value.slice(0, 13).split('');
+                value.splice(-6, 0, ' ');
+                value.splice(1, 0, ' ');
+            } else {
+                value = value.split('');
+                value.splice(-4, 0, ' ');
+            }
             return value.join('');
         });
         _.addRule('L', function(params) {
