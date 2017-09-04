@@ -742,7 +742,7 @@ console.debug('TODO title', title);
             if (videoActive) {
                 videoActive = false;
                 streamCanvas.getContext('2d').drawImage(streamVideo, 0, 0, videoSize, videoSize);
-                let data = mainEls.streamCanvas.toDataURL('image/png');
+                let data = streamCanvas.toDataURL('image/png');
                 streamPicture.src = data;
                 takePicture.textContent = btnInactiveTitle;
                 takePicture.dataset.i18n = btnInactiveTitle;
