@@ -1050,7 +1050,12 @@ console.debug('TODO title', title);
 
             ],
             storage: ['localStorage', 'cookie'],
-            onLocaleReady: localeChanged
+            onLocaleReady: localeChanged,
+            defaultFormat: {
+                string: {
+                    escape: 'html'
+                }
+            }
         });
         _.addRule('§', function(params) {
             let value = params.value;
