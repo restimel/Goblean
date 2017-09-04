@@ -1,7 +1,9 @@
 (function() {
     'use strict';
 
-    const authors = ['Gilles Masclef (Le Gobelin)', 'Benoît Mariat'];
+    const authors = ['Gilles Masclef (Le Gobelin)', 'Benoît Mariat',
+    'Anthony Oliveira', 'Clément Chrétien', 'Clotilde Masclef',
+    'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé'];
 
     let supportMediaDevice = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
     if (supportMediaDevice) {
@@ -940,7 +942,8 @@ console.debug('TODO title', title);
         mainEls.locale.src = 'img/locale-' + _.getLocale() + '.png';
         _.html();
         document.querySelectorAll('.fighter-picture,.goblean-picture').forEach(el => el.title = el.alt = _('picture of your Goblean'));
-        document.querySelector('.credit-authors').textContent = _('The Goblean game exists with the help of %L.', authors);
+        document.querySelector('.credit-authors').textContent =
+            _('Thanks to %L for all they did to the Goblean game and the time they spent on it.', authors);
     }
 
     function chooseLocale() {
