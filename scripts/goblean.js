@@ -88,7 +88,8 @@
     };
 
     const mode = {
-        auto: false
+        autoFight: false,
+        autoCreationSelect: true
     };
 
     const viewStack = [];
@@ -196,7 +197,7 @@ console.log('viewStack:', viewStack);
             mainEls.messageText.textContent = list[0];
         }
 
-        if (mode.auto) {
+        if (mode.autoFight) {
             let choice = Math.ceil(Math.random() * 4);
             setMessage(_('%(name)s will attack with %(choice)s', {
                 name: currentFighter.name,
@@ -533,7 +534,7 @@ console.log('viewStack:', viewStack);
         mainEls.lastLogs.innerHTML = '';
 
         mainEls.modeOptions.classList.add('active');
-        mainEls.modeAuto.checked = mode.auto;
+        mainEls.modeAuto.checked = mode.autoFight;
 
         fighters.forEach(updateFighter);
 
@@ -642,13 +643,24 @@ console.log('viewStack:', viewStack);
             setView('stats', true, true);
         }
 
-console.debug('TODO title', title);
+// console.debug('TODO title', title);
 
         fillList(mainEls.gobleanList, {
             callback: function(goblean) {
                 if (goblean.code === -1) {
                     initializeGobleanCreation.callback = (goblean) => {
-                        initializeStats({refresh: true, selected: goblean, callback, btnOk, title});
+                        if (mode.autoCreationSelect && typeof callback === 'function') {
+                            callback(goblean);
+                            setView('', true, false);
+                        } else {
+                            let opt = {
+                                ...options,
+                                refresh: true,
+                                selected: goblean,
+
+                            };
+                            initializeStats(opt);
+                        }
                     };
                     return initializeGobleanCreation;
                 }
@@ -892,7 +904,7 @@ console.debug('TODO title', title);
     function initializeGobleanCreation() {
         function removeElement(step) {
             if (step.el) {
-                step.el.parentNode.removeChild(step.el);
+                step.el.parentNode && step.el.parentNode.removeChild(step.el);
                 step.el = null;
             }
         }
@@ -901,6 +913,8 @@ console.debug('TODO title', title);
         removeElement(stepActions['2']);
         stepActions['2'].result = null;
         stepActions['3'].result = '';
+        mainEls.gobleanCreationCode.value = '';
+        mainEls.gobleanCreationName.value = '';
         gotoStep(1);
         setView('createGoblean', true, true);
     }
@@ -932,8 +946,8 @@ console.debug('TODO title', title);
     }
 
     function changeModeAuto() {
-        mode.auto = this.checked;
-        let message = mode.auto ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
+        mode.autoFight = this.checked;
+        let message = mode.autoFight ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
         setMessage(message, false, true);
         localStorage.setItem('mode', JSON.stringify(mode));
     }

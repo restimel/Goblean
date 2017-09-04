@@ -93,6 +93,7 @@ body > header {
     flex-direction: column;
     overflow-x: hidden;
     overflow-y: auto;
+    justify-content: flex-start;
 }
 
 .list > div {
@@ -128,6 +129,7 @@ body > header {
     #goblean-list, #goblean-stat {
         flex-basis: 40%;
         flex-grow: 2;
+        max-height: 100%;
     }
 }
 @media (orientation: portrait) {
@@ -264,6 +266,13 @@ button.ok {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+.video-stream > .picture-temp,
+.video-stream > .stream-canvas,
+.video-stream > .stream-video {
+    width: auto;
+    max-height: 100%;
+    max-width: 100%;
 }
 
 #video-section {
