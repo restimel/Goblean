@@ -20,6 +20,8 @@ QuaggaJS: used to read EAN code from images (https://github.com/serratus/quaggaJ
 
 i18nJS-formatter: used to manage different languages and format display in the selected locale (https://github.com/restimel/i18n-js-formatter)
 
+font-awesome: a grat library for icons (http://fontawesome.io/)
+
 ## Authors
 
-Goblean was imagined by Gilles Masclef and Benoît Mariat.
+Goblean was imagined by Gilles Masclef and Benoît Mariat. And many other people have contributed to build this project (see in-code credits).

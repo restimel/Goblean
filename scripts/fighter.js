@@ -40,6 +40,19 @@ class Fighter {
 		localStorage.setItem('fighters', JSON.stringify(list));
 	}
 
+	remove() {
+		let list = JSON.parse(localStorage.getItem('fighters') || '[]');
+		let idx = list.findIndex(f => f.code === this.code);
+
+		if (idx === -1) {
+			return;
+		} else {
+			list.splice(idx, 1);
+		}
+
+		localStorage.setItem('fighters', JSON.stringify(list));
+	}
+
 	isValid() {
 		if (!this.code || this.code.length < minLength) {
 			this._error = 'code:invalid';
@@ -163,7 +176,7 @@ class Fighter {
 		if (attributes.nbw) {
 			this.numberOfWin = attributes.nbw;
 		}
-		
+
 		return this.isValid();
 	}
 
@@ -180,7 +193,7 @@ class Fighter {
 
 		let setWidth = (part) => {
 			var value = this.stats[part];
-			
+
 			value *= 2;
 			if (value === 0) {
 				value = 1;
@@ -191,7 +204,7 @@ class Fighter {
 
 		let setScale = (part) => {
 			var value = this.stats[part] / 10;
-			
+
 			if (value < 0) {
 				value = 0;
 			}
@@ -209,9 +222,9 @@ class Fighter {
 			if (!clip) {
 				w = 0;
 			}
-			this.ctx.ellipse(100, 100, 20+w/2, 50+w/2, 0, 0, 2*Math.PI);
+			this.ctx.ellipse(100, 100, 20+w/2, 55+w/2, 0, 0, 2*Math.PI);
 		}
-		
+
 		if (this.picture) {
 			let h = 50 + this.stats.body;
 			let img = new Image();

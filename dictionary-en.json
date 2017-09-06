@@ -55,6 +55,7 @@
 	"rightLeg": "right leg",
 	"Ok": "Ok",
 	"Cancel": "Cancel",
+	"Delete": "Delete",
 	"Take picture": "Take picture",
 	"Take again": "Take again",
 	"Import an image": "Import an image",
@@ -67,7 +68,9 @@
 	"see last actions": "see last actions",
 	"Start battle between %s and %s": "Start battle between %s and %s",
 	"Please enter an EAN code": "Please enter an EAN code",
+	"Please add a name": "Please add a name",
 	"Enter the Goblean's EAN code": "Enter the Goblean's EAN code",
 	"Add a picture of your Goblean": "Add a picture of your Goblean",
-	"Give a name to the Goblean": "Give a name to the Goblean"
+	"Give a name to the Goblean": "Give a name to the Goblean",
+	"Do you want to eliminate the Goblean \"%s\"? All its stats will be removed.": "Do you want to eliminate the Goblean \"%s\"? All its stats will be removed."
 }

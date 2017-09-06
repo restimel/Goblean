@@ -6,7 +6,7 @@
 	"Thanks for playing!": "Merci de jouer à Goblean !",
 	"Thanks to %L for all they did to the Goblean game and the time they spent on it.": "Merci à %L grâce à qui le jeu existe et pour tout le temps qu'ils ont passé dessus.",
 	"You are free to share this game around you.": "Vous êtes libre de partager ce jeu autour de vous.",
-	"Welcome to the great battle in the Goble-aena!": "Bienvenue à la grande bataille dans le Goble-aena !",
+	"Welcome to the great battle in the Goble-aena!": "Bienvenue à la grande bataille dans la Goble-aena !",
 	"Enter the Goble-aena": "Entrer dans la Goble-aena",
 	"Your Gobleans": "Vos Gobleans",
 	"Your team": "Votre équipe",
@@ -32,7 +32,7 @@
 	"Number of win:": "Nombre de victoire :",
 	"Number of fight:": "Nombre de combat :",
 	"Ratio:": "Ratio :",
-	"Goblean are small creatures which live all around us. There are hidden and stay immobile while you are watching them. But they have one default! They all have a tatoo which looks like a bar code (which is called EAN13).": "Les Goblean sont de petites créatures qui vivent autour de nous. Elles sont bien cachées et reste immobiles dèq que vous les regardez. Mais elles ont un défaut ! Elles ont toutes un tatouage qui ressemble à un code barre (qui est appelé EAN13).",
+	"Goblean are small creatures which live all around us. There are hidden and stay immobile while you are watching them. But they have one default! They all have a tatoo which looks like a bar code (which is called EAN13).": "Les Gobleans sont de petites créatures qui vivent autour de nous. Elles sont bien cachées et reste immobiles dèq que vous les regardez. Mais elles ont un défaut ! Elles ont toutes un tatouage qui ressemble à un code barre (qui est appelé EAN13).",
 	"Enter the EAN code of the creature you have catched in this application and it will reveal its original form.": "Entrez le code EAN de la créature que vous avez attrapée dans cette application et elle apparaîtra sous sa vraie forme.",
 	"Enter the EAN code of a second creature (catched by a friend) and let them fight": "Entrez le code EAN d'une deuxième créature (attrapée par un ami) et faites les combattre",
 	"At each round you can select an attack which will be more or less powerful depending of your goblean stats and the defense of your opponent.": "À chaque tour vous pouvez sélectionner une attaque qui sera plus ou moins puissante selon les caractèristiques de votre Goblean et de celui de votre adversaire.",
@@ -56,6 +56,7 @@
 	"rightLeg": "jambe droite",
 	"Ok": "Ok",
 	"Cancel": "Annuler",
+	"Delete": "Supprimer",
 	"Select": "Selectionner",
 	"Take picture": "Prendre une photo",
 	"Take again": "Recommencer",
@@ -69,7 +70,9 @@
 	"see last actions": "voir les dernières actions",
 	"Start battle between %s and %s": "Début de la battaille entre %s et %s",
 	"Please enter an EAN code": "Veuillez entrer un code EAN",
+	"Please add a name": "Veuillez ajouter un nom",
 	"Enter the Goblean's EAN code": "Entrez le code EAN du Goblean",
 	"Add a picture of your Goblean": "Ajoutez une image à votre Goblean",
-	"Give a name to the Goblean": "Donnez un nom à ce Goblean"
+	"Give a name to the Goblean": "Donnez un nom à ce Goblean",
+	"Do you want to eliminate the Goblean \"%s\"? All its stats will be removed.": "Voulez-vous éliminer le Goblean \"%s\" ? Toutes ses stats seront supprimées."
 }

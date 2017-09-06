@@ -26,19 +26,19 @@
     };
 
     const mainEls = {
-        creationForm: document.getElementById('fighter-creation'),
-        creationSection: document.querySelector('.fighter-creation'),
-        creationStat: document.querySelector('.fighter-stats'),
-        creationTitle: document.getElementById('nb-fighter'),
-        creationBtnForm: document.querySelector('#fighter-creation button'),
-        gobleanBtnForm: document.querySelector('.fighter-stats button'),
-        creationPicture: document.querySelector('#fighter-creation img'),
-        creationName: document.getElementById('fighter-name'),
-        creationCode: document.getElementById('fighter-code'),
-        fighterSelection: document.querySelector('.fighter-selection'),
-        gobleanName: document.querySelector('.goblean-name'),
-        gobleanCode: document.querySelector('.goblean-code'),
-        gobleanPicture: document.querySelector('.goblean-picture'),
+    // creationForm: document.getElementById('fighter-creation'),
+    // creationSection: document.querySelector('.fighter-creation'),
+    // creationStat: document.querySelector('.fighter-stats'),
+    // creationTitle: document.getElementById('nb-fighter'),
+    // creationBtnForm: document.querySelector('#fighter-creation button'),
+        // gobleanBtnForm: document.querySelector('.fighter-stats button'),
+        // creationPicture: document.querySelector('#fighter-creation img'),
+    // creationName: document.getElementById('fighter-name'),
+    // creationCode: document.getElementById('fighter-code'),
+        // fighterSelection: document.querySelector('.fighter-selection'),
+        // gobleanName: document.querySelector('.goblean-name'),
+        // gobleanCode: document.querySelector('.goblean-code'),
+        // gobleanPicture: document.querySelector('.goblean-picture'),
         readyFight: document.getElementById('ready-fight'),
         messageText: document.querySelector('.text-message'),
         battleHistoric: document.querySelector('.battle-historic'),
@@ -65,6 +65,9 @@
         statNbw: document.querySelector('.stat-nbw'),
         statRatio: document.querySelector('.stat-ratio'),
         statPicture: document.querySelector('.stat-picture'),
+        editGoblean: document.querySelector('.edit-goblean'),
+        deleteGoblean: document.querySelector('.delete-goblean'),
+        warningDeletion: document.getElementById('warning-deletion'),
         localeChooser: document.querySelector('.locale-chooser'),
         locale: document.querySelector('.locale'),
         // dialogPicture: document.getElementById('dialog-picture'),
@@ -653,7 +656,7 @@ console.log('viewStack:', viewStack);
                             callback(goblean);
                             setView('', true, false);
                         } else {
-                            let opt = {
+                            const opt = {
                                 ...options,
                                 refresh: true,
                                 selected: goblean,
@@ -699,6 +702,25 @@ console.log('viewStack:', viewStack);
         } else {
             okButton.classList.remove('active');
         }
+
+        mainEls.editGoblean.onclick = () => {
+            document.getElementById('debug').showModal();
+            document.getElementById('debug').onclick = function() {this.close();}
+        };
+        mainEls.deleteGoblean.onclick = () => {
+            mainEls.warningDeletion.querySelector('header').textContent = _('Do you want to eliminate the Goblean "%s"? All its stats will be removed.', currentSelected.name);
+            mainEls.warningDeletion.showModal();
+        };
+        mainEls.warningDeletion.querySelector('.btn-delete').onclick = () => {
+            currentSelected.remove();
+            mainEls.warningDeletion.close();
+            const opt = {
+                ...options,
+                refresh: true,
+                selected: true,
+            };
+            initializeStats(opt);
+        };
     }
 
     function prepareVideo(options = {}) {
@@ -762,6 +784,7 @@ console.log('viewStack:', viewStack);
                 takePicture.dataset.i18n = btnInactiveTitle;
                 streamVideo.classList.remove('active');
                 streamPicture.classList.add('active');
+                result();
             } else {
                 videoActive = true;
                 streamVideo.classList.add('active');
@@ -782,6 +805,7 @@ console.log('viewStack:', viewStack);
                 videoActive = false;
                 takePicture.textContent = btnFromCameraTitle;
                 takePicture.dataset.i18n = btnFromCameraTitle;
+                result();
             };
             reader.readAsDataURL(evt.target.files[0]);
         };
@@ -861,7 +885,7 @@ console.log('viewStack:', viewStack);
                     prepareVideo({
                         el: this.el,
                         hideFile: false,
-                        callback: function(src) {
+                        callback: (src) => {
                             this.result = src;
                             return true;
                         }
@@ -928,6 +952,12 @@ console.log('viewStack:', viewStack);
         const name = stepActions['3'].result;
         const picture = stepActions['2'].result;
         const code = stepActions['1'].result;
+        if (!name) {
+            gotoStep(3);
+            mainEls.createGobleanMessage.classList.add('active');
+            mainEls.createGobleanMessage.textContent = _('Please add a name');
+            return;
+        }
         const goblean = new Fighter(0, {
             name, picture, code
         });
@@ -977,18 +1007,18 @@ console.log('viewStack:', viewStack);
     function prepareEvents() {
         mainEls.readyBtn.onclick = startFight;
 
-        mainEls.creationName.oninput = function() {
-            var isValid = currentFighter.setAttributes({
-                name: this.value
-            });
-            mainEls.creationBtnForm.disabled = !isValid;
-        };
-        mainEls.creationCode.oninput = function() {
-            var isValid = currentFighter.setAttributes({
-                code: this.value
-            });
-            mainEls.creationBtnForm.disabled = !isValid;
-        };
+        // mainEls.creationName.oninput = function() {
+        //     var isValid = currentFighter.setAttributes({
+        //         name: this.value
+        //     });
+        //     mainEls.creationBtnForm.disabled = !isValid;
+        // };
+        // mainEls.creationCode.oninput = function() {
+        //     var isValid = currentFighter.setAttributes({
+        //         code: this.value
+        //     });
+        //     mainEls.creationBtnForm.disabled = !isValid;
+        // };
 
         // mainEls.creationBtnForm.onclick = addToBattle;
         // mainEls.gobleanBtnForm.onclick = addToBattle;
@@ -1021,12 +1051,43 @@ console.log('viewStack:', viewStack);
             }
         };
 
+        mainEls.warningDeletion.querySelector('.btn-cancel').onclick = () => {
+            mainEls.warningDeletion.close();
+        };
+
         document.onkeydown = function(evt) {
             switch (viewStack[viewStack.length -1]) {
                 case 'createGoblean':
                     switch (evt.keyCode) {
                         case 13: validateGobleanCreation(); break;
                         case 27: setView('', true, false); break;
+                    }
+                    break;
+                case 'stats':
+                    switch (evt.keyCode) {
+                        case 13: 
+                            if (mainEls.warningDeletion.open) {
+                                mainEls.warningDeletion.querySelector('.btn-delete').click();
+                                evt.preventDefault();
+                            }
+                            break;
+                        case 27: 
+                            if (mainEls.warningDeletion.open) {
+                                mainEls.warningDeletion.close();
+                            } else {
+                                setView('', true, false);
+                            }
+                            break;
+                        case 46:
+                            if (mainEls.warningDeletion.open) {
+                                mainEls.warningDeletion.querySelector('.btn-delete').click();
+                                evt.preventDefault();
+                            } else {
+                                mainEls.deleteGoblean.click();
+                            }
+                            break;
+                        default:
+                            console.log(evt.keyCode)
                     }
                     break;
             }

@@ -172,10 +172,44 @@ body > header {
     align-items: center;
     justify-content: space-around;
 }
-
 .footer-view button {
     font-size: 40px;
     flex-grow: 5;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.footer-stats {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    transform: translate(0, -250%);
+}
+.footer-stats button {
+    font-size: 2em;
+    flex-basis: 15%;
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: 0.2em;
+    color: white;
+    background-color: #325961;
+}
+
+dialog{
+    font-size: 2em;
+}
+
+.footer-dialog {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.footer-dialog button {
+    font-size: 2em;
+    flex-basis: 20%;
     margin-left: 1em;
     margin-right: 1em;
 }
@@ -230,6 +264,7 @@ button.ok {
 }
 #step-creation .message,
 .footer-view,
+.footer-stats,
 .breadcrumb {
     left: 0;
     right: 0;

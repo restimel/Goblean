@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Goblean</title>
     <link rel="stylesheet" type="text/css" href="css/goblean.css">
+    <link rel="stylesheet" type="text/css" href="libs/font-awesome-4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <header>
@@ -20,7 +21,7 @@
         <div class="menu1 credits" data-i18n="Credits">Credits</div>
     </nav>
 </section>
-<section id="add-fighter" class="view">
+<!-- <section id="add-fighter" class="view">
     <h2 id="nb-fighter" data-i18n="First Goblean fighter">First Goblean fighter</h2>
     <div class="list fighter-selection"></div>
     <div class="fighter-creation">
@@ -39,7 +40,7 @@
         <button type="submit" class="active" data-i18n="Add it to the Goble-aena">Add it to the Goble-aena</button>
     </div>
     <aside id="ready-fight" data-i18n="This Goblean is ready to fight">This Goblean is ready to fight</aside>
-</section>
+</section> -->
 <section id="battle" class="view preparation">
     <div class="fighter fighter1">
         <h3 class="fighter-name">?</h3>
@@ -82,6 +83,10 @@
         <label><span data-i18n="Number of fight:">Number of fight:</span> <span class="stat-nbf"></span></label>
         <label><span data-i18n="Ratio:">Ratio:</span> <span class="stat-ratio"></span></label>
         <canvas class="stat-picture" width="200px" height="200px"></canvas>
+        <footer class="footer-stats">
+            <button class="delete-goblean"><span class="fa fa-trash"></span></button>
+            <button class="edit-goblean"><span class="fa fa-pencil"></span></button>
+        </footer>
     </div>
     <footer class="footer-view">
         <button class="back-home" data-i18n="Back">Back</button>
@@ -139,9 +144,9 @@
 </section>
 <aside id="video-section">
     <label class="file-stream"><span data-i18n="Import an image">Import an image</span><input type="file" class=""></label>
-    <video class="stream-video" width="300" height="300" autoplay="true"></video>
-    <canvas class="stream-canvas" width="300" height="300"></canvas>
-    <img class="picture-temp" width="300" height="300">
+    <video class="stream-video" autoplay="true"></video>
+    <canvas class="stream-canvas"></canvas>
+    <img class="picture-temp">
     <button class="take-picture" data-i18n="Take picture">Take picture</button>
 </aside>
 <!-- <dialog id="dialog-picture">
@@ -155,6 +160,17 @@
     <button class="btn-valid" data-i18n="Ok">Ok</button>
     <button class="btn-cancel" data-i18n="Cancel">Cancel</button>
 </dialog> -->
+<dialog id="warning-deletion">
+    <header></header>
+    <footer class="footer-dialog">
+        <button class="btn-cancel" data-i18n="Cancel">Cancel</button>
+        <button class="btn-delete" data-i18n="Delete">Delete</button>
+    </footer>
+</dialog>
+
+<dialog id="debug">
+    Coming soon
+</dialog>
 
 <script src="libs/quagga.min.js"></script>
 <script src="libs/i18n-js-formatter.full.min.js"></script>
