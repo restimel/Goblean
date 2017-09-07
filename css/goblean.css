@@ -163,6 +163,11 @@ body > header {
 #step-creation .message:not(.active) {
     display: none;
 }
+#step-creation .message.active-info {
+    display: block;
+    background-color: rgb(191, 191, 243);
+    color: #233e43;
+}
 
 .footer-view {
     position: fixed;

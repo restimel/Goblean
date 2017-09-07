@@ -10,10 +10,10 @@
         navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
             stream.getVideoTracks().forEach(mediaStreamTrack => mediaStreamTrack.stop());
             supportMediaDevice = true;
-        }).catch(() => supportMediaDevice = false);
+        }).catch(() => supportMediaDevice = true);
     }
 
-    const videoSize = 300;
+    const pictureSize = 300;
 
     const views = {
         main: document.getElementById('main-view'),
@@ -137,7 +137,6 @@
     }
 
     function setView(view, animate, stack = false) {
-console.log('viewStack:', viewStack);
         const elViews = document.querySelectorAll('.view.active');
         const oldView = viewStack[viewStack.length - 2];
         let opacity = 1;
@@ -312,7 +311,6 @@ console.log('viewStack:', viewStack);
             selected: currentFighter,
             btnOk: _('Select'),
             callback: function(goblean) {
-                console.log(goblean);
                 fighters[nb-1] = goblean;
                 goblean.position = nb;
                 updateFighter(goblean);
@@ -364,7 +362,7 @@ console.log('viewStack:', viewStack);
     //     function takePhoto() {
     //         if (takeScreenshot) {
     //             takeScreenshot = false;
-    //             mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
+    //             mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, pictureSize, pictureSize);
     //             let data = mainEls.streamCanvas.toDataURL('image/png');
     //             mainEls.streamPicture.src = data;
     //             mainEls.takePicture.textContent = _('Take again');
@@ -464,7 +462,7 @@ console.log('viewStack:', viewStack);
         function takePhoto() {
             if (takeScreenshot) {
                 takeScreenshot = false;
-                mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, videoSize, videoSize);
+                mainEls.streamCanvas.getContext('2d').drawImage(mainEls.streamVideo, 0, 0, pictureSize, pictureSize);
                 let data = mainEls.streamCanvas.toDataURL('image/png');
                 mainEls.streamPicture.src = data;
                 mainEls.takePicture.textContent = _('Scan again');
@@ -704,8 +702,9 @@ console.log('viewStack:', viewStack);
         }
 
         mainEls.editGoblean.onclick = () => {
-            document.getElementById('debug').showModal();
-            document.getElementById('debug').onclick = function() {this.close();}
+            initializeGobleanCreation(currentSelected);
+            // document.getElementById('debug').showModal();
+            // document.getElementById('debug').onclick = function() {this.close();}
         };
         mainEls.deleteGoblean.onclick = () => {
             mainEls.warningDeletion.querySelector('header').textContent = _('Do you want to eliminate the Goblean "%s"? All its stats will be removed.', currentSelected.name);
@@ -727,6 +726,10 @@ console.log('viewStack:', viewStack);
         let videoActive = true;
 
         let elem = options.el;
+        let {
+            picture = null,
+            fullVideo = false,
+        } = options;
         let btnActiveTitle = options.btnActiveTitle || _('Take picture');
         let btnInactiveTitle = options.btnInactiveTitle || _('Take again');
         let btnFromCameraTitle = options.btnFromCameraTitle || _('Take picture from camera');
@@ -757,6 +760,15 @@ console.log('viewStack:', viewStack);
 
             fileStream.classList.toggle('active', !options.hideFile);
             streamPicture.classList.remove('active', 'success', 'fail');
+
+            if (picture) {
+                streamPicture.src = picture;
+                videoActive = false;
+                takePicture.textContent = btnInactiveTitle;
+                takePicture.dataset.i18n = btnInactiveTitle;
+                streamVideo.classList.remove('active');
+                streamPicture.classList.add('active');
+            }
         };
 
         function result() {
@@ -777,7 +789,29 @@ console.log('viewStack:', viewStack);
         function takePhoto() {
             if (videoActive) {
                 videoActive = false;
-                streamCanvas.getContext('2d').drawImage(streamVideo, 0, 0, videoSize, videoSize);
+                const vWidth = streamVideo.videoWidth;
+                const vHeight = streamVideo.videoHeight;
+                let width = pictureSize, height = pictureSize;
+                let offsetX = 0;
+                let offsetY = 0;
+                if (fullVideo) {
+                    if (vWidth > vHeight) {
+                        height = pictureSize * vHeight / vWidth;
+                        offsetY = (pictureSize - height) / 2;
+                    } else {
+                        width = pictureSize * vWidth / vHeight;
+                        offsetX = (pictureSize - width) / 2;
+                    }
+                } else {
+                    if (vWidth > vHeight) {
+                        width = pictureSize * vWidth / vHeight;
+                        offsetX = (pictureSize - width) / 2;
+                    } else {
+                        height = pictureSize * vHeight / vWidth;
+                        offsetY = (pictureSize - height) / 2;
+                    }
+                }
+                streamCanvas.getContext('2d').drawImage(streamVideo, 0, 0, vWidth, vHeight, offsetX, offsetY, width, height);
                 let data = streamCanvas.toDataURL('image/png');
                 streamPicture.src = data;
                 takePicture.textContent = btnInactiveTitle;
@@ -795,6 +829,7 @@ console.log('viewStack:', viewStack);
         };
         takePicture.onclick = takePhoto;
         streamVideo.onclick = takePhoto;
+        streamPicture.onclick = takePhoto;
 
         fileStream.querySelector('input').onchange = function(evt) {
             let reader = new FileReader();
@@ -837,39 +872,51 @@ console.log('viewStack:', viewStack);
                 views.createGoblean.classList.toggle('camera-on', supportMediaDevice);
                 mainEls.gobleanCreationCode.oninput = () => {
                     this.result = mainEls.gobleanCreationCode.value;
+                    this.fromCamera = false;
                 };
+                mainEls.gobleanCreationCode.value = this.result;
+                mainEls.gobleanCreationCode.disabled = this.readOnly;
                 mainEls.gobleanCreationSideContent.innerHTML = '';
-                if (!this.el) {
-                    this.el = mainEls.videoSection.cloneNode(true);
-                    this.el.id = 'step1';
-                    this.el.classList.add('video-stream');
-                    prepareVideo({
-                        el: this.el,
-                        hideFile: true,
-                        btnActiveTitle: _('Scan picture'),
-                        btnInactiveTitle: _('Scan again'),
-                        callback: function(src) {
-                            scanCode(src, (result) => {
-                                if (result && result.codeResult) {
-                                    mmainEls.gobleanCreationCode.value = result.codeResult.code;
-                                    this.result = result.codeResult.code;
-                                    return true;
-                                } else {
-                                    return false
-                                }
-                            });
-                        }
-                    });
-                }
-                mainEls.gobleanCreationSideContent.appendChild(this.el);
+                if (!this.readOnly) {
+                    if (!this.el) {
+                        this.el = mainEls.videoSection.cloneNode(true);
+                        this.el.id = 'step1';
+                        this.el.classList.add('video-stream');
+                        prepareVideo({
+                            el: this.el,
+                            hideFile: true,
+                            fullVideo: true,
+                            btnActiveTitle: _('Scan picture'),
+                            btnInactiveTitle: _('Scan again'),
+                            callback: function(src) {
+                                scanCode(src, (result) => {
+                                    if (result && result.codeResult) {
+                                        mmainEls.gobleanCreationCode.value = result.codeResult.code;
+                                        this.result = result.codeResult.code;
+                                        this.fromCamera = true;
+                                        return true;
+                                    } else {
+                                        return false
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    mainEls.gobleanCreationSideContent.appendChild(this.el);
 
-                if (!supportMediaDevice) {
-                    setTimeout(() => {
-                        mainEls.gobleanCreationCode.focus();
-                    }, 10);
+                    if (!supportMediaDevice) {
+                        setTimeout(() => {
+                            mainEls.gobleanCreationCode.focus();
+                        }, 10);
+                    }
+                } else {
+                    mainEls.createGobleanMessage.classList.add('active-info');
+                    mainEls.createGobleanMessage.textContent = _('Code of a Goblean cannot be changed. Create another one if the code is wrong.');
                 }
             },
-            result: ''
+            readOnly: false,
+            result: '',
+            fromCamera: false
         },
         '2': {
             el: null,
@@ -888,7 +935,8 @@ console.log('viewStack:', viewStack);
                         callback: (src) => {
                             this.result = src;
                             return true;
-                        }
+                        },
+                        picture: this.result
                     });
                 }
                 mainEls.gobleanCreationSideContent.appendChild(this.el);
@@ -905,6 +953,7 @@ console.log('viewStack:', viewStack);
                 mainEls.gobleanCreationName.oninput = () => {
                     this.result = mainEls.gobleanCreationName.value;
                 };
+                mainEls.gobleanCreationName.value = this.result;
                 setTimeout(() => {
                     mainEls.gobleanCreationName.focus();
                 }, 10);
@@ -920,25 +969,29 @@ console.log('viewStack:', viewStack);
 
         mainEls.createGobleanSection.querySelector('.content > .active').classList.remove('active');
         mainEls.createGobleanTitle.textContent = _(stepActions[nb].title);
+        mainEls.createGobleanMessage.classList.remove('active', 'active-info');
         stepActions[nb].action();
         stepActions[nb].div.classList.add('active');
-        mainEls.createGobleanMessage.classList.remove('active');
     }
 
-    function initializeGobleanCreation() {
+    function initializeGobleanCreation(options = {}) {
         function removeElement(step) {
             if (step.el) {
                 step.el.parentNode && step.el.parentNode.removeChild(step.el);
                 step.el = null;
             }
         }
+
         removeElement(stepActions['1']);
-        stepActions['1'].result = '';
+        stepActions['1'].result = options.code || '';
+        stepActions['1'].readOnly = !!options.code;
+        stepActions['1'].fromCamera = !!options.fromCamera;
         removeElement(stepActions['2']);
-        stepActions['2'].result = null;
-        stepActions['3'].result = '';
+        stepActions['2'].result = options.picture || null;
+        stepActions['3'].result = options.name || '';
         mainEls.gobleanCreationCode.value = '';
         mainEls.gobleanCreationName.value = '';
+
         gotoStep(1);
         setView('createGoblean', true, true);
     }
@@ -952,6 +1005,7 @@ console.log('viewStack:', viewStack);
         const name = stepActions['3'].result;
         const picture = stepActions['2'].result;
         const code = stepActions['1'].result;
+        const fromCamera = stepActions['1'].fromCamera;
         if (!name) {
             gotoStep(3);
             mainEls.createGobleanMessage.classList.add('active');
@@ -959,7 +1013,7 @@ console.log('viewStack:', viewStack);
             return;
         }
         const goblean = new Fighter(0, {
-            name, picture, code
+            name, picture, code, fromCamera
         });
         if (goblean.isValid()) {
             goblean.save();
@@ -1126,11 +1180,11 @@ console.log('viewStack:', viewStack);
             ],
             storage: ['localStorage', 'cookie'],
             onLocaleReady: localeChanged,
-            defaultFormat: {
-                string: {
-                    escape: 'html'
-                }
-            }
+            // defaultFormat: {
+            //     string: {
+            //         escape: 'html'
+            //     }
+            // }
         });
         _.addRule('§', function(params) {
             let value = params.value;

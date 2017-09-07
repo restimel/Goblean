@@ -21,6 +21,7 @@ class Fighter {
 		return {
 			name: this.name,
 			code: this.code,
+			fromCamera: this.fromCamera,
 			picture: this.picture,
 			nbf: this.numberOfFight,
 			nbw: this.numberOfWin
@@ -169,12 +170,16 @@ class Fighter {
 			this.setCode(attributes.code);
 		}
 
-		if (attributes.nbf) {
+		if (typeof attributes.nbf !== 'undefined') {
 			this.numberOfFight = attributes.nbf;
 		}
 
-		if (attributes.nbw) {
+		if (typeof attributes.nbw !== 'undefined') {
 			this.numberOfWin = attributes.nbw;
+		}
+
+		if (typeof attributes.fromCamera === 'boolean') {
+			this.fromCamera = attributes.fromCamera;
 		}
 
 		return this.isValid();
@@ -285,6 +290,18 @@ class Fighter {
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();
+
+		// eyes
+		if (this.fromCamera) {
+			this.ctx.beginPath();
+			this.ctx.save();
+			this.ctx.strokeStyle = '#00FF00';
+			this.ctx.fillStyle = '#00FF00';
+			this.ctx.ellipse(107, 25, 2, 2, 0, 0, 2*Math.PI);
+			this.ctx.ellipse(93, 25, 2, 2, 0, 0, 2*Math.PI);
+			this.ctx.fill();
+			this.ctx.restore();
+		}
 
 		this.ctx.restore();
 	}

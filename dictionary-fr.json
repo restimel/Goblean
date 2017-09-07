@@ -74,5 +74,6 @@
 	"Enter the Goblean's EAN code": "Entrez le code EAN du Goblean",
 	"Add a picture of your Goblean": "Ajoutez une image à votre Goblean",
 	"Give a name to the Goblean": "Donnez un nom à ce Goblean",
-	"Do you want to eliminate the Goblean \"%s\"? All its stats will be removed.": "Voulez-vous éliminer le Goblean \"%s\" ? Toutes ses stats seront supprimées."
+	"Do you want to eliminate the Goblean \"%s\"? All its stats will be removed.": "Voulez-vous éliminer le Goblean \"%s\" ? Toutes ses stats seront supprimées.",
+	"Code of a Goblean cannot be changed. Create another one if the code is wrong.": "Le code d'un Goblean ne peut pas être changé. Créez en un autre si ce code est faux."
 }
