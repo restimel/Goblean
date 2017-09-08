@@ -10,7 +10,7 @@
         navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
             stream.getVideoTracks().forEach(mediaStreamTrack => mediaStreamTrack.stop());
             supportMediaDevice = true;
-        }).catch(() => supportMediaDevice = true);
+        }).catch(() => supportMediaDevice = false);
     }
 
     const pictureSize = 300;
@@ -1119,13 +1119,13 @@
                     break;
                 case 'stats':
                     switch (evt.keyCode) {
-                        case 13: 
+                        case 13:
                             if (mainEls.warningDeletion.open) {
                                 mainEls.warningDeletion.querySelector('.btn-delete').click();
                                 evt.preventDefault();
                             }
                             break;
-                        case 27: 
+                        case 27:
                             if (mainEls.warningDeletion.open) {
                                 mainEls.warningDeletion.close();
                             } else {
