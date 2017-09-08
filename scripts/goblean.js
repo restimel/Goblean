@@ -5,6 +5,13 @@
     'Anthony Oliveira', 'Clément Chrétien', 'Clotilde Masclef',
     'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé'];
 
+    const winMessages = [
+        'The champion is %(name)s',
+        '%(name)s kicks off %(nameLoser)s',
+        'The victory is for %(name)s',
+        '%(nameLoser)s has been humilitaed by %(name)s!'
+    ];
+
     let supportMediaDevice = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
     if (supportMediaDevice) {
         navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
@@ -616,8 +623,7 @@
 
         save();
 
-        let messages = ['The champion is %(name)s', '%(name)s kicks off %(nameLoser)s', 'The victory is for %(name)s'];
-        let message = messages[Math.floor(Math.random() * messages.length)];
+        let message = winMessages[Math.floor(Math.random() * winMessages.length)];
 
         message = _(message, {
             name: otherFighter.name,
@@ -643,8 +649,6 @@
         if (refresh !== true) {
             setView('stats', true, true);
         }
-
-// console.debug('TODO title', title);
 
         fillList(mainEls.gobleanList, {
             callback: function(goblean) {
@@ -703,8 +707,6 @@
 
         mainEls.editGoblean.onclick = () => {
             initializeGobleanCreation(currentSelected);
-            // document.getElementById('debug').showModal();
-            // document.getElementById('debug').onclick = function() {this.close();}
         };
         mainEls.deleteGoblean.onclick = () => {
             mainEls.warningDeletion.querySelector('header').textContent = _('Do you want to eliminate the Goblean "%s"? All its stats will be removed.', currentSelected.name);
@@ -874,7 +876,7 @@
                     this.result = mainEls.gobleanCreationCode.value;
                     this.fromCamera = false;
                 };
-                mainEls.gobleanCreationCode.value = this.result;
+                mainEls.gobleanCreationCode.value = _.parse('%§', this.result);
                 mainEls.gobleanCreationCode.disabled = this.readOnly;
                 mainEls.gobleanCreationSideContent.innerHTML = '';
                 if (!this.readOnly) {

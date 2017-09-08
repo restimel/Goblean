@@ -73,5 +73,6 @@
 	"Add a picture of your Goblean": "Add a picture of your Goblean",
 	"Give a name to the Goblean": "Give a name to the Goblean",
 	"Do you want to eliminate the Goblean \"%s\"? All its stats will be removed.": "Do you want to eliminate the Goblean \"%s\"? All its stats will be removed.",
-	"Code of a Goblean cannot be changed. Create another one if the code is wrong.": "Code of a Goblean cannot be changed. Create another one if the code is wrong."
+	"Code of a Goblean cannot be changed. Create another one if the code is wrong.": "Code of a Goblean cannot be changed. Create another one if the code is wrong.",
+	"%(nameLoser)s has been humilitaed by %(name)s!": "%(nameLoser)s has been humilitaed by %(name)s!"
 }
