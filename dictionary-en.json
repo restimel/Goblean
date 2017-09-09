@@ -47,6 +47,7 @@
 	"The champion is %(name)s": "The champion is %(name)s",
 	"%(name)s kicks off %(nameLoser)s": "%(name)s kicks off %(nameLoser)s",
 	"The victory is for %(name)s": "The victory is for %(name)s",
+	"%(nameLoser)s has been humilitaed by %(name)s!": "%(nameLoser)s has been humilitaed by %(name)s!",
 	"head": "head",
 	"body": "body",
 	"leftArm": "left arm",
