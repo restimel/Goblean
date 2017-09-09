@@ -23,6 +23,7 @@
         credits: document.getElementById('credits'),
         stats: document.getElementById('stats'),
         createGoblean: document.getElementById('step-creation'),
+        configuration: document.getElementById('options-configuration'),
     };
 
     const mainEls = {
@@ -44,7 +45,7 @@
         battleHistoric: document.querySelector('.battle-historic'),
         lastLogs: document.querySelector('.last-logs'),
         attackChoice: document.querySelector('.attack-choice'),
-        modeOptions: document.querySelector('.mode-options'),
+    // modeOptions: document.querySelector('.mode-options'),
         modeAuto: document.getElementById('mode-auto'),
         readyBtn: document.getElementById('battle-ready'),
         endBtn: document.getElementById('battle-end'),
@@ -92,7 +93,8 @@
 
     const mode = {
         autoFight: false,
-        autoCreationSelect: true
+        autoCreationSelect: true,
+        fightMode: 'versus'
     };
 
     const viewStack = [];
@@ -190,7 +192,7 @@
     }
 
     function setChoice(list) {
-        mainEls.modeOptions.classList.remove('active');
+        // mainEls.modeOptions.classList.remove('active');
 
         if (!list[0]) {
             mainEls.messageText.classList.remove('active');
@@ -534,8 +536,7 @@
         mainEls.lastLogs.classList.remove('active');
         mainEls.lastLogs.innerHTML = '';
 
-        mainEls.modeOptions.classList.add('active');
-        mainEls.modeAuto.checked = mode.autoFight;
+        // mainEls.modeOptions.classList.add('active');
 
         fighters.forEach(updateFighter);
 
@@ -1029,6 +1030,14 @@
         }
     }
 
+    function initializeConfiguration() {
+        mainEls.modeAuto.checked = mode.autoFight;
+        document.getElementById('mode-auto-creation').checked = mode.autoCreationSelect;
+        document.getElementById('fight-configuration').value = mode.fightMode;
+
+        setView('configuration', true, true);
+    }
+
     function changeModeAuto() {
         mode.autoFight = this.checked;
         let message = mode.autoFight ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
@@ -1086,6 +1095,7 @@
         document.querySelector('.goblean-stats').onclick = initializeStats;
         document.querySelector('.rules').onclick = setView.bind(null, 'rules', true, true);
         document.querySelector('.credits').onclick = setView.bind(null, 'credits', true, true);
+        document.querySelector('.configuration').onclick = initializeConfiguration;
         document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, '', true, false));
         document.querySelector('.validate-create-goblean').onclick = validateGobleanCreation;
 

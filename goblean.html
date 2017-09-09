@@ -12,12 +12,14 @@
     <img class="locale" src="img/locale-en.png" width="32px" height="32px">
     <div class="locale-chooser"></div>
 </header>
+
 <section id="main-view" class="view active">
     <h1 data-i18n="Welcome to the great battle in the Goble-aena!">Welcome to the great battle in the Goble-aena!</h1>
     <nav>
         <div class="menu4 gobleaena" data-i18n="Enter the Goble-aena">Enter the Goble-aena</div>
         <div class="menu1 goblean-stats" data-i18n="Your Gobleans">Your Gobleans</div>
         <div class="menu2 rules" data-i18n="Rules">Rules</div>
+        <div class="menu1 configuration" data-i18n="Configuration">Configuration</div>
         <div class="menu1 credits" data-i18n="Credits">Credits</div>
     </nav>
 </section>
@@ -64,9 +66,6 @@
             <div class="choice choice3"></div>
             <div class="choice choice4"></div>
         </div>
-        <div class="mode-options">
-            <label><input id="mode-auto" type="checkbox"> <span data-i18n="auto-fight">auto-fight</span></label>
-        </div>
     </div>
     <div class="attack-result"></div>
     <div class="vs" data-i18n="VS">VS</div>
@@ -74,6 +73,7 @@
     <button id="battle-end" class="battle-btn back-home" data-i18n="Great job!">Great job!</button>
     <aside id="winner" data-i18n="Winner">Winner</aside>
 </section>
+
 <section id="stats" class="view">
     <div id="goblean-list" class="list"></div>
     <div id="goblean-stat">
@@ -93,6 +93,7 @@
         <button class="select-goblean ok" data-i18n="Ok">Ok</button>
     </footer>
 </section>
+
 <section id="rules" class="view">
     <h2 data-i18n="Rules">Rules</h2>
     <p data-i18n="Goblean are small creatures which live all around us. There are hidden and stay immobile while you are watching them. But they have one default! They all have a tatoo which looks like a bar code (which is called EAN13)."></p>
@@ -105,6 +106,7 @@
         <button class="back-home" data-i18n="Back">Back</button>
     </footer>
 </section>
+
 <section id="credits" class="view">
     <h2 data-i18n="Credits">Credits</h2>
     <p data-i18n="Thanks for playing!"></p>
@@ -114,6 +116,7 @@
         <button class="back-home" data-i18n="Back">Back</button>
     </footer>
 </section>
+
 <section id="step-creation" class="view default-view">
     <h2 class="title"></h2>
     <div class="content">
@@ -142,6 +145,40 @@
     </footer>
     <aside class="side-content"></aside>
 </section>
+
+<section id="options-configuration" class="view default-view">
+    <h2 class="title" data-i18n="Configuration"></h2>
+    <nav class="configuration-menu">
+        <div class="menu4">
+            <label><span data-i18n="Mode">Mode</span>
+                <select id="fight-configuration">
+                    <option value="versus" data-i18n="Versus">Versus</option>
+                    <option disabled value="team" data-i18n="Team vs Team">Team vs Team</option>
+                    <option disabled value="adventure" data-i18n="Adventure">Adventure</option>
+                </select>
+            </label>
+        </div>
+        <div class="menu4">
+            <label>
+                <input id="mode-auto" type="checkbox">
+                <span data-i18n="auto-fight">auto-fight</span>
+            </label>
+        </div>
+    </nav>
+    <h2 class="title" data-i18n="Settings"></h2>
+    <nav class="configuration-menu">
+        <div class="menu4">
+            <label>
+                <input id="mode-auto-creation" type="checkbox">
+                <span data-i18n="Automatically select newly created Goblean"></span>
+            </label>
+        </div>
+    </nav>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+    </footer>
+</section>
+
 <aside id="video-section">
     <label class="file-stream"><span data-i18n="Import an image">Import an image</span><input type="file" class=""></label>
     <video class="stream-video" autoplay="true"></video>

@@ -77,7 +77,9 @@ body > header {
     #stats,
     #step-creation,
     #rules,
-    #credits {
+    #credits,
+    #main-view,
+    .default-view {
         font-size: 1.8em;
     }
 }
@@ -327,7 +329,11 @@ button.ok {
     flex-wrap: wrap;
 }
 .menu1, .menu2, .menu4 {
-    border: 10px outset gray;
+    /*border: 10px outset gray;*/
+    box-shadow: 0 0 20px 7px #325961, inset 0 0 20px 7px #325961;
+    background-color: #111f22;
+    color: #ddebee;
+    border-radius: 2em;
     margin: 1em;
     padding: 1em;
     cursor: pointer;
@@ -354,8 +360,15 @@ button.ok {
     }
 }
 .menu1:hover, .menu2:hover, .menu4:hover {
-    border: 10px outset orange;
+    /*border: 10px outset orange;*/
+    box-shadow: 0 0 20px 7px gold, inset 0 0 20px 7px gold;
     color: orange;
+}
+
+.configuration-menu .menu4,
+.configuration-menu .menu4:hover {
+    border: none;
+    box-shadow: none;
 }
 
 #fighter-creation img,
