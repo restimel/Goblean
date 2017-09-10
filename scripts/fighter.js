@@ -2,6 +2,8 @@ const minLength = 6;
 
 class Fighter {
 	constructor(position, json) {
+		this.mode = 'rest';
+
 		this.stats = {};
 		this.position = position;
 		this.dmg = 0;
@@ -15,6 +17,7 @@ class Fighter {
 			}
 			this.setAttributes(json);
 		}
+		this.resetEnergy();
 	}
 
 	toJSON() {
@@ -60,7 +63,7 @@ class Fighter {
 			return false;
 		}
 
-		if (['initiative', 'kind', 'hp', 'head', 'body', 'rightArm', 'rightLeg', 'leftArm', 'leftLeg', 'seed']
+		if (['initiative', 'kind', 'hp', 'head', 'body', 'rightArm', 'rightLeg', 'leftArm', 'leftLeg', 'energyRestore']
 			.some(a => typeof this.stats[a] !== 'number'))
 		{
 			this._error = 'stats:notNumber';
@@ -122,7 +125,7 @@ class Fighter {
 			leftArm: value[8],
 			rightLeg: value[7],
 			leftLeg: value[6],
-			seed: value[2]
+			energyRestore: value[2]
 		};
 
 		if (this.stats.hp <= 0) {
@@ -183,6 +186,17 @@ class Fighter {
 		}
 
 		return this.isValid();
+	}
+
+	resetEnergy() {
+		this.stats.energy = 0;
+	}
+
+	setMode(mode = 'rest') {
+		this.mode = mode;
+		if (this.canvas) {
+			this.drawPicture();
+		}
 	}
 
 	drawPicture(canvas = this.canvas) {
@@ -303,6 +317,32 @@ class Fighter {
 			this.ctx.restore();
 		}
 
+		// energy
+		if (this.mode === 'battle') {
+			this.ctx.beginPath();
+			this.ctx.save();
+			this.ctx.strokeStyle = '#00FFFF';
+			this.ctx.fillStyle = '#00CCCC';
+
+			this.ctx.lineWidth = 5;
+
+			this.ctx.moveTo(190, 180);
+			this.ctx.lineTo(160, 180);
+			this.ctx.lineTo(160, 130);
+			this.ctx.lineTo(170, 130);
+			this.ctx.lineTo(170, 125);
+			this.ctx.lineTo(180, 125);
+			this.ctx.lineTo(180, 130);
+			this.ctx.lineTo(190, 130);
+			this.ctx.lineTo(190, 180);
+			this.ctx.lineTo(160, 180);
+			this.ctx.clip();
+			this.ctx.fillRect(150, 180 - this.stats.energy, 200, 200);
+			this.ctx.stroke();
+
+			this.ctx.restore();
+		}
+
 		this.ctx.restore();
 	}
 
@@ -342,7 +382,14 @@ class Fighter {
 		return [this.stats[choice[0]] + this.stats[choice[1]] / 2, choice[2]];
 	}
 
-	setDamage(attack) {
+	haveDealtDamage(dmg, opponent) {
+		let energy = (4 - dmg) * this.stats.energyRestore / 2;
+
+		this.stats.energy +=  Math.max(energy, 1);
+		this.drawPicture();
+	}
+
+	setDamage(attack, opponent) {
 		const defense = this.stats[attack[1]];
 		let dmg = Math.floor(attack[0] - defense);
 
@@ -350,10 +397,13 @@ class Fighter {
 			dmg = 1;
 		}
 
+		this.stats.energy += dmg * this.stats.energyRestore / 6;
+
 		this.dmg += dmg;
 		this.stats.currentHp -= dmg; 
 
 		this.drawPicture();
+		opponent.haveDealtDamage(dmg, this);
 
 		return dmg;
 	}

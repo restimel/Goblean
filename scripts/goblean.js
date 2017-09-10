@@ -490,22 +490,6 @@
         setMessage('Awaiting for goblean fighters', false, true);
     }
 
-    // function addToBattle(evt) {
-    //     evt.preventDefault();
-    //     if (this.disabled) {
-    //         return;
-    //     }
-
-    //     mainEls.readyFight.classList.add('active');
-    //     animationElement(mainEls.readyFight, 1, () => {
-    //         setTimeout(() => {
-    //             mainEls.readyFight.classList.remove('active');
-    //             updateFighter(currentFighter);
-    //             setView('battle', true);
-    //         }, 600);
-    //     });
-    // }
-
     function initializeBattle() {
         fighters[0] = new Fighter(1, localStorage.getItem('fighter1'));
         fighters[1] = new Fighter(2, localStorage.getItem('fighter2'));
@@ -541,7 +525,10 @@
 
         addHistoric(_('Start battle between %s and %s', fighters[0].name, fighters[1].name));
 
-        fighters.forEach(f => f.numberOfFight++);
+        fighters.forEach(f => {
+            f.numberOfFight++;
+            f.setMode('battle');
+        });
 
         if (fighters[0].stats.initiative < fighters[1].stats.initiative) {
             attackRound(2);
@@ -582,7 +569,7 @@
             }));
             let otherFighter = fighters[currentFighter.position % 2];
             let attack = currentFighter.chooseAttack(choice);
-            let dmg = otherFighter.setDamage(attack);
+            let dmg = otherFighter.setDamage(attack, currentFighter);
             mainEls.attackResult.textContent = -dmg;
             mainEls.attackResult.classList.add('active' + otherFighter.position);
             setMessage(_('%(name)s has lost %(dmg)i hp', {
@@ -613,6 +600,9 @@
         mainEls.endBtn.classList.add('active');
         mainEls.winner.classList.add('active' + otherFighter.position);
         animationElement(mainEls.winner, 1);
+        fighters.forEach(f => {
+            f.setMode('rest');
+        });
         return;
     }
 
