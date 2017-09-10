@@ -77,6 +77,7 @@
         gobleanCreationName: document.querySelector('.name-goblean-creation'),
         gobleanCreationCode: document.querySelector('.code-goblean-creation'),
         gobleanCreationSideContent: document.querySelector('.side-content'),
+        configurationMessage: document.querySelector('#options-configuration .message'),
     };
 
     const viewStack = [];
@@ -1088,13 +1089,25 @@
         document.getElementById('mode-auto-creation').checked = configuration.autoCreationSelect;
         document.getElementById('fight-configuration').value = configuration.fightMode;
 
+        mainEls.configurationMessage.innerHTML = '';
+
         setView('configuration', true, true);
     }
 
     function changeModeAuto() {
         configuration.autoFight = this.checked;
-        let message = configuration.autoFight ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
-        setMessage(message, false, true);
+        // let message = configuration.autoFight ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
+        // setMessage(message, false, true);
+        localStorage.setItem('configuration', JSON.stringify(configuration));
+    }
+
+    function changeAutoCreationSelect() {
+        configuration.autoCreationSelect = this.checked;
+        localStorage.setItem('configuration', JSON.stringify(configuration));
+    }
+
+    function changeGameMode() {
+        configuration.fightMode = this.value;
         localStorage.setItem('configuration', JSON.stringify(configuration));
     }
 
@@ -1149,7 +1162,7 @@
         document.querySelector('.rules').onclick = setView.bind(null, 'rules', true, true);
         document.querySelector('.credits').onclick = setView.bind(null, 'credits', true, true);
         document.querySelector('.configuration').onclick = initializeConfiguration;
-        document.querySelectorAll('.back-home').forEach(el => el.onclick = function() {
+        Array.from(document.querySelectorAll('.back-home')).forEach(el => el.onclick = function() {
             prepareVideo.stopVideo();
             setView('', true, false);
         });
@@ -1162,6 +1175,8 @@
         };
 
         mainEls.modeAuto.onchange = changeModeAuto;
+        document.getElementById('mode-auto-creation').onchange = changeAutoCreationSelect;
+        document.getElementById('fight-configuration').onchange = changeGameMode;
 
         document.querySelector('.show-historic').onclick = function() {
             if (mainEls.lastLogs.classList.contains('active')) {
@@ -1173,6 +1188,14 @@
 
         mainEls.warningDeletion.querySelector('.btn-cancel').onclick = () => {
             mainEls.warningDeletion.close();
+        };
+
+        Array.from(document.querySelectorAll('#options-configuration [data-message]')).forEach(el => el.onfocus = function() {
+            let header = (this.previousElementSibling || this.nextElementSibling).textContent;
+            mainEls.configurationMessage.innerHTML = '<header>' + header + '</header><div class="content">' + _(this.dataset.message) + '</div>';
+        });
+        mainEls.configurationMessage.onclick = function() {
+            this.innerHTML = '';
         };
 
         document.onkeydown = function(evt) {

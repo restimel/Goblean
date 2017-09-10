@@ -79,9 +79,10 @@
 	"Code of a Goblean cannot be changed. Create another one if the code is wrong.": "Le code d'un Goblean ne peut pas être changé. Créez en un autre si ce code est faux.",
 	"Configuration": "Configuration",
 	"Settings": "Réglages",
-	"Mode": "Mode",
+	"Game mode": "Mode de jeu",
 	"Versus": "Versus",
 	"Team vs Team": "Équipe contre Équipe",
 	"Adventure": "Aventure",
-	"Automatically select newly created Goblean": "Sélectionne automatiquement un Goblean créé"
+	"Automatically select newly created Goblean": "Sélectionne automatiquement un Goblean créé",
+	"During Goblean selection, if you create a new Goblean, this one is immediately selected.": "Pendant la sélection d'un Goblean, si vous en créer un nouveau, celui-ci sera automatiquement sélectionné."
 }

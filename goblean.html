@@ -14,7 +14,7 @@
 </header>
 
 <section id="main-view" class="view active">
-    <h1 data-i18n="Welcome to the great battle in the Goble-aena!">Welcome to the great battle in the Goble-aena!</h1>
+    <h1 data-i18n="Goblean">Welcome to the great battle in the Goble-aena!</h1>
     <nav>
         <div class="menu4 gobleaena" data-i18n="Enter the Goble-aena">Enter the Goble-aena</div>
         <div class="menu1 goblean-stats" data-i18n="Your Gobleans">Your Gobleans</div>
@@ -150,8 +150,9 @@
     <h2 class="title" data-i18n="Configuration"></h2>
     <nav class="configuration-menu">
         <div class="menu4">
-            <label><span data-i18n="Mode">Mode</span>
-                <select id="fight-configuration">
+            <label><span data-i18n="Game mode">Game mode</span>
+                <select id="fight-configuration"
+data-message="<ul><li><b>Versus</b> - One Goblean fights another one</li><li><b>Team vs Team</b> - A Goblean team fights another Goblean team <i>(must be unlocked)</i></li><li><b>Adventure</b> - Lets go on adventure <i>(must be unlocked)</i></li></ul>">
                     <option value="versus" data-i18n="Versus">Versus</option>
                     <option disabled value="team" data-i18n="Team vs Team">Team vs Team</option>
                     <option disabled value="adventure" data-i18n="Adventure">Adventure</option>
@@ -160,7 +161,7 @@
         </div>
         <div class="menu4">
             <label>
-                <input id="mode-auto" type="checkbox">
+                <input id="mode-auto" type="checkbox" data-message="The tactical choices will be chosen automatically">
                 <span data-i18n="auto-fight">auto-fight</span>
             </label>
         </div>
@@ -169,11 +170,12 @@
     <nav class="configuration-menu">
         <div class="menu4">
             <label>
-                <input id="mode-auto-creation" type="checkbox">
+                <input id="mode-auto-creation" type="checkbox" data-message="During Goblean selection, if you create a new Goblean, this one is immediately selected.">
                 <span data-i18n="Automatically select newly created Goblean"></span>
             </label>
         </div>
     </nav>
+    <aside class="message"></aside>
     <footer class="footer-view">
         <button class="back-home" data-i18n="Back">Back</button>
     </footer>
