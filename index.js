@@ -372,8 +372,10 @@ if (!live) {
         // canvas.height = height;
         var width = video.width;
         var height = video.height;
+        var width = video.videoWidth;
+        var height = video.videoHeight;
         console.log(width, height)
-        canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+        canvas.getContext('2d').drawImage(video, 0, 0, width, height,0,0,800,800);
         var data = canvas.toDataURL('image/png');
         imgEl.setAttribute('src', data);
         test(data);

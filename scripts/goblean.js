@@ -20,7 +20,13 @@
         }).catch(() => supportMediaDevice = false);
     }
 
-    const pictureSize = 300;
+    const mode = {
+        autoFight: false,
+        autoCreationSelect: true,
+        fightMode: 'versus',
+        timerAutoCapture: 1100,
+        pictureSize: 300
+    };
 
     const views = {
         main: document.getElementById('main-view'),
@@ -34,25 +40,11 @@
     };
 
     const mainEls = {
-    // creationForm: document.getElementById('fighter-creation'),
-    // creationSection: document.querySelector('.fighter-creation'),
-    // creationStat: document.querySelector('.fighter-stats'),
-    // creationTitle: document.getElementById('nb-fighter'),
-    // creationBtnForm: document.querySelector('#fighter-creation button'),
-        // gobleanBtnForm: document.querySelector('.fighter-stats button'),
-        // creationPicture: document.querySelector('#fighter-creation img'),
-    // creationName: document.getElementById('fighter-name'),
-    // creationCode: document.getElementById('fighter-code'),
-        // fighterSelection: document.querySelector('.fighter-selection'),
-        // gobleanName: document.querySelector('.goblean-name'),
-        // gobleanCode: document.querySelector('.goblean-code'),
-        // gobleanPicture: document.querySelector('.goblean-picture'),
         readyFight: document.getElementById('ready-fight'),
         messageText: document.querySelector('.text-message'),
         battleHistoric: document.querySelector('.battle-historic'),
         lastLogs: document.querySelector('.last-logs'),
         attackChoice: document.querySelector('.attack-choice'),
-    // modeOptions: document.querySelector('.mode-options'),
         modeAuto: document.getElementById('mode-auto'),
         readyBtn: document.getElementById('battle-ready'),
         endBtn: document.getElementById('battle-end'),
@@ -78,30 +70,13 @@
         warningDeletion: document.getElementById('warning-deletion'),
         localeChooser: document.querySelector('.locale-chooser'),
         locale: document.querySelector('.locale'),
-        // dialogPicture: document.getElementById('dialog-picture'),
-        // streamHeader: document.querySelector('#dialog-picture header'),
-        // btnCancel: document.querySelector('.btn-cancel'),
-        // btnOk: document.querySelector('.btn-valid'),
         videoSection: document.getElementById('video-section'),
-    streamVideo: document.querySelector('.stream-video'),
-    streamCanvas: document.querySelector('.stream-canvas'),
-    streamPicture: document.querySelector('.picture-temp'),
-    takePicture: document.querySelector('.take-picture'),
-    fileStream: document.querySelector('.file-stream'),
-    codeStream: document.querySelector('.code-stream'),
-    streamCode: document.querySelector('.code-stream input'),
         createGobleanSection: document.querySelector('#step-creation'),
         createGobleanTitle: document.querySelector('#step-creation .title'),
         createGobleanMessage: document.querySelector('#step-creation .message'),
         gobleanCreationName: document.querySelector('.name-goblean-creation'),
         gobleanCreationCode: document.querySelector('.code-goblean-creation'),
         gobleanCreationSideContent: document.querySelector('.side-content'),
-    };
-
-    const mode = {
-        autoFight: false,
-        autoCreationSelect: true,
-        fightMode: 'versus'
     };
 
     const viewStack = [];
@@ -199,8 +174,6 @@
     }
 
     function setChoice(list) {
-        // mainEls.modeOptions.classList.remove('active');
-
         if (!list[0]) {
             mainEls.messageText.classList.remove('active');
         } else {
@@ -677,7 +650,7 @@
 
                     let fighter = new Fighter(0, goblean);
 
-                    let ratio = goblean.nbw / goblean.nbf;
+                    let ratio = goblean.nbf ? goblean.nbw / goblean.nbf : 0;
                     ratio = Math.round(ratio * 10000) / 100;
 
                     mainEls.statTitle.textContent = goblean.name;
@@ -732,6 +705,8 @@
         let {
             picture = null,
             fullVideo = false,
+            canvasSize = mode.pictureSize,
+            autoCapture = false
         } = options;
         let btnActiveTitle = options.btnActiveTitle || _('Take picture');
         let btnInactiveTitle = options.btnInactiveTitle || _('Take again');
@@ -750,6 +725,9 @@
 
             streamVideo.classList.toggle('active', supportMediaDevice);
             takePicture.classList.toggle('active', supportMediaDevice);
+
+            streamCanvas.width = canvasSize;
+            streamCanvas.height = canvasSize;
 
             if (supportMediaDevice) {
                 takePicture.textContent = btnActiveTitle;
@@ -772,57 +750,97 @@
                 streamVideo.classList.remove('active');
                 streamPicture.classList.add('active');
             }
+
+            if (autoCapture && videoActive) {
+                prepareVideo.timer = setInterval(takePhoto, mode.timerAutoCapture, true);
+            }
         };
 
         function result() {
-            var isOk;
+            var result;
             if (typeof options.callback === 'function') {
-                isOk = options.callback(streamPicture.src);
+                result = options.callback(streamPicture.src);
             }
+            return Promise.resolve(result).then((isOk) => {
+                streamPicture.classList.remove('success', 'fail');
+                if (isOk === true) {
+                    streamPicture.classList.add('success');
+                } else
+                if (isOk === false) {
+                    streamPicture.classList.add('fail');
+                }
 
-            streamPicture.classList.remove('success', 'fail');
-            if (isOk === true) {
-                streamPicture.classList.add('success');
-            } else
-            if (isOk === false) {
-                streamPicture.classList.add('fail');
-            }
+                return isOk;
+            });
         }
 
-        function takePhoto() {
+        function showPicture() {
+            takePicture.textContent = btnInactiveTitle;
+            takePicture.dataset.i18n = btnInactiveTitle;
+            streamVideo.classList.remove('active');
+            streamPicture.classList.add('active');
+        }
+
+        function takePhoto(autoTake) {
+            if (takePhoto.wait) {
+                if (autoTake !== true) {
+                    takePhoto.waiting = arguments;
+                    checkPhotoAvailability();
+                }
+                return;
+            }
             if (videoActive) {
-                videoActive = false;
+                takePhoto.wait = true;
+
+                if (autoTake !== true) {
+                    videoActive = false;
+                }
                 const vWidth = streamVideo.videoWidth;
                 const vHeight = streamVideo.videoHeight;
-                let width = pictureSize, height = pictureSize;
+                let width = canvasSize, height = canvasSize;
                 let offsetX = 0;
                 let offsetY = 0;
                 if (fullVideo) {
                     if (vWidth > vHeight) {
-                        height = pictureSize * vHeight / vWidth;
-                        offsetY = (pictureSize - height) / 2;
+                        height = canvasSize * vHeight / vWidth;
+                        offsetY = (canvasSize - height) / 2;
                     } else {
-                        width = pictureSize * vWidth / vHeight;
-                        offsetX = (pictureSize - width) / 2;
+                        width = canvasSize * vWidth / vHeight;
+                        offsetX = (canvasSize - width) / 2;
                     }
                 } else {
                     if (vWidth > vHeight) {
-                        width = pictureSize * vWidth / vHeight;
-                        offsetX = (pictureSize - width) / 2;
+                        width = canvasSize * vWidth / vHeight;
+                        offsetX = (canvasSize - width) / 2;
                     } else {
-                        height = pictureSize * vHeight / vWidth;
-                        offsetY = (pictureSize - height) / 2;
+                        height = canvasSize * vHeight / vWidth;
+                        offsetY = (canvasSize - height) / 2;
                     }
                 }
                 streamCanvas.getContext('2d').drawImage(streamVideo, 0, 0, vWidth, vHeight, offsetX, offsetY, width, height);
                 let data = streamCanvas.toDataURL('image/png');
                 streamPicture.src = data;
-                takePicture.textContent = btnInactiveTitle;
-                takePicture.dataset.i18n = btnInactiveTitle;
-                streamVideo.classList.remove('active');
-                streamPicture.classList.add('active');
-                result();
+
+                if (autoTake !== true) {
+                    showPicture();
+                    result().then(() => {
+                        takePhoto.wait = false;
+                        checkPhotoAvailability();
+                    });
+                } else {
+                    result().then((isOk) => {
+                        if (isOk) {
+                            videoActive = false;
+                            showPicture();
+                        }
+                        takePhoto.wait = false;
+                        checkPhotoAvailability();
+                    });
+                }
             } else {
+                if (autoTake === true) {
+                    return;
+                }
                 videoActive = true;
                 streamVideo.classList.add('active');
                 streamPicture.classList.remove('active');
@@ -830,6 +848,20 @@
                 takePicture.dataset.i18n = btnActiveTitle;
             }
         };
+        takePhoto.waiting = null;
+
+        function checkPhotoAvailability() {
+            clearTimeout(checkPhotoAvailability.timer);
+            if (takePhoto.wait) {
+                checkPhotoAvailability.timer = setTimeout(checkPhotoAvailability, 100);
+            } else
+            if (takePhoto.waiting) {
+                let args = takePhoto.waiting;
+                takePhoto.waiting = null;
+                takePhoto(...args);
+            }
+        }
+
         takePicture.onclick = takePhoto;
         streamVideo.onclick = takePhoto;
         streamPicture.onclick = takePhoto;
@@ -850,10 +882,12 @@
 
         initializeVideo();
     }
+    prepareVideo.timer = -1;
     prepareVideo.mediaStream = [];
     prepareVideo.stopVideo = function() {
         prepareVideo.mediaStream.forEach(mediaStreamTrack => mediaStreamTrack.stop());
         prepareVideo.mediaStream = [];
+        clearInterval(prepareVideo.timer);
     };
 
     function scanCode(img, callback) {
@@ -888,19 +922,23 @@
                         prepareVideo({
                             el: this.el,
                             hideFile: true,
-                            fullVideo: true,
+                            fullVideo: false,
+                            canvasSize: 1000,
+                            autoCapture: true,
                             btnActiveTitle: _('Scan picture'),
                             btnInactiveTitle: _('Scan again'),
-                            callback: function(src) {
-                                scanCode(src, (result) => {
-                                    if (result && result.codeResult) {
-                                        mmainEls.gobleanCreationCode.value = result.codeResult.code;
-                                        this.result = result.codeResult.code;
-                                        this.fromCamera = true;
-                                        return true;
-                                    } else {
-                                        return false
-                                    }
+                            callback: (src) => {
+                                return new Promise((success) => {
+                                    scanCode(src, (result) => {
+                                        if (result && result.codeResult) {
+                                            mainEls.gobleanCreationCode.value = result.codeResult.code;
+                                            this.result = result.codeResult.code;
+                                            this.fromCamera = true;
+                                            success(true);
+                                        } else {
+                                            success(false);
+                                        }
+                                    });
                                 });
                             }
                         });
@@ -1098,7 +1136,10 @@
         document.querySelector('.rules').onclick = setView.bind(null, 'rules', true, true);
         document.querySelector('.credits').onclick = setView.bind(null, 'credits', true, true);
         document.querySelector('.configuration').onclick = initializeConfiguration;
-        document.querySelectorAll('.back-home').forEach(el => el.onclick = setView.bind(null, '', true, false));
+        document.querySelectorAll('.back-home').forEach(el => el.onclick = function() {
+            prepareVideo.stopVideo();
+            setView('', true, false);
+        });
         document.querySelector('.validate-create-goblean').onclick = validateGobleanCreation;
 
         document.querySelector('.breadcrumb').onclick = function (evt) {

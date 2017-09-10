@@ -5,12 +5,24 @@
 </head>
 <body>
 <h1>Goblean</h1>
+<select id="csource">
+	<option>test.mp4</option>
+	<option>magic.mp4</option>
+</select>
 <div id="result"></div>
 <img>
-<canvas width="300" height="300"></canvas>
-<video id="webcam" width="300" height="300"></video>
+<canvas width="800" height="800"></canvas>
+<video id="webcam" width="500" height="500" autoplay="true">
+	<source src="test.mp4"></source>
+</video>
 <button>Screenshot</button>
 
+<script>
+document.getElementById('csource').onchange = function() {
+	console.log('t')
+	document.querySelector('video').src = this.value;
+}
+</script>
 <script src="node_modules/quagga/dist/quagga.min.js"></script>
 <script src="index.js"></script>
 </body>
