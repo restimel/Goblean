@@ -20,7 +20,7 @@
         }).catch(() => supportMediaDevice = false);
     }
 
-    const mode = {
+    const configuration = {
         autoFight: false,
         autoCreationSelect: true,
         fightMode: 'versus',
@@ -181,7 +181,7 @@
             mainEls.messageText.textContent = list[0];
         }
 
-        if (mode.autoFight) {
+        if (configuration.autoFight) {
             let choice = Math.ceil(Math.random() * 4);
             setMessage(_('%(name)s will attack with %(choice)s', {
                 name: currentFighter.name,
@@ -203,7 +203,7 @@
     function fillList(element, options) {
         let {callback, selected, addFirstItem} = options;
 
-        let list = JSON.parse(localStorage.getItem('fighters') || '[]');
+        let list = options.list || JSON.parse(localStorage.getItem('fighters') || '[]');
         list.sort((a, b) => b.nbw - a.nbw);
 
         if (list.length === 0) {
@@ -232,6 +232,7 @@
             if (selected.code === goblean.code) {
                 //select the first item
                 el.onclick();
+                setTimeout(() => el.scrollIntoViewIfNeeded(), 10);
             }
 
             element.appendChild(el);
@@ -416,12 +417,10 @@
                 src: img // or 'data:image/jpg;base64,' + data
             }, function(result){
                 if(result && result.codeResult) {
-                    console.log("result", result.codeResult.code);
                     mainEls.streamCode.value = result.codeResult.code;
                     mainEls.streamPicture.classList.add('success');
                     mainEls.streamPicture.classList.remove('fail');
                 } else {
-                    console.log("not detected");
                     mainEls.streamPicture.classList.remove('success');
                     mainEls.streamPicture.classList.add('fail');
                 }
@@ -615,7 +614,7 @@
     function initializeStats(options) {
         let {
             title = _('Your team'), refresh, selected = true, callback,
-            btnOk = _('Ok')
+            btnOk = _('Ok'),
         } = options;
 
         let currentSelected = null;
@@ -628,7 +627,7 @@
             callback: function(goblean) {
                 if (goblean.code === -1) {
                     initializeGobleanCreation.callback = (goblean) => {
-                        if (mode.autoCreationSelect && typeof callback === 'function') {
+                        if (configuration.autoCreationSelect && typeof callback === 'function') {
                             callback(goblean);
                             setView('', true, false);
                         } else {
@@ -705,7 +704,7 @@
         let {
             picture = null,
             fullVideo = false,
-            canvasSize = mode.pictureSize,
+            canvasSize = configuration.pictureSize,
             autoCapture = false
         } = options;
         let btnActiveTitle = options.btnActiveTitle || _('Take picture');
@@ -752,7 +751,7 @@
             }
 
             if (autoCapture && videoActive) {
-                prepareVideo.timer = setInterval(takePhoto, mode.timerAutoCapture, true);
+                prepareVideo.timer = setInterval(takePhoto, configuration.timerAutoCapture, true);
             }
         };
 
@@ -838,7 +837,7 @@
                     });
                 }
             } else {
-                if (autoTake === true) {
+                if (autoTake === true || !supportMediaDevice) {
                     return;
                 }
                 videoActive = true;
@@ -869,13 +868,22 @@
         fileStream.querySelector('input').onchange = function(evt) {
             let reader = new FileReader();
             reader.onloadend = function(data) {
-                streamPicture.src = data.target.result;
-                streamVideo.classList.remove('active');
-                streamPicture.classList.add('active');
-                videoActive = false;
-                takePicture.textContent = btnFromCameraTitle;
-                takePicture.dataset.i18n = btnFromCameraTitle;
-                result();
+                let image = new Image()
+                image.src = data.target.result;
+                image.onload = () => {
+                    let width = canvasSize * image.width / image.height;
+                    let offsetX = (canvasSize - width) / 2;
+                    streamCanvas.getContext('2d').drawImage(image, offsetX, 0, width, canvasSize);
+                    streamPicture.src = streamCanvas.toDataURL('image/png');;
+
+                    streamVideo.classList.remove('active');
+                    streamPicture.classList.add('active');
+                    videoActive = false;
+                    takePicture.textContent = btnFromCameraTitle;
+                    takePicture.dataset.i18n = btnFromCameraTitle;
+                    result();
+                    streamPicture.onload = null;
+                }
             };
             reader.readAsDataURL(evt.target.files[0]);
         };
@@ -1059,8 +1067,9 @@
         if (goblean.isValid()) {
             goblean.save();
             if (typeof initializeGobleanCreation.callback === 'function') {
-                initializeGobleanCreation.callback(goblean);
+                let callback = initializeGobleanCreation.callback;
                 initializeGobleanCreation.callback = null;
+                callback(goblean);
             }
             setView('', true, false);
         } else {
@@ -1071,18 +1080,18 @@
     }
 
     function initializeConfiguration() {
-        mainEls.modeAuto.checked = mode.autoFight;
-        document.getElementById('mode-auto-creation').checked = mode.autoCreationSelect;
-        document.getElementById('fight-configuration').value = mode.fightMode;
+        mainEls.modeAuto.checked = configuration.autoFight;
+        document.getElementById('mode-auto-creation').checked = configuration.autoCreationSelect;
+        document.getElementById('fight-configuration').value = configuration.fightMode;
 
         setView('configuration', true, true);
     }
 
     function changeModeAuto() {
-        mode.autoFight = this.checked;
-        let message = mode.autoFight ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
+        configuration.autoFight = this.checked;
+        let message = configuration.autoFight ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
         setMessage(message, false, true);
-        localStorage.setItem('mode', JSON.stringify(mode));
+        localStorage.setItem('configuration', JSON.stringify(configuration));
     }
 
     function localeChanged() {
@@ -1259,8 +1268,8 @@
             return values.join(', ') + ' ' + _('and') + ' ' + lastValue;
         });
 
-        const options = JSON.parse(localStorage.getItem('mode') || '{}');
-        Object.assign(mode, options);
+        const options = JSON.parse(localStorage.getItem('configuration') || '{}');
+        Object.assign(configuration, options);
 
         let locales = _.getLocales({key: true, name: true});
         locales.forEach(l => {
