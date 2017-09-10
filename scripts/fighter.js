@@ -1,4 +1,6 @@
 const minLength = 6;
+const energyThreshold = 20;
+
 
 class Fighter {
 	constructor(position, json) {
@@ -11,6 +13,8 @@ class Fighter {
 		this.numberOfFight = 0;
 		this.numberOfWin = 0;
 
+		this.choice = [null, null, null, null];
+
 		if (json) {
 			if (typeof json === 'string') {
 				json = JSON.parse(json);
@@ -18,6 +22,7 @@ class Fighter {
 			this.setAttributes(json);
 		}
 		this.resetEnergy();
+		this.initializeAttack();
 	}
 
 	toJSON() {
@@ -128,6 +133,12 @@ class Fighter {
 			energyRestore: value[2]
 		};
 
+		/* bonus */
+
+		if (this.fromCamera) {
+			this.stats.energyRestore += 0.5;
+		}
+
 		if (this.stats.hp <= 0) {
 			this.stats.hp = 30;
 		}
@@ -147,6 +158,8 @@ class Fighter {
 		} else {
 			malus += 2;
 		}
+
+		/* malus */
 
 		if (malus) {
 			malus = malus > 7 ? 7 : malus;
@@ -326,18 +339,29 @@ class Fighter {
 
 			this.ctx.lineWidth = 5;
 
-			this.ctx.moveTo(190, 180);
-			this.ctx.lineTo(160, 180);
-			this.ctx.lineTo(160, 130);
-			this.ctx.lineTo(170, 130);
-			this.ctx.lineTo(170, 125);
-			this.ctx.lineTo(180, 125);
-			this.ctx.lineTo(180, 130);
-			this.ctx.lineTo(190, 130);
-			this.ctx.lineTo(190, 180);
-			this.ctx.lineTo(160, 180);
+			let x = 190;
+			let y = 190;
+			this.ctx.moveTo(x, y);
+			this.ctx.lineTo(x-30, y);
+			this.ctx.lineTo(x-30, y-80);
+			this.ctx.lineTo(x-20, y-80);
+			this.ctx.lineTo(x-20, y-87);
+			this.ctx.lineTo(x-10, y-87);
+			this.ctx.lineTo(x-10, y-80);
+			this.ctx.lineTo(x, y-80);
+			this.ctx.lineTo(x, y);
 			this.ctx.clip();
-			this.ctx.fillRect(150, 180 - this.stats.energy, 200, 200);
+			this.ctx.fillRect(150, 190 - (this.stats.energy * (37 / energyThreshold)), 200, 200);
+
+			this.ctx.stroke();
+			this.ctx.beginPath();
+			this.ctx.lineWidth = 2.5;
+			this.ctx.moveTo(x-30, y-40);
+			this.ctx.lineTo(x-20, y-40);
+			this.ctx.lineTo(x-20, y-47);
+			this.ctx.lineTo(x-10, y-47);
+			this.ctx.lineTo(x-10, y-40);
+			this.ctx.lineTo(x, y-40);
 			this.ctx.stroke();
 
 			this.ctx.restore();
@@ -346,40 +370,67 @@ class Fighter {
 		this.ctx.restore();
 	}
 
-	createOneChoice() {
-		let attack = this.choiceAttack[this.order % this.choiceAttack.length];
-		let support = this.choiceSupport[this.order % this.choiceSupport.length];
-		let target = this.target[this.order % this.target.length];
+	initializeAttack(special) {
+		this.listAttack = listAttack.slice();
+		if (!special) {
+			this.specialReady = false;
+		}
+	}
 
+	createOneChoice() {
+		// let attack = this.choiceAttack[this.order % this.choiceAttack.length];
+		// let support = this.choiceSupport[this.order % this.choiceSupport.length];
+		// let target = this.target[this.order % this.target.length];
 		this.order++;
-		return [attack, support, target];
+
+		if (this.listAttack.length === 0) {
+			this.initializeAttack(true);
+		}
+
+		if (this.stats.energy > energyThreshold && !this.specialReady) {
+			this.specialReady = true;
+			this.listAttack.unshift({
+				name: 'special attack',
+				attack: ['head', 'head', 'head'],
+				result: () => {
+					this.stats.energy -= energyThreshold;
+					this.specialReady = false;
+
+					return [15, 'head'];
+				}
+			});
+		}
+		
+		return this.listAttack.shift();
 	}
 
 	createNextChoice() {
-		this.choice = [
-			this.createOneChoice(),
-			this.createOneChoice(),
-			this.createOneChoice(),
-			this.createOneChoice()
-		];
+		this.choice.forEach((c, i) => {
+			if (!c) {
+				this.choice[i] = this.createOneChoice();
+			}
+		});
 	}
 
+	/* return label of current possible attacks */
 	getChoice() {
-		if (!this.choice) {
-			this.createNextChoice();
-		}
+		this.createNextChoice();
 
-		return this.choice.map(choice => _('%(attack)s + %(support)s vs %(defense)s', {
-			attack: _(choice[0]),
-			support: _(choice[1]),
-			defense: _(choice[2])
+		return this.choice.map(choice => _(choice.name || '%(attack)s + %(support)s vs %(defense)s', {
+			attack: _(choice.attack[0]),
+			support: _(choice.attack[1]),
+			defense: _(choice.attack[2])
 		}));
 	}
 
 	chooseAttack(idx) {
 		const choice = this.choice[idx];
-		this.createNextChoice();
-		return [this.stats[choice[0]] + this.stats[choice[1]] / 2, choice[2]];
+		this.choice[idx] = null;
+		if (typeof choice.result === 'function') {
+			return choice.result();
+		} else {
+			return [this.stats[choice.attack[0]] + this.stats[choice.attack[1]] / 2, choice.attack[2]];
+		}
 	}
 
 	haveDealtDamage(dmg, opponent) {
@@ -412,3 +463,18 @@ class Fighter {
 Fighter.prototype.choiceAttack = ['leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
 Fighter.prototype.choiceSupport = ['head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
 Fighter.prototype.target = ['head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
+
+const listAttack = [];
+
+Fighter.prototype.choiceAttack.forEach(a => {
+	Fighter.prototype.choiceSupport.forEach(b => {
+		Fighter.prototype.target.forEach(c => {
+			listAttack.push({
+				name: '',
+				attack: [a, b, c]
+			});
+		});
+	});
+});
+listAttack.sort(() => Math.random());
+listAttack.sort(() => Math.random());

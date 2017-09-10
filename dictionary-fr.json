@@ -84,5 +84,7 @@
 	"Team vs Team": "Équipe contre Équipe",
 	"Adventure": "Aventure",
 	"Automatically select newly created Goblean": "Sélectionne automatiquement un Goblean créé",
-	"During Goblean selection, if you create a new Goblean, this one is immediately selected.": "Pendant la sélection d'un Goblean, si vous en créer un nouveau, celui-ci sera automatiquement sélectionné."
+	"During Goblean selection, if you create a new Goblean, this one is immediately selected.": "Pendant la sélection d'un Goblean, si vous en créer un nouveau, celui-ci sera automatiquement sélectionné.",
+	"special attack": "attaque spéciale",
+	"": ""
 }

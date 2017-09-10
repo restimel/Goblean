@@ -528,6 +528,7 @@
         fighters.forEach(f => {
             f.numberOfFight++;
             f.setMode('battle');
+            f.initializeAttack();
         });
 
         if (fighters[0].stats.initiative < fighters[1].stats.initiative) {
