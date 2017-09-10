@@ -229,6 +229,10 @@
             el.textContent = goblean.name;
             el.onclick = callback(goblean);
 
+            if (goblean.DOMclass) {
+                el.classList.add(goblean.DOMclass);
+            }
+
             if (selected.code === goblean.code) {
                 //select the first item
                 el.onclick();
@@ -663,7 +667,7 @@
                 };
             },
             selected: selected,
-            addFirstItem: {name: _('+ Enrole a new Goblean'), code: -1}
+            addFirstItem: {name: _('+ Enrole a new Goblean'), code: -1, DOMclass: 'new-item'},
         });
 
         let okButton = views.stats.querySelector('.select-goblean');

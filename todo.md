@@ -7,8 +7,6 @@
 * Adventure mode
 * survivor mode
 
-* goblean selection
-	* set ADD item in another color
 * add EAN reader (quagga)
 	* use worker (?needed)
 
