@@ -1,7 +1,5 @@
 # TODO list
 
-* check browser compatibility
-
 * Gobl-aena
 * Team
 * Adventure mode
