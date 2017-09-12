@@ -201,9 +201,23 @@ data-message="<ul><li><b>Versus</b> - One Goblean fights another one</li><li><b>
     </footer>
 </dialog>
 
+<aside id="compatibility-failure" class="hide">
+    <span>
+    Your browser does not support some features needed by this game.<br>
+    We are really sorry that you cannot play with this one.<br>
+    You can try with a more modern browser.
+    </span>
+</aside>
+
+<script>self.compatibility = {};</script>
 <script src="libs/quagga.min.js"></script>
 <script src="libs/i18n-js-formatter.full.min.js"></script>
 <script src="scripts/fighter.js"></script>
 <script src="scripts/goblean.js"></script>
+<script>
+if (!compatibility.fighter || !compatibility.goblean) {
+    document.getElementById('compatibility-failure').className = 'active';
+}
+</script>
 </body>
 </html>

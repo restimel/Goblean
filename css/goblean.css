@@ -786,3 +786,19 @@ h1 {
 .picture-temp.fail {
 	border: 5px solid red;
 }
+
+#compatibility-failure {
+    position: fixed;
+    z-index: 100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #8d4949;
+    box-shadow: 0 0 20px 7px #ba7878, inset 0 0 20px 7px #ba7878;
+    font-size: 2em;
+    padding: 1em;
+}
+
+.hide {
+    display: none;
+}

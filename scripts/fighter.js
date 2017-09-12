@@ -478,3 +478,6 @@ Fighter.prototype.choiceAttack.forEach(a => {
 });
 listAttack.sort(() => Math.random());
 listAttack.sort(() => Math.random());
+
+/* compatibility check */
+(self.compatibility || {}).fighter = true;

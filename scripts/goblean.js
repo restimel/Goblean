@@ -1305,3 +1305,6 @@
 
     initialize();
 })();
+
+/* compatibility check */
+(self.compatibility || {}).goblean = true;
