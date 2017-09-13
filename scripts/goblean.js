@@ -3,7 +3,7 @@
 
     const authors = ['Gilles Masclef (Le Gobelin)', 'Benoît Mariat',
     'Anthony Oliveira', 'Clément Chrétien', 'Clotilde Masclef',
-    'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé'];
+    'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé', 'Aurélien Martin'];
 
     const winMessages = [
         'The champion is %(name)s',
