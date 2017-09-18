@@ -16,6 +16,10 @@ class Fighter {
 		this.choice = [null, null, null, null];
 
 		if (json) {
+			if (json.isGhost) {
+				this.isGhost = true;
+				this.autoFight = 1;
+			}
 			if (typeof json === 'string') {
 				json = JSON.parse(json);
 			}
@@ -32,11 +36,16 @@ class Fighter {
 			fromCamera: this.fromCamera,
 			picture: this.picture,
 			nbf: this.numberOfFight,
-			nbw: this.numberOfWin
+			nbw: this.numberOfWin,
+			isGhost: this.isGhost
 		};
 	}
 
 	save() {
+		if (this.isGhost) {
+			return;
+		}
+
 		let list = JSON.parse(localStorage.getItem('fighters') || '[]');
 		let idx = list.findIndex(f => f.code === this.code);
 
@@ -63,6 +72,10 @@ class Fighter {
 	}
 
 	isValid() {
+		if (this.isGhost) {
+			return !this._error;
+		}
+
 		if (!this.code || this.code.length < minLength) {
 			this._error = 'code:invalid';
 			return false;
@@ -94,7 +107,30 @@ class Fighter {
 		return key === cKey;
 	}
 
+	getGhost() {
+		let [hasGhost, color, code] = Fighter.isThereGhost();
+
+		if (!hasGhost) {
+			this.name = '';
+			this._error = _('No ghost right now! Try again later.');
+			return false;
+		}
+
+		this._error = '';
+
+		this.name = 'GHOST ' + color; // TDOO
+
+		return code;
+	}
+
 	setCode(code) {
+		if (this.isGhost) {
+			code = this.getGhost();
+			if (!code) {
+				return false;
+			}
+		}
+
 		let malus = 0;
 
 		code = code.replace(/[^\d]+/, '');
@@ -137,13 +173,16 @@ class Fighter {
 
 		if (this.fromCamera) {
 			this.stats.energyRestore += 0.5;
+		} else
+		if (this.isGhost) {
+			this.stats.energyRestore += 1.5;
 		}
 
 		if (this.stats.hp <= 0) {
 			this.stats.hp = 30;
 		}
 
-		if (this.checkKey()) {
+		if (this.isGhost || this.checkKey()) {
 			this.stats.hp += 2;
 			this.stats.initiative += 20;
 
@@ -161,7 +200,7 @@ class Fighter {
 
 		/* malus */
 
-		if (malus) {
+		if (malus && !this.isGhost) {
 			malus = malus > 7 ? 7 : malus;
 			['hp', 'hp', 'initiative', 'body', 'hp', 'head', 'initiative'].slice(0, malus).forEach((carac) => {
 				this.stats[carac] = Math.max(1, this.stats[carac] - 1);
@@ -222,6 +261,16 @@ class Fighter {
 			this.ctx = canvas.getContext('2d');
 		}
 		this.ctx.clearRect(0, 0, 200, 200);
+
+		if (this.isGhost && !this.name) {
+			//no ghost
+			this.ctx.save();
+			this.ctx.beginPath();
+			this.ctx.ellipse(100, 100, 30, 30, 0, 0, 2*Math.PI);
+			this.ctx.fill();
+			this.ctx.restore();
+			return;
+		}
 
 		let setWidth = (part) => {
 			var value = this.stats[part];
@@ -319,13 +368,14 @@ class Fighter {
 		this.ctx.restore();
 
 		// eyes
-		if (this.fromCamera) {
+		if (this.fromCamera || this.isGhost) {
 			this.ctx.beginPath();
 			this.ctx.save();
-			this.ctx.strokeStyle = '#00FF00';
-			this.ctx.fillStyle = '#00FF00';
+			this.ctx.strokeStyle = '#000000';
+			this.ctx.fillStyle = this.isGhost ? '#FF0000' : '#00FF00';
 			this.ctx.ellipse(107, 25, 2, 2, 0, 0, 2*Math.PI);
 			this.ctx.ellipse(93, 25, 2, 2, 0, 0, 2*Math.PI);
+			this.ctx.stroke();
 			this.ctx.fill();
 			this.ctx.restore();
 		}
@@ -460,9 +510,102 @@ class Fighter {
 	}
 }
 
+Fighter.ghosts = [{
+	id: 'white',
+	build: function() {
+		return {
+			name: _('White ghost')
+		}
+	}
+}, {
+	id: 'blue',
+	build: function() {
+		return {
+			name: _('Blue ghost')
+		}
+	}
+}];
+
+Fighter.isThereGhost = function() {
+	const PI = Math.PI;
+	const [LAT, LNG, isActived] = geoloc();
+	let timestamp = Math.round(Date.now() / 60000); // ts in min
+
+	/* get color */
+	const d1 = 19;
+	const s1 = 0;
+
+	const lt = Math.round(LAT * 1000); // ~100m
+	const lg = Math.round(LNG * 100); // ~400m
+	let t = lt + lg + timestamp;
+
+	let colorGhost = Math.sin(t * PI/d1) > s1 ? Math.ceil(t / (2*d1))%10 : 0;
+
+	// todo activation white ghost
+
+	//debug
+	colorGhost = colorGhost;
+
+	/* get code */
+	const code = [];
+	if (colorGhost) {
+		let lat = Math.round(LAT * 10000).toString(); // ~10m
+		let lng = Math.round(LNG * 1000).toString(); // ~40m
+
+		while (lat.length < 7) {
+			lat = '0' + lat;
+		}
+		while (lng.length < 6) {
+			lng = '0' + lng;
+		}
+		const d = new Date();
+
+		code[0] = lng[2]; // init
+		code[1] = 0; // kind
+		code[2] = lng[5]; // energy
+		code[3] = lat[3]; // init
+		code[4] = lat[4]; // hp
+		code[5] = 0; // kind
+		code[6] = lng[4]; // leftLeg
+		code[7] = Math.round(d.getMinutes()/10 + d.getHours()/10 + d.getDate()/10) % 10; // rightLeg
+		code[8] = d.getMinutes() % 10; // leftArm
+		code[9] = lat[6]; // rightArm
+		code[10] = (lat[5]+d.getMonth()) % 10; // body
+		code[11] = d.getDate() % 10; // head
+		code[12] = d.getHours() % 10; // hp
+
+		if (!isActived) {
+			code[0] = 20;
+			code[2] = 10;
+			code[12] = 0;
+			code[9] = 5;
+		}
+	}
+
+	return [!!colorGhost, colorGhost, code.join('')];
+}
+
+Fighter.prototype.autoFight = 0;
 Fighter.prototype.choiceAttack = ['leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
 Fighter.prototype.choiceSupport = ['head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
 Fighter.prototype.target = ['head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
+
+var geoloc = (function() {
+	const lastLatLng = [0, 0, false];
+
+	function success(position) {
+		lastLatLng[0] = position.coords.latitude;
+		lastLatLng[1] = position.coords.longitude;
+		lastLatLng[2] = true;
+	}
+	function fail() {}
+
+	return () => {
+		navigator.geolocation.getCurrentPosition(success, fail);
+		return lastLatLng;
+	}
+})();
+geoloc();
 
 const listAttack = [];
 

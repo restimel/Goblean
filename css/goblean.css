@@ -8,6 +8,11 @@ Color guide
   dark background: #111f22;
 */
 
+@font-face{
+    font-family: fontAwesome;
+    src: url('../libs/fon-awesome-4.7.0/fonts/fontawesome-webfont.woff');
+}
+
 body > header {
     height: 30px;
     background-color: black;
@@ -148,6 +153,10 @@ body > header {
     color: yellow;
     border: 3px ridge yellow;
 }
+.list > div.ghost {
+    margin-bottom: 0.5em;
+    background-color: #111f22;
+}
 .list > div.selected {
     background-color: #FFFFAA;
     color: #233e43;
@@ -157,6 +166,17 @@ body > header {
 .list > div.new-item {
     margin-bottom: 0.5em;
     background-color: #325961;
+}
+.list > div.ghost.locked,
+.list > div.ghost.locked:hover {
+    color: #233e43;
+    border-color: #233e43;
+    cursor: default;
+}
+.locked:after {
+    content: '\f023';
+    font-family: fontAwesome;
+    margin-left: 1em;
 }
 
 #stats {

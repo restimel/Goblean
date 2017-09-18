@@ -3,7 +3,7 @@
 
     const authors = ['Gilles Masclef (Le Gobelin)', 'Benoît Mariat',
     'Anthony Oliveira', 'Clément Chrétien', 'Clotilde Masclef',
-    'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé'];
+    'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé', 'Aurélien Martin'];
 
     const winMessages = [
         'The champion is %(name)s',
@@ -182,7 +182,7 @@
             mainEls.messageText.textContent = list[0];
         }
 
-        if (configuration.autoFight) {
+        if (currentFighter.autoFight) {
             let choice = Math.ceil(Math.random() * 4);
             setMessage(_('%(name)s will attack with %(choice)s', {
                 name: currentFighter.name,
@@ -216,7 +216,11 @@
         }
 
         if (addFirstItem) {
-            list.unshift(addFirstItem);
+            if (Array.isArray(addFirstItem)) {
+                addFirstItem.forEach(item => list.unshift(item));
+            } else {
+                list.unshift(addFirstItem);
+            }
         }
 
         if (typeof selected !== 'object') {
@@ -231,7 +235,7 @@
             el.onclick = callback(goblean);
 
             if (goblean.DOMclass) {
-                el.classList.add(goblean.DOMclass);
+                el.classList.add(...goblean.DOMclass);
             }
 
             if (selected.code === goblean.code) {
@@ -256,52 +260,18 @@
         currentFighter = fighter;
 
         let title = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
-        // mainEls.creationTitle.textContent = _(title);
-        // mainEls.creationTitle.dataset.i18n = title;
-
-        // mainEls.creationBtnForm.disabled = !fighter.isValid();
-
-        // fillList(mainEls.fighterSelection, {
-        //     addFirstItem: {name: _('+ Create a new Goblean')},
-        //     callback: function(goblean) { return function() {
-        //         document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-        //         this.classList.add('selected');
-
-        //         if (!goblean.code) {
-        //             mainEls.creationSection.classList.add('active');
-        //             mainEls.creationStat.classList.remove('active');
-
-        //             currentFighter = new Fighter(nb);
-
-        //             mainEls.creationName.value = '';
-        //             mainEls.creationCode.value = '';
-        //             mainEls.creationPicture.src = '';
-        //             mainEls.creationBtnForm.disabled = true;
-        //         } else {
-        //             mainEls.creationSection.classList.remove('active');
-        //             mainEls.creationStat.classList.add('active');
-
-        //             currentFighter = new Fighter(nb, goblean);
-
-        //             mainEls.gobleanName.textContent = currentFighter.name || '';
-        //             mainEls.gobleanCode.textContent = _.parse('%§', currentFighter.code || '');
-        //             mainEls.gobleanPicture.src = currentFighter.picture || '';
-
-        //         }
-
-        //         fighters[nb-1] = currentFighter;
-        //     };},
-        //     selected: currentFighter
-        // });
-
+ 
         initializeStats({
             title: title,
             selected: currentFighter,
+            addGhost: nb === 2,
             btnOk: _('Select'),
             callback: function(goblean) {
-                fighters[nb-1] = goblean;
-                goblean.position = nb;
-                updateFighter(goblean);
+                if (goblean) {
+                    fighters[nb-1] = goblean;
+                    goblean.position = nb;
+                    updateFighter(goblean);
+                }
             }
         });
         // setView('stats', true);
@@ -613,10 +583,20 @@
             btnOk = _('Ok'),
         } = options;
 
+        const addFirstItem = [
+            {name: _('+ Enrole a new Goblean'), code: -1, DOMclass: ['new-item']}
+        ];
+
         let currentSelected = null;
 
         if (refresh !== true) {
             setView('stats', true, true);
+        }
+
+        if (options.addGhost) {
+            addFirstItem.unshift({
+                name: _('Fight a Ghost'), isGhost: true, code: -2, DOMclass: ['ghost', 'locked']
+            });
         }
 
         fillList(mainEls.gobleanList, {
@@ -643,23 +623,47 @@
                     document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
                     this.classList.add('selected');
 
+                    let ratio, code, nbf, nbw, name;
+
                     let fighter = new Fighter(0, goblean);
+                    if (goblean.code !== -2) {
+                        name = fighter.name;
+                        ratio = goblean.nbf ? goblean.nbw / goblean.nbf : 0;
+                        ratio = Math.round(ratio * 10000) / 100;
+                        ratio = ratio + '%';
+                        code = _.parse('%§', goblean.code);
+                        nbf = _.parse('%i', goblean.nbf);
+                        nbw = _.parse('%i', goblean.nbw);
+                    } else {
+                        if (!fighter._error) {
+                            name = fighter.name;
+                            ratio = '???';
+                            code = _('secret');
+                            nbf = '???';
+                            nbw = '???';
+                        } else {
+                            name = fighter._error;
+                            code = '';
+                            ratio = '';
+                            nbf = '';
+                            nbw = '';
+                        }
+                    }
 
-                    let ratio = goblean.nbf ? goblean.nbw / goblean.nbf : 0;
-                    ratio = Math.round(ratio * 10000) / 100;
-
-                    mainEls.statTitle.textContent = goblean.name;
-                    mainEls.statCode.textContent = _.parse('%§', goblean.code);
-                    mainEls.statNbf.textContent = _.parse('%i', goblean.nbf);
-                    mainEls.statNbw.textContent = _.parse('%i', goblean.nbw);
+                    mainEls.statTitle.textContent = name;
+                    mainEls.statCode.textContent = code;
+                    mainEls.statNbf.textContent = nbf;
+                    mainEls.statNbw.textContent = nbw;
                     fighter.drawPicture(mainEls.statPicture);
-                    mainEls.statRatio.textContent = ratio + '%';
+                    mainEls.statRatio.textContent = ratio;
 
-                    currentSelected = fighter;
+                    if (goblean.code !== -2 || !fighter._error) {
+                        currentSelected = fighter;
+                    }
                 };
             },
             selected: selected,
-            addFirstItem: {name: _('+ Enrole a new Goblean'), code: -1, DOMclass: 'new-item'},
+            addFirstItem: addFirstItem,
         });
 
         let okButton = views.stats.querySelector('.select-goblean');
@@ -1087,6 +1091,7 @@
 
     function changeModeAuto() {
         configuration.autoFight = this.checked;
+        Fighter.prototype.autoFight = this.checked ? 1 : 0;
         // let message = configuration.autoFight ? 'The tactical choices will be chosen automatically' : 'Players have to choose the tactical choices';
         // setMessage(message, false, true);
         localStorage.setItem('configuration', JSON.stringify(configuration));
@@ -1288,6 +1293,7 @@
 
         const options = JSON.parse(localStorage.getItem('configuration') || '{}');
         Object.assign(configuration, options);
+        Fighter.prototype.autoFight = configuration.autoFight ? 1 : 0;
 
         let locales = _.getLocales({key: true, name: true});
         locales.forEach(l => {
