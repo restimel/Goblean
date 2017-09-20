@@ -108,7 +108,7 @@ class Fighter {
 	}
 
 	getGhost() {
-		let [hasGhost, color, code] = Fighter.isThereGhost();
+		let [hasGhost, ghost, code] = Fighter.isThereGhost();
 
 		if (!hasGhost) {
 			this.name = '';
@@ -118,7 +118,11 @@ class Fighter {
 
 		this._error = '';
 
-		this.name = 'GHOST ' + color; // TDOO
+		this.ghostId = ghost.id;
+		this.name = _('Ghost');
+		ghost.modifyStats && (this.modifyStats = ghost.modifyStats);
+		ghost.modifyDamage && (this.modifyDamage = ghost.modifyDamage);
+		ghost.drawAlternative && (this.drawAlternative = ghost.drawAlternative);
 
 		return code;
 	}
@@ -207,6 +211,8 @@ class Fighter {
 			});
 		}
 
+		this.modifyStats();
+
 		this.stats.currentHp = this.stats.hp;
 
 		return true;
@@ -251,6 +257,28 @@ class Fighter {
 		}
 	}
 
+	setScale(part) {
+		let value = this.stats[part] / 10;
+
+		if (value < 0) {
+			value = 0;
+		}
+
+		this.ctx.scale(value, value);
+		return value;
+	}
+
+	setWidth(part) {
+		let value = this.stats[part];
+
+		value *= 2;
+		if (value === 0) {
+			value = 1;
+		}
+		this.ctx.lineWidth = value;
+		return value;
+	}
+
 	drawPicture(canvas = this.canvas) {
 		if (!canvas) {
 			return;
@@ -272,38 +300,11 @@ class Fighter {
 			return;
 		}
 
-		let setWidth = (part) => {
-			var value = this.stats[part];
-
-			value *= 2;
-			if (value === 0) {
-				value = 1;
-			}
-			this.ctx.lineWidth = value;
-			return value;
-		};
-
-		let setScale = (part) => {
-			var value = this.stats[part] / 10;
-
-			if (value < 0) {
-				value = 0;
-			}
-
-			this.ctx.scale(value, value);
-		};
-
 		this.ctx.save();
 
-		let drawBody = (clip=false) => {
-			this.ctx.beginPath();
-			this.ctx.strokeStyle = '#000000';
-			this.ctx.fillStyle = '#000000';
-			let w = setWidth('body');
-			if (!clip) {
-				w = 0;
-			}
-			this.ctx.ellipse(100, 100, 20+w/2, 55+w/2, 0, 0, 2*Math.PI);
+		if (this.drawAlternative()) {
+			this.ctx.restore();
+			return;
 		}
 
 		if (this.picture) {
@@ -312,62 +313,111 @@ class Fighter {
 			img.src = this.picture;
 			img.onload = () => {
 				this.ctx.save();
-				drawBody(true);
-				this.ctx.clip();
+				this.drawBody(true);
 				this.ctx.drawImage(img, 100-h, 100-h, 2*h, 2*h);
 				this.ctx.restore();
 			}
 		} else {
-			drawBody();
+			this.drawBody();
+		}
+
+		this.drawHead();
+		this.drawArms();
+		this.drawLegs();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+
+		this.ctx.restore();
+	}
+
+	drawGhostBody() {
+		this.ctx.beginPath();
+		this.ctx.strokeStyle = '#000000';
+		this.ctx.fillStyle = '#000000';
+		let w = this.setWidth('body')/2;
+		this.ctx.moveTo(60-w, 145+w);
+		this.ctx.bezierCurveTo(60-w, 15-w, 140+w, 15-w, 140+w,140+w);
+		this.ctx.lineTo(130, 135-w);
+		this.ctx.lineTo(115, 145+w);
+		this.ctx.lineTo(100, 135-w);
+		this.ctx.lineTo(85, 145+w);
+		this.ctx.lineTo(70, 145-w);
+		this.ctx.lineTo(60-w, 145+w);
+		this.ctx.stroke();
+		this.ctx.fill();
+	}
+
+	drawBody(clip=false) {
+		this.ctx.beginPath();
+		this.ctx.strokeStyle = '#000000';
+		this.ctx.fillStyle = '#000000';
+		let w = this.setWidth('body');
+		if (!clip) {
+			w = 0;
+		}
+		this.ctx.ellipse(100, 100, 20+w/2, 55+w/2, 0, 0, 2*Math.PI);
+		
+		if (clip) {
+			this.ctx.clip();
+		} else {
 			this.ctx.stroke();
 			this.ctx.fill();
 		}
+	}
 
+	drawHead() {
 		this.ctx.beginPath();
 		this.ctx.ellipse(100, 30, 19, 19, 0, 0, 2*Math.PI);
-		setWidth('head');
+		this.setWidth('head');
 		this.ctx.fill();
 		this.ctx.stroke();
+	}
 
+	drawArms() {
 		this.ctx.beginPath();
 		this.ctx.moveTo(100, 100);
 		this.ctx.lineTo(170, 30);
-		setWidth('leftArm');
+		this.setWidth('leftArm');
 		this.ctx.stroke();
 
 		this.ctx.beginPath();
 		this.ctx.moveTo(100, 100);
 		this.ctx.lineTo(30, 30);
-		setWidth('rightArm');
+		this.setWidth('rightArm');
 		this.ctx.stroke();
+	}
 
+	drawLegs() {
 		this.ctx.beginPath();
 		this.ctx.moveTo(100, 100);
 		this.ctx.lineTo(130, 190);
-		setWidth('leftLeg');
+		this.setWidth('leftLeg');
 		this.ctx.stroke();
 
 		this.ctx.beginPath();
 		this.ctx.moveTo(100, 100);
 		this.ctx.lineTo(70, 190);
-		setWidth('rightLeg');
+		this.setWidth('rightLeg');
 		this.ctx.stroke();
+	}
 
-		// hp
+	drawHP() {
 		this.ctx.beginPath();
 		this.ctx.save();
 		this.ctx.strokeStyle = '#FF0000';
 		this.ctx.fillStyle = '#FF0000';
 		this.ctx.translate(50, 150);
-		setScale('currentHp');
+		this.setScale('currentHp');
 		this.ctx.ellipse(10, -5, 10, 10, 0, 0, Math.PI, true);
 		this.ctx.ellipse(-10, -5, 10, 10, 0, 0, Math.PI, true);
 		this.ctx.lineTo(0, 15);
 		this.ctx.closePath();
 		this.ctx.fill();
 		this.ctx.restore();
+	}
 
-		// eyes
+	drawEyes() {
 		if (this.fromCamera || this.isGhost) {
 			this.ctx.beginPath();
 			this.ctx.save();
@@ -375,12 +425,13 @@ class Fighter {
 			this.ctx.fillStyle = this.isGhost ? '#FF0000' : '#00FF00';
 			this.ctx.ellipse(107, 25, 2, 2, 0, 0, 2*Math.PI);
 			this.ctx.ellipse(93, 25, 2, 2, 0, 0, 2*Math.PI);
-			this.ctx.stroke();
+			// this.ctx.stroke();
 			this.ctx.fill();
 			this.ctx.restore();
 		}
+	}
 
-		// energy
+	drawEnergy() {
 		if (this.mode === 'battle') {
 			this.ctx.beginPath();
 			this.ctx.save();
@@ -416,8 +467,6 @@ class Fighter {
 
 			this.ctx.restore();
 		}
-
-		this.ctx.restore();
 	}
 
 	initializeAttack(special) {
@@ -493,6 +542,7 @@ class Fighter {
 	setDamage(attack, opponent) {
 		const defense = this.stats[attack[1]];
 		let dmg = Math.floor(attack[0] - defense);
+		dmg = this.modifyDamage(attack, dmg);
 
 		if (dmg < 1) {
 			dmg = 1;
@@ -508,21 +558,183 @@ class Fighter {
 
 		return dmg;
 	}
+
+	modifyStats() {}
+
+	modifyDamage(a, dmg) { return dmg; }
+
+	drawAlternative() {}
 }
 
 Fighter.ghosts = [{
 	id: 'white',
-	build: function() {
-		return {
-			name: _('White ghost')
-		}
+	modifyStats: function() {
+		this.name = _('White ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHead();
+		this.drawArms();
+		this.drawLegs();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
 	}
 }, {
 	id: 'blue',
-	build: function() {
-		return {
-			name: _('Blue ghost')
-		}
+	modifyStats: function() {
+		this.name = _('Blue ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawArms();
+		this.drawLegs();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'orange',
+	modifyStats: function() {
+		this.name = _('Orange ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHead();
+		this.drawLegs();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'green',
+	modifyStats: function() {
+		this.name = _('Green ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHead();
+		this.drawArms();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'red',
+	modifyStats: function() {
+		this.name = _('Red ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHead();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'yellow',
+	modifyStats: function() {
+		this.name = _('Yellow ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHead();
+		this.drawArms();
+		this.drawLegs();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'purple',
+	modifyStats: function() {
+		this.name = _('Purple ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'brown',
+	modifyStats: function() {
+		this.name = _('Brown ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawHead();
+		this.drawArms();
+		this.drawLegs();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'pink',
+	modifyStats: function() {
+		this.name = _('Pink ghost');
+		this.stats.hp += 10;
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHead();
+		this.drawArms();
+		this.drawLegs();
+		this.drawHP();
+		this.drawEyes();
+		this.drawEnergy();
+		return true;
+	}
+}, {
+	id: 'gray',
+	modifyStats: function() {
+		this.name = _('Gray ghost');
+	},
+	modifyDamage: function(attack, dmg) {
+		return dmg;
+	},
+	drawAlternative: function() {
+		this.drawGhostBody();
+		this.drawHead();
+		this.drawArms();
+		this.drawLegs();
+		this.drawHP();
+		this.drawEyes();
+		return true;
 	}
 }];
 
@@ -539,8 +751,9 @@ Fighter.isThereGhost = function() {
 	const lg = Math.round(LNG * 100); // ~400m
 	let t = lt + lg + timestamp;
 
-	let colorGhost = Math.sin(t * PI/d1) > s1 ? Math.ceil(t / (2*d1))%10 : 0;
+	let colorGhost = Math.sin(t * PI/d1) > s1 ? Math.ceil(t / (2*d1))%Fighter.ghosts.length : 0;
 
+	// todo set some ghost appears more often
 	// todo activation white ghost
 
 	//debug
@@ -582,7 +795,7 @@ Fighter.isThereGhost = function() {
 		}
 	}
 
-	return [!!colorGhost, colorGhost, code.join('')];
+	return [!!colorGhost, Fighter.ghosts[colorGhost], code.join('')];
 }
 
 Fighter.prototype.autoFight = 0;
