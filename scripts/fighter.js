@@ -123,6 +123,7 @@ class Fighter {
 		ghost.modifyStats && (this.modifyStats = ghost.modifyStats);
 		ghost.modifyDamage && (this.modifyDamage = ghost.modifyDamage);
 		ghost.drawAlternative && (this.drawAlternative = ghost.drawAlternative);
+		ghost.skipAttack && (this.skipAttack = ghost.skipAttack);
 
 		return code;
 	}
@@ -302,6 +303,9 @@ class Fighter {
 
 		this.ctx.save();
 
+		this.ctx.strokeStyle = this.baseColor;
+		this.ctx.fillStyle = this.baseColor;
+
 		if (this.drawAlternative()) {
 			this.ctx.restore();
 			return;
@@ -333,8 +337,6 @@ class Fighter {
 
 	drawGhostBody() {
 		this.ctx.beginPath();
-		this.ctx.strokeStyle = '#000000';
-		this.ctx.fillStyle = '#000000';
 		let w = this.setWidth('body')/2;
 		this.ctx.moveTo(60-w, 145+w);
 		this.ctx.bezierCurveTo(60-w, 15-w, 140+w, 15-w, 140+w,140+w);
@@ -342,7 +344,7 @@ class Fighter {
 		this.ctx.lineTo(115, 145+w);
 		this.ctx.lineTo(100, 135-w);
 		this.ctx.lineTo(85, 145+w);
-		this.ctx.lineTo(70, 145-w);
+		this.ctx.lineTo(70, 135-w);
 		this.ctx.lineTo(60-w, 145+w);
 		this.ctx.stroke();
 		this.ctx.fill();
@@ -350,8 +352,6 @@ class Fighter {
 
 	drawBody(clip=false) {
 		this.ctx.beginPath();
-		this.ctx.strokeStyle = '#000000';
-		this.ctx.fillStyle = '#000000';
 		let w = this.setWidth('body');
 		if (!clip) {
 			w = 0;
@@ -421,7 +421,7 @@ class Fighter {
 		if (this.fromCamera || this.isGhost) {
 			this.ctx.beginPath();
 			this.ctx.save();
-			this.ctx.strokeStyle = '#000000';
+			this.ctx.strokeStyle = this.baseColor;
 			this.ctx.fillStyle = this.isGhost ? '#FF0000' : '#00FF00';
 			this.ctx.ellipse(107, 25, 2, 2, 0, 0, 2*Math.PI);
 			this.ctx.ellipse(93, 25, 2, 2, 0, 0, 2*Math.PI);
@@ -499,6 +499,8 @@ class Fighter {
 				}
 			});
 		}
+
+		this.skipAttack();
 		
 		return this.listAttack.shift();
 	}
@@ -542,11 +544,11 @@ class Fighter {
 	setDamage(attack, opponent) {
 		const defense = this.stats[attack[1]];
 		let dmg = Math.floor(attack[0] - defense);
-		dmg = this.modifyDamage(attack, dmg);
 
 		if (dmg < 1) {
 			dmg = 1;
 		}
+		dmg = this.modifyDamage(attack, dmg);
 
 		this.stats.energy += dmg * this.stats.energyRestore / 6;
 
@@ -564,14 +566,20 @@ class Fighter {
 	modifyDamage(a, dmg) { return dmg; }
 
 	drawAlternative() {}
+
+	skipAttack() {}
 }
+Fighter.prototype.baseColor = '#000000';
 
 Fighter.ghosts = [{
 	id: 'white',
 	modifyStats: function() {
 		this.name = _('White ghost');
+		this.baseColor = '#EEEEEE';
+		this.stats.energyRestore += 1;
 	},
 	modifyDamage: function(attack, dmg) {
+		dmg = Math.max(Math.round(dmg /2), 1);
 		return dmg;
 	},
 	drawAlternative: function() {
@@ -587,8 +595,12 @@ Fighter.ghosts = [{
 	id: 'blue',
 	modifyStats: function() {
 		this.name = _('Blue ghost');
+		this.baseColor = '#1111CC';
 	},
 	modifyDamage: function(attack, dmg) {
+		if (['head'].includes(attack[1])) {
+			dmg = 0;
+		}
 		return dmg;
 	},
 	drawAlternative: function() {
@@ -604,8 +616,20 @@ Fighter.ghosts = [{
 	id: 'orange',
 	modifyStats: function() {
 		this.name = _('Orange ghost');
+		this.baseColor = '#EE9900';
+	},
+	skipAttack: function() {
+		while (['rightArm', 'leftArm'].includes(this.listAttack[0].attack)) {
+			this.listAttack.shift();
+			if (this.listAttack.length === 0) {
+				this.initializeAttack(true);
+			}
+		}
 	},
 	modifyDamage: function(attack, dmg) {
+		if (['rightArm', 'leftArm'].includes(attack[1])) {
+			dmg = 0;
+		}
 		return dmg;
 	},
 	drawAlternative: function() {
@@ -621,8 +645,20 @@ Fighter.ghosts = [{
 	id: 'green',
 	modifyStats: function() {
 		this.name = _('Green ghost');
+		this.baseColor = '#11CC11';
+	},
+	skipAttack: function() {
+		while (['rightLeg', 'leftLeg'].includes(this.listAttack[0].attack)) {
+			this.listAttack.shift();
+			if (this.listAttack.length === 0) {
+				this.initializeAttack(true);
+			}
+		}
 	},
 	modifyDamage: function(attack, dmg) {
+		if (['rightLeg', 'leftLeg'].includes(attack[1])) {
+			dmg = 0;
+		}
 		return dmg;
 	},
 	drawAlternative: function() {
@@ -638,6 +674,7 @@ Fighter.ghosts = [{
 	id: 'red',
 	modifyStats: function() {
 		this.name = _('Red ghost');
+		this.baseColor = '#CC1111';
 	},
 	modifyDamage: function(attack, dmg) {
 		return dmg;
@@ -654,6 +691,7 @@ Fighter.ghosts = [{
 	id: 'yellow',
 	modifyStats: function() {
 		this.name = _('Yellow ghost');
+		this.baseColor = '#EEDD22';
 	},
 	modifyDamage: function(attack, dmg) {
 		return dmg;
@@ -672,8 +710,12 @@ Fighter.ghosts = [{
 	id: 'purple',
 	modifyStats: function() {
 		this.name = _('Purple ghost');
+		this.baseColor = '#CC11CC';
 	},
 	modifyDamage: function(attack, dmg) {
+		if (['head', 'leftLeg', 'rightLeg', 'rightArm', 'leftLeg'].includes(attack[1])) {
+			dmg = 0;
+		}
 		return dmg;
 	},
 	drawAlternative: function() {
@@ -687,8 +729,12 @@ Fighter.ghosts = [{
 	id: 'brown',
 	modifyStats: function() {
 		this.name = _('Brown ghost');
+		this.baseColor = '#775500';
 	},
 	modifyDamage: function(attack, dmg) {
+		if (['body'].includes(attack[1])) {
+			dmg = 0;
+		}
 		return dmg;
 	},
 	drawAlternative: function() {
@@ -704,9 +750,11 @@ Fighter.ghosts = [{
 	id: 'pink',
 	modifyStats: function() {
 		this.name = _('Pink ghost');
+		this.baseColor = '#DDBBBB';
 		this.stats.hp += 10;
 	},
 	modifyDamage: function(attack, dmg) {
+		dmg = Math.max(dmg - 1, 1);
 		return dmg;
 	},
 	drawAlternative: function() {
@@ -723,6 +771,8 @@ Fighter.ghosts = [{
 	id: 'gray',
 	modifyStats: function() {
 		this.name = _('Gray ghost');
+		this.baseColor = '#999999';
+		this.stats.energyRestore += 0.5;
 	},
 	modifyDamage: function(attack, dmg) {
 		return dmg;
@@ -762,8 +812,8 @@ Fighter.isThereGhost = function() {
 	/* get code */
 	const code = [];
 	if (colorGhost) {
-		let lat = Math.round(LAT * 10000).toString(); // ~10m
-		let lng = Math.round(LNG * 1000).toString(); // ~40m
+		let lat = Math.abs(Math.round(LAT * 10000)).toString(); // ~10m
+		let lng = Math.abs(Math.round(LNG * 1000)).toString(); // ~40m
 
 		while (lat.length < 7) {
 			lat = '0' + lat;
