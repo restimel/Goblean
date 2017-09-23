@@ -819,16 +819,21 @@ Fighter.isThereGhost = function() {
 		colorGhost = Math.sin(t * PI/d1) > s1 ? Math.ceil(t / (2*d1))%Fighter.ghosts.length : 0;
 
 		// prefered color
-		const d2 = 67;
-		const s2 = 0.75;
-		const prefered = (lat + lng)%Fighter.ghosts.length;
-		const isPrefered = Math.sin(t * PI/d2) > s2 ? prefered : 0;
-
-		if (isPrefered && colorGhost) {
-			colorGhost = isPrefered;
+		if (!colorGhost) {
+			const d2 = 67;
+			const s2 = 0.75;
+			colorGhost = Math.abs(Math.round(lat + lng + Math.sin(t * PI/d2)))%Fighter.ghosts.length;
 		}
 
-		hasGhost = !!colorGhost;
+		if (colorGhost < 1) {
+			colorGhost = Fighter.ghosts.length - 1;
+		}
+
+		hasGhost = true;
+		// ghost is not there
+		if (d.getMinutes() === 4 && d.getHours() === 4  && d.getSeconds() === 0) {
+			hasGhost = false;
+		}
 	}
 
 	/* get code */
