@@ -615,8 +615,7 @@
                             callback(goblean);
                             setView('', true, false);
                         } else {
-                            const opt = {
-                                ...options,
+                            const opt = Object.assign({}, options, {
                                 refresh: true,
                                 selected: goblean,
 
@@ -696,8 +695,7 @@
         mainEls.warningDeletion.querySelector('.btn-delete').onclick = () => {
             currentSelected.remove();
             mainEls.warningDeletion.close();
-            const opt = {
-                ...options,
+            const opt = Object.assign({}, options, {
                 refresh: true,
                 selected: true,
             };
