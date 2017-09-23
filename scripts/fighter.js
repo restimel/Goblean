@@ -51,6 +51,10 @@ class Fighter {
 
 		if (idx === -1) {
 			list.push(this);
+			if (this.fromCamera) {
+				this.gameStatistics.nbGoblean++;
+				localStorage.setItem('gameStatistics', JSON.stringify(this.gameStatistics));
+			}
 		} else {
 			list[idx] = this;
 		}
@@ -81,7 +85,7 @@ class Fighter {
 			return false;
 		}
 
-		if (['initiative', 'kind', 'hp', 'head', 'body', 'rightArm', 'rightLeg', 'leftArm', 'leftLeg', 'energyRestore']
+		if (['initiative', 'kind', 'hp', 'head', 'body', 'rightArm', 'rightLeg', 'leftArm', 'leftLeg', 'energyRestore', 'armor']
 			.some(a => typeof this.stats[a] !== 'number'))
 		{
 			this._error = 'stats:notNumber';
@@ -171,7 +175,8 @@ class Fighter {
 			leftArm: value[8],
 			rightLeg: value[7],
 			leftLeg: value[6],
-			energyRestore: value[2]
+			energyRestore: value[2],
+			armor: 0
 		};
 
 		/* bonus */
@@ -494,6 +499,9 @@ class Fighter {
 				result: () => {
 					this.stats.energy -= energyThreshold;
 					this.specialReady = false;
+					if (!this.isGhost && this.fromCamera) {
+						this.gameStatistics.specialAttack++;
+					}
 
 					return [15, 'head'];
 				}
@@ -542,7 +550,7 @@ class Fighter {
 	}
 
 	setDamage(attack, opponent) {
-		const defense = this.stats[attack[1]];
+		const defense = this.stats[attack[1]] + this.stats.armor;
 		let dmg = Math.floor(attack[0] - defense);
 
 		if (dmg < 1) {

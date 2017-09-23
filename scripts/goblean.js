@@ -29,6 +29,17 @@
         pictureSize: 300
     };
 
+    const gameStatistics = {
+        nbFight: 0,
+        nbWin: 0,
+        nbGoblean: 0,
+        ghosts: {
+            nbFight: {},
+            win: {}
+        },
+        specialAttack: 0
+    };
+
     const views = {
         main: document.getElementById('main-view'),
     // addFighter: document.getElementById('add-fighter'),
@@ -456,7 +467,9 @@
             mainEls['fighter' + fighter.position + 'Ready'].classList.add('active');
             fighter.drawPicture(el.querySelector('.fighter-canvas'));
 
-            localStorage.setItem('fighter' + fighter.position, JSON.stringify(fighter));
+            if (!fighter.isGhost) {
+                localStorage.setItem('fighter' + fighter.position, JSON.stringify(fighter));
+            }
 
             if (fighters.every(f => f.isValid())) {
                 mainEls.readyBtn.classList.add('active');
@@ -565,6 +578,18 @@
         mainEls['fighter' + otherFighter.position].classList.add('winner');
         otherFighter.numberOfWin++;
 
+        gameStatistics.nbFight++;
+        if (otherFighter.position === 1) {
+            gameStatistics.nbWin++;
+        }
+        if (fighters[1].isGhost) {
+            gameStatistics.ghosts.nbFight[fighters[1].ghostId] = (gameStatistics.ghosts.nbFight[fighters[1].ghostId] || 0) + 1;
+            if (fighters[1] !== otherFighter) {
+                gameStatistics.ghosts.win[fighters[1].ghostId] = (gameStatistics.ghosts.win[fighters[1].ghostId] || 0) + 1;
+            }
+        }
+        localStorage.setItem('gameStatistics', JSON.stringify(gameStatistics));
+
         save();
 
         let message = winMessages[Math.floor(Math.random() * winMessages.length)];
@@ -582,6 +607,7 @@
         fighters.forEach(f => {
             f.setMode('rest');
         });
+
         return;
     }
 
@@ -618,8 +644,7 @@
                             const opt = Object.assign({}, options, {
                                 refresh: true,
                                 selected: goblean,
-
-                            };
+                            });
                             initializeStats(opt);
                         }
                     };
@@ -644,10 +669,14 @@
                     } else {
                         if (!fighter._error) {
                             name = fighter.name;
-                            ratio = '???';
+                            const f = gameStatistics.ghosts.nbFight[fighter.ghostId] || 0;
+                            const w = f - (gameStatistics.ghosts.nbFight[fighter.ghostId] || 0);
+                            ratio = f ? w / f : 0;
+                            ratio = Math.round(ratio * 10000) / 100;
+                            ratio = ratio + '%';
                             code = _('secret');
-                            nbf = '???';
-                            nbw = '???';
+                            nbf = _.parse('%i', f);
+                            nbw = _.parse('%i', w);
                         } else {
                             name = fighter._error;
                             code = '';
@@ -698,7 +727,7 @@
             const opt = Object.assign({}, options, {
                 refresh: true,
                 selected: true,
-            };
+            });
             initializeStats(opt);
         };
     }
@@ -1306,6 +1335,13 @@
         const options = JSON.parse(localStorage.getItem('configuration') || '{}');
         Object.assign(configuration, options);
         Fighter.prototype.autoFight = configuration.autoFight ? 1 : 0;
+
+        const stats = JSON.parse(localStorage.getItem('gameStatistics') || '{}');
+        Object.assign(gameStatistics, stats);
+        Fighter.prototype.gameStatistics = gameStatistics;
+        if (gameStatistics.nbGoblean === 0) {
+            gameStatistics.nbGoblean = (JSON.parse(localStorage.getItem('fighters')) || []).filter(g=>!!g.fromCamera).length;
+        }
 
         let locales = _.getLocales({key: true, name: true});
         locales.forEach(l => {
