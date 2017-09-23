@@ -23,6 +23,7 @@
     const configuration = {
         autoFight: false,
         autoCreationSelect: true,
+        autoStep: true,
         fightMode: 'versus',
         timerAutoCapture: 1100,
         pictureSize: 300
@@ -86,11 +87,18 @@
     let currentFighter;
 
     function save() {
-        localStorage.setItem('fighter1', JSON.stringify(fighters[0]));
-        localStorage.setItem('fighter2', JSON.stringify(fighters[1]));
-
-        fighters[0].save();
-        fighters[1].save();
+        if (!fighters[0].isGhost) {
+            localStorage.setItem('fighter1', JSON.stringify(fighters[0]));
+            fighters[0].save();
+        } else {
+            fighters[0] = new Fighter(1, localStorage.getItem('fighter1'));
+        }
+        if (!fighters[1].isGhost) {
+            localStorage.setItem('fighter2', JSON.stringify(fighters[1]));
+            fighters[1].save();
+        } else {
+            fighters[1] = new Fighter(2, localStorage.getItem('fighter2'));
+        }
     }
 
     function animationElement(elements, show = 1, callback = function() {}) {
@@ -943,6 +951,9 @@
                                             this.result = result.codeResult.code;
                                             this.fromCamera = true;
                                             success(true);
+                                            if (configuration.autoStep) {
+                                                validateGobleanCreation();
+                                            }
                                         } else {
                                             success(false);
                                         }
@@ -983,6 +994,9 @@
                         hideFile: false,
                         callback: (src) => {
                             this.result = src;
+                            if (configuration.autoStep) {
+                                setTimeout(validateGobleanCreation, 1000);
+                            }
                             return true;
                         },
                         picture: this.result

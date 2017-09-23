@@ -577,6 +577,9 @@ Fighter.ghosts = [{
 		this.name = _('White ghost');
 		this.baseColor = '#EEEEEE';
 		this.stats.energyRestore += 1;
+		if (this.stats.hp < 20) {
+			this.stats.hp += 5;
+		}
 	},
 	modifyDamage: function(attack, dmg) {
 		dmg = Math.max(Math.round(dmg /2), 1);
@@ -711,6 +714,7 @@ Fighter.ghosts = [{
 	modifyStats: function() {
 		this.name = _('Purple ghost');
 		this.baseColor = '#CC11CC';
+		this.stats.hp = Math.max(this.stats.hp - 4, 5);
 	},
 	modifyDamage: function(attack, dmg) {
 		if (['head', 'leftLeg', 'rightLeg', 'rightArm', 'leftLeg'].includes(attack[1])) {
@@ -790,28 +794,46 @@ Fighter.ghosts = [{
 
 Fighter.isThereGhost = function() {
 	const PI = Math.PI;
+	const d = new Date();
 	const [LAT, LNG, isActived] = geoloc();
-	let timestamp = Math.round(Date.now() / 60000); // ts in min
+	let timestamp = Math.round(Date.now() / 60000) + 10; // ts in min
+
+	let hasGhost = false;
+	let colorGhost;
+
+	/* is there white ghost */
+	if (d.getMinutes() < 10 && (d.getHours() === 0 || d.getHours() === 12)) {
+		hasGhost = true;
+		colorGhost = 0;
+	}
 
 	/* get color */
-	const d1 = 19;
-	const s1 = 0;
+	if (!hasGhost) {
+		const lat = Math.round(LAT * 1000); // ~100m
+		const lng = Math.round(LNG * 100) * 2; // ~400m
+		const t = lat + lng + timestamp;
 
-	const lt = Math.round(LAT * 1000); // ~100m
-	const lg = Math.round(LNG * 100); // ~400m
-	let t = lt + lg + timestamp;
+		const d1 = 19;
+		const s1 = 0;
 
-	let colorGhost = Math.sin(t * PI/d1) > s1 ? Math.ceil(t / (2*d1))%Fighter.ghosts.length : 0;
+		colorGhost = Math.sin(t * PI/d1) > s1 ? Math.ceil(t / (2*d1))%Fighter.ghosts.length : 0;
 
-	// todo set some ghost appears more often
-	// todo activation white ghost
+		// prefered color
+		const d2 = 67;
+		const s2 = 0.75;
+		const prefered = (lat + lng)%Fighter.ghosts.length;
+		const isPrefered = Math.sin(t * PI/d2) > s2 ? prefered : 0;
 
-	//debug
-	colorGhost = colorGhost;
+		if (isPrefered && colorGhost) {
+			colorGhost = isPrefered;
+		}
+
+		hasGhost = !!colorGhost;
+	}
 
 	/* get code */
 	const code = [];
-	if (colorGhost) {
+	if (hasGhost) {
 		let lat = Math.abs(Math.round(LAT * 10000)).toString(); // ~10m
 		let lng = Math.abs(Math.round(LNG * 1000)).toString(); // ~40m
 
@@ -821,7 +843,6 @@ Fighter.isThereGhost = function() {
 		while (lng.length < 6) {
 			lng = '0' + lng;
 		}
-		const d = new Date();
 
 		code[0] = lng[2]; // init
 		code[1] = 0; // kind
@@ -845,7 +866,7 @@ Fighter.isThereGhost = function() {
 		}
 	}
 
-	return [!!colorGhost, Fighter.ghosts[colorGhost], code.join('')];
+	return [hasGhost, Fighter.ghosts[colorGhost], code.join('')];
 }
 
 Fighter.prototype.autoFight = 0;
