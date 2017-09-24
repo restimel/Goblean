@@ -1123,6 +1123,7 @@
     function initializeConfiguration() {
         mainEls.modeAuto.checked = configuration.autoFight;
         document.getElementById('mode-auto-creation').checked = configuration.autoCreationSelect;
+        document.getElementById('mode-auto-step').checked = configuration.autoStep;
         document.getElementById('fight-configuration').value = configuration.fightMode;
 
         mainEls.configurationMessage.innerHTML = '';
@@ -1140,6 +1141,11 @@
 
     function changeAutoCreationSelect() {
         configuration.autoCreationSelect = this.checked;
+        localStorage.setItem('configuration', JSON.stringify(configuration));
+    }
+
+    function changeAutoStep() {
+        configuration.autoStep = this.checked;
         localStorage.setItem('configuration', JSON.stringify(configuration));
     }
 
@@ -1213,6 +1219,7 @@
 
         mainEls.modeAuto.onchange = changeModeAuto;
         document.getElementById('mode-auto-creation').onchange = changeAutoCreationSelect;
+        document.getElementById('mode-auto-step').onchange = changeAutoStep;
         document.getElementById('fight-configuration').onchange = changeGameMode;
 
         document.querySelector('.show-historic').onclick = function() {
@@ -1272,7 +1279,7 @@
                     break;
             }
         }
-        document.querySelector('credit-version').textContent = self.version;
+        document.querySelector('.credit-version').textContent = self.version;
 
         mainEls.locale.onclick = chooseLocale;
         mainEls.localeChooser.onclick = changeLocale;

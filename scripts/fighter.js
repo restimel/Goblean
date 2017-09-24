@@ -123,7 +123,7 @@ class Fighter {
 		this._error = '';
 
 		this.ghostId = ghost.id;
-		this.name = _('Ghost');
+		this.name = ghost.name ? _(ghost.name) : _('Ghost');
 		ghost.modifyStats && (this.modifyStats = ghost.modifyStats);
 		ghost.modifyDamage && (this.modifyDamage = ghost.modifyDamage);
 		ghost.drawAlternative && (this.drawAlternative = ghost.drawAlternative);
@@ -581,8 +581,8 @@ Fighter.prototype.baseColor = '#000000';
 
 Fighter.ghosts = [{
 	id: 'white',
-	modifyStats: function() {
-		this.name = _('White ghost');
+	name: 'White ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#EEEEEE';
 		this.stats.energyRestore += 1;
 		if (this.stats.hp < 20) {
@@ -604,8 +604,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'blue',
-	modifyStats: function() {
-		this.name = _('Blue ghost');
+	name: 'Blue ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#1111CC';
 	},
 	modifyDamage: function(attack, dmg) {
@@ -625,8 +625,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'orange',
-	modifyStats: function() {
-		this.name = _('Orange ghost');
+	name: 'Orange ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#EE9900';
 	},
 	skipAttack: function() {
@@ -654,8 +654,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'green',
-	modifyStats: function() {
-		this.name = _('Green ghost');
+	name: 'Green ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#11CC11';
 	},
 	skipAttack: function() {
@@ -683,8 +683,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'red',
-	modifyStats: function() {
-		this.name = _('Red ghost');
+	name: 'Red ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#CC1111';
 	},
 	modifyDamage: function(attack, dmg) {
@@ -700,8 +700,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'yellow',
-	modifyStats: function() {
-		this.name = _('Yellow ghost');
+	name: 'Yellow ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#EEDD22';
 	},
 	modifyDamage: function(attack, dmg) {
@@ -719,8 +719,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'purple',
-	modifyStats: function() {
-		this.name = _('Purple ghost');
+	name: 'Purple ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#CC11CC';
 		this.stats.hp = Math.max(this.stats.hp - 4, 5);
 	},
@@ -739,8 +739,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'brown',
-	modifyStats: function() {
-		this.name = _('Brown ghost');
+	name: 'Brown ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#775500';
 	},
 	modifyDamage: function(attack, dmg) {
@@ -760,8 +760,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'pink',
-	modifyStats: function() {
-		this.name = _('Pink ghost');
+	name: 'Pink ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#DDBBBB';
 		this.stats.hp += 10;
 	},
@@ -781,8 +781,8 @@ Fighter.ghosts = [{
 	}
 }, {
 	id: 'gray',
-	modifyStats: function() {
-		this.name = _('Gray ghost');
+	name: 'Gray ghost',
+	modifyStats: function(ghost) {
 		this.baseColor = '#999999';
 		this.stats.energyRestore += 0.5;
 	},
