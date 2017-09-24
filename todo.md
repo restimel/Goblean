@@ -11,5 +11,3 @@
 * Animation de fin
 * Add user name (to author)
 * Add user experience
-
-* Achievements

@@ -18,9 +18,9 @@
     <nav>
         <div class="menu4 gobleaena" data-i18n="Enter the Goble-aena">Enter the Goble-aena</div>
         <div class="menu1 goblean-stats" data-i18n="Your Gobleans">Your Gobleans</div>
-        <div class="menu2 rules" data-i18n="Rules">Rules</div>
+        <div class="menu2 achievements" data-i18n="Achievements">Achievements</div>
         <div class="menu1 configuration" data-i18n="Configuration">Configuration</div>
-        <div class="menu1 credits" data-i18n="Credits">Credits</div>
+        <div class="menu1 rules" data-i18n="Rules & Credits">Rules & Credits</div>
     </nav>
 </section>
 <!-- <section id="add-fighter" class="view">
@@ -104,20 +104,25 @@
     <p data-i18n="Enter the EAN code of a second creature (catched by a friend) and let them fight"></p>
     <p data-i18n="At each round you can select an attack which will be more or less powerful depending of your goblean stats and the defense of your opponent."></p>
     <p data-i18n="If your Goblean survive, it will be declared champion of the Goble-aena. (Then it can be defied by another challenger)"></p>
+    <h2 data-i18n="Credits">Credits</h2>
+    <p data-i18n="Thanks for playing!"></p>
+    <p class="credit-authors"></p>
+    <p data-i18n="You are free to share this game around you."></p>
+    <h3><span data-i18n="Version"></span> <span class="credit-version"></span></h3>
+
     <footer class="footer-view">
         <button class="back-home" data-i18n="Back">Back</button>
     </footer>
 </section>
 
-<section id="credits" class="view">
-    <h2 data-i18n="Credits">Credits</h2>
-    <p data-i18n="Thanks for playing!"></p>
-    <p class="credit-authors"></p>
-    <p data-i18n="You are free to share this game around you."></p>
+<section id="achievements" class="view default-view has-message">
+    <h2 class="title" data-i18n="Achievements"></h2>
+    <nav class="achievements-menu"></nav>
+    <aside class="message"></aside>
+
     <footer class="footer-view">
         <button class="back-home" data-i18n="Back">Back</button>
     </footer>
-    <h3><span data-i18n="Version"></span> <span class="credit-version"></span></h3>
 </section>
 
 <section id="step-creation" class="view default-view">
@@ -149,7 +154,7 @@
     <aside class="side-content"></aside>
 </section>
 
-<section id="options-configuration" class="view default-view">
+<section id="options-configuration" class="view default-view has-message">
     <h2 class="title" data-i18n="Configuration"></h2>
     <nav class="configuration-menu">
         <div class="menu4">

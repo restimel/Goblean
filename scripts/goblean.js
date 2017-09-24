@@ -1,6 +1,29 @@
 (function() {
     'use strict';
 
+    if (Array.prototype.last !== 'function') {
+        Array.prototype.last = function() {
+            return this[this.length -1];
+        };
+    }
+    if (Array.prototype.get !== 'function') {
+        Array.prototype.get = function(index) {
+            if(!this.length) {
+                return;
+            }
+            if (index < 0) {
+                index = this.length + index;
+                if (index < 0) {
+                    index = 0;
+                }
+            }
+            if (index > this.length - 1) {
+                index = this.length - 1;
+            }
+            return this[index];
+        };
+    }
+
     const authors = ['Gilles Masclef (Le Gobelin)', 'Benoît Mariat',
     'Anthony Oliveira', 'Clément Chrétien', 'Clotilde Masclef',
     'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé', 'Aurélien Martin'];
@@ -26,7 +49,8 @@
         autoStep: true,
         fightMode: 'versus',
         timerAutoCapture: 1100,
-        pictureSize: 300
+        pictureSize: 300,
+        playerName: ''
     };
 
     const gameStatistics = {
@@ -37,15 +61,104 @@
             nbFight: {},
             win: {}
         },
-        specialAttack: 0
+        specialAttack: 0,
+        achievements: {},
+        playerLevel: 0
     };
+
+    const achievements = [
+        {
+            id: 'storage',
+            xp: [0, 5, 10, 20, 50, 100],
+            threshold: [0, 5, 20, 50, 100, 500],
+            className: ['ac-mystery', 'ac-gold'],
+            names: ['a pocket', 'a bag', 'a chest', 'a cupboard', 'a room', 'a house', 'a store', 'a wharehouse'],
+            title: function(level) {
+                return _('Stored in %s', _(this.names.get(level)));
+            },
+            message: function(level) {
+                let value = this.threshold.get(level);
+                return _('You have captured more than %d Gobleans.<br><i>(only goblean captured with camera counts)</i>', value)
+            },
+            condition: function(level) {
+                if (level >= this.threshold.length) {
+                    return false;
+                }
+                return gameStatistics.nbGoblean > this.threshold[level];
+            }
+        },
+        {
+            id: 'fighter',
+            xp: [0, 2, 5, 10, 20, 50],
+            threshold: [0, 5, 20, 50, 100, 500],
+            className: ['ac-mystery', 'ac-gold'],
+            names: ['New comer', 'Have learn to fight'],
+            title: function(level) {
+                return _(this.names.get(level));
+            },
+            message: function(level) {
+                let value = this.threshold.get(level);
+                return _('You have battled in more than %d fights.', value);
+            },
+            condition: function(level) {
+                if (level >= this.threshold.length) {
+                    return false;
+                }
+                return gameStatistics.nbFight > this.threshold[level];
+            }
+        },
+        {
+            id: 'specialAttack',
+            xp: [0, 2, 5, 10, 20, 50],
+            threshold: [0, 1, 10, 50, 100, 500],
+            className: ['ac-mystery', 'ac-gold'],
+            names: ['Secret', 'Master of Fatal Flying Guillotine Kick'],
+            title: function(level) {
+                return _(this.names.get(level));
+            },
+            message: function(level) {
+                let value = this.threshold.get(level);
+                if (level === 0) {
+                    return _('secret award');
+                }
+                return _('You have used more than %d special attacks.<br><i>(only fights with goblean captured with camera counts)</i>', value);
+            },
+            condition: function(level) {
+                if (level >= this.threshold.length) {
+                    return false;
+                }
+                return gameStatistics.specialAttack > this.threshold[level];
+            }
+        },
+        {
+            id: 'namedPlayer',
+            xp: [0, 5],
+            threshold: [0, 1],
+            className: ['ac-mystery', 'ac-gold'],
+            names: ['You are anonymous', 'You have a name'],
+            title: function(level) {
+                return _(this.names.get(level));
+            },
+            message: function(level) {
+                if (level === 0) {
+                    return _('secret award');
+                }
+                return _('You have given your name.');
+            },
+            condition: function(level) {
+                if (level >= this.threshold.length) {
+                    return false;
+                }
+                return !!configuration.playerName;
+            }
+        },
+    ]
 
     const views = {
         main: document.getElementById('main-view'),
-    // addFighter: document.getElementById('add-fighter'),
         battle: document.getElementById('battle'),
         rules: document.getElementById('rules'),
-        credits: document.getElementById('credits'),
+        achievements: document.getElementById('achievements'),
         stats: document.getElementById('stats'),
         createGoblean: document.getElementById('step-creation'),
         configuration: document.getElementById('options-configuration'),
@@ -90,6 +203,8 @@
         gobleanCreationCode: document.querySelector('.code-goblean-creation'),
         gobleanCreationSideContent: document.querySelector('.side-content'),
         configurationMessage: document.querySelector('#options-configuration .message'),
+        achievementsArea: document.querySelector('#achievements .achievements-menu'),
+        achievementsMessage: document.querySelector('#achievements .message'),
     };
 
     const viewStack = [];
@@ -1120,6 +1235,37 @@
         }
     }
 
+    function initializeAchievement() {
+        mainEls.achievementsArea.innerHTML = '';
+        for(let achievement of achievements) {
+            const level = gameStatistics.achievements[achievement.id] || 0;
+            const el = document.createElement('div');
+            el.className = 'menu1 award ' + (achievement.className[level] || achievement.className.last() || '');
+            const title = achievement.title(level);
+            let message = achievement.message(level) + '<br><br>';
+            if (level < achievement.threshold.length - 1) {
+                message += _('Reach %d to get next level.', achievement.threshold[level + 1]);
+            } else {
+                message += _('Level Max');
+            }
+            const elTitle = document.createElement('header');
+            elTitle.textContent = title;
+            el.appendChild(elTitle);
+            el.dataset.message = message;
+            //TODO icon
+
+            mainEls.achievementsArea.appendChild(el);
+        }
+
+        mainEls.achievementsMessage.innerHTML = '';
+        Array.from(document.querySelectorAll('#achievements [data-message]')).forEach(el => el.onclick = function() {
+            let header = this.firstElementChild.textContent;
+            mainEls.achievementsMessage.innerHTML = '<header>' + header + '</header><div class="content">' + this.dataset.message + '</div>';
+        });
+
+        setView('achievements', true, true);
+    }
+
     function initializeConfiguration() {
         mainEls.modeAuto.checked = configuration.autoFight;
         document.getElementById('mode-auto-creation').checked = configuration.autoCreationSelect;
@@ -1159,7 +1305,7 @@
         _.html();
         document.querySelectorAll('.fighter-picture,.goblean-picture').forEach(el => el.title = el.alt = _('picture of your Goblean'));
         document.querySelector('.credit-authors').textContent =
-            _('Thanks to %L for all they did to the Goblean game and the time they spent on it.', authors);
+            _('Thanks to %L for all they did to the Goblean game and the time they spent on it.', authors.concat([configuration.playerName]));
     }
 
     function chooseLocale() {
@@ -1203,7 +1349,7 @@
         document.querySelector('.gobleaena').onclick = initializeBattle;
         document.querySelector('.goblean-stats').onclick = initializeStats;
         document.querySelector('.rules').onclick = setView.bind(null, 'rules', true, true);
-        document.querySelector('.credits').onclick = setView.bind(null, 'credits', true, true);
+        document.querySelector('.achievements').onclick = initializeAchievement;
         document.querySelector('.configuration').onclick = initializeConfiguration;
         Array.from(document.querySelectorAll('.back-home')).forEach(el => el.onclick = function() {
             prepareVideo.stopVideo();
@@ -1238,7 +1384,7 @@
             let header = (this.previousElementSibling || this.nextElementSibling).textContent;
             mainEls.configurationMessage.innerHTML = '<header>' + header + '</header><div class="content">' + _(this.dataset.message) + '</div>';
         });
-        mainEls.configurationMessage.onclick = function() {
+        mainEls.achievementsMessage.onclick = mainEls.configurationMessage.onclick = function() {
             this.innerHTML = '';
         };
 
@@ -1334,8 +1480,9 @@
             return value.join('');
         });
         _.addRule('L', function(params) {
-            var values = params.value.slice(0, -1);
-            var lastValue = params.value.slice(-1);
+            const lastIndex = params.value.last() ? -1 : -2;
+            const values = params.value.slice(0, lastIndex);
+            const lastValue = params.value.get(lastIndex);
 
             return values.join(', ') + ' ' + _('and') + ' ' + lastValue;
         });

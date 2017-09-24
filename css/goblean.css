@@ -73,7 +73,7 @@ body > header {
 .default-view,
 #main-view,
 #rules,
-#credits,
+#achievements,
 #stats {
     background-color: black;
     color: #ddebee; /* white; */
@@ -83,7 +83,6 @@ body > header {
     font-size: 1.1em;
 }
 
-#credits p,
 #rules p {
     text-align: justify;
 }
@@ -92,18 +91,24 @@ body > header {
     #stats,
     #step-creation,
     #rules,
-    #credits,
+    #achievements,
     #main-view,
     .default-view {
         font-size: 1.8em;
     }
 }
 
-#options-configuration {
+.achievements-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.has-message {
     padding-bottom: 150px; /* to let enough space for the last item */
 }
 
-#options-configuration > .message {
+.has-message > .message {
     position: fixed;
     bottom: 50px;
     left: 50%;
@@ -118,10 +123,10 @@ body > header {
     max-width: 100%;
 }
 
-#options-configuration > .message > header {
+.has-message > .message > header {
     font-weight: bold;
 }
-#options-configuration > .message > .content {
+.has-message > .message > .content {
     text-align: justify;
     margin-bottom: 0.5em;
 }
@@ -167,6 +172,7 @@ body > header {
     margin-bottom: 0.5em;
     background-color: #325961;
 }
+.award.ac-mystery,
 .list > div.ghost.locked,
 .list > div.ghost.locked:hover {
     color: #233e43;
