@@ -53,6 +53,9 @@
         playerName: ''
     };
 
+    const playerTitle = ['Beginner', 'Goblean student', 'Goblean hunter', 'Goblean explorer', 'Goblean master'];
+    const playerXP = [0, 10, 20, 50, 100];
+
     const gameStatistics = {
         nbFight: 0,
         nbWin: 0,
@@ -63,7 +66,8 @@
         },
         specialAttack: 0,
         achievements: {},
-        playerLevel: 0
+        playerLevel: 0,
+        xp: 0
     };
 
     const achievements = [
@@ -84,12 +88,12 @@
                 if (level >= this.threshold.length) {
                     return false;
                 }
-                return gameStatistics.nbGoblean > this.threshold[level];
+                return gameStatistics.nbGoblean >= this.threshold[level];
             }
         },
         {
             id: 'fighter',
-            xp: [0, 2, 5, 10, 20, 50],
+            xp: [0, 5, 10, 20, 50, 100],
             threshold: [0, 5, 20, 50, 100, 500],
             className: ['ac-mystery', 'ac-gold'],
             names: ['New comer', 'Have learn to fight'],
@@ -104,7 +108,7 @@
                 if (level >= this.threshold.length) {
                     return false;
                 }
-                return gameStatistics.nbFight > this.threshold[level];
+                return gameStatistics.nbFight >= this.threshold[level];
             }
         },
         {
@@ -127,7 +131,7 @@
                 if (level >= this.threshold.length) {
                     return false;
                 }
-                return gameStatistics.specialAttack > this.threshold[level];
+                return gameStatistics.specialAttack >= this.threshold[level];
             }
         },
         {
@@ -165,6 +169,7 @@
     };
 
     const mainEls = {
+        mainTitle: document.querySelector('.main-title'),
         readyFight: document.getElementById('ready-fight'),
         messageText: document.querySelector('.text-message'),
         battleHistoric: document.querySelector('.battle-historic'),
@@ -723,6 +728,7 @@
             f.setMode('rest');
         });
 
+        checkPlayerLevel();
         return;
     }
 
@@ -743,8 +749,13 @@
         }
 
         if (options.addGhost) {
+            const className = ['ghost'];
+            if (gameStatistics.playerLevel < 2) {
+                className.push('locked');
+            }
+
             addFirstItem.unshift({
-                name: _('Fight a Ghost'), isGhost: true, code: -2, DOMclass: ['ghost', 'locked']
+                name: _('Fight a Ghost'), isGhost: true, code: -2, DOMclass: className
             });
         }
 
@@ -1300,12 +1311,46 @@
         localStorage.setItem('configuration', JSON.stringify(configuration));
     }
 
+    function checkPlayerLevel() {
+        let xp = 0;
+
+        for (let achievement of achievements) {
+            const ln = achievement.threshold.length;
+            let level = 0;
+            for (level = 1; level < ln; level++) {
+                if (!achievement.condition(level)) {
+                    break;
+                }
+                xp += achievement.xp.get(level);
+            }
+            level--;
+            gameStatistics.achievements[achievement.id] = level;
+        }
+
+        gameStatistics.xp = xp;
+
+        let lvl = 0;
+        while (xp >= playerXP[lvl] && lvl < playerXP.length) {
+            lvl++;
+        }
+        lvl--;
+        gameStatistics.playerLevel = lvl;
+
+        const mainTitle = [_('level %d', lvl), _(playerTitle.get(lvl), lvl)];
+        if (configuration.playerName) {
+            mainTitle.unshift(configuration.playerName)
+        }
+        mainEls.mainTitle.textContent = mainTitle.join(' - ');
+    }
+
     function localeChanged() {
         mainEls.locale.src = 'img/locale-' + _.getLocale() + '.png';
         _.html();
         document.querySelectorAll('.fighter-picture,.goblean-picture').forEach(el => el.title = el.alt = _('picture of your Goblean'));
         document.querySelector('.credit-authors').textContent =
             _('Thanks to %L for all they did to the Goblean game and the time they spent on it.', authors.concat([configuration.playerName]));
+
+        checkPlayerLevel();
     }
 
     function chooseLocale() {

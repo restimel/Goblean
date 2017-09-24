@@ -96,6 +96,7 @@
 	"Your browser does not support some features needed by this game.<br>We are really sorry that you cannot play with this one.<br>You should try with a more modern browser.": "Votre navigateur ne supporte pas certaines fonctionnalités requises par ce jeu.\nNous sommes vraiment attristés que vous ne puissiez jouer avec celui-ci.\nVous devriez essayer avec un navigateur plus récent.",
 	"Fight a Ghost": "combattre un fantôme",
 	"No ghost right now! Try again later.": "Pas de fantôme pour l'instant ! Essayez plus tard.",
+	"You are not experiment enough. Try again later when you will be level 2.": "Vous n'êtes pas assez expérimenté. Essayez plus tard quand vous serez niveau 2.",
 	"Ghost": "Fantôme",
 	"White ghost" : "Fantôme blanc",
 	"Blue ghost" : "Fantôme bleu",
@@ -130,5 +131,11 @@
 	"You have given your name.": "Vous avez donné votre nom.",
 	"Reach %d to get next level.": "Atteignez %d pour accéder au prochain niveau.",
 	"Level Max": "Niveau maximum",
+	"level %d": "niveau %d",
+	"Beginner": "Débutant",
+	"Goblean student": "Étudiant en Goblean",
+	"Goblean hunter": "Chasseur de Goblean",
+	"Goblean explorer": "Explorateur Goblean",
+	"Goblean master": "Maître Goblean",
 	"": ""
 }

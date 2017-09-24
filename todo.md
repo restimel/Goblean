@@ -10,4 +10,7 @@
 
 * Animation de fin
 * Add user name (to author)
+
 * Add user experience
+	* Notification when level is increased
+	* Notification when achievement is reached

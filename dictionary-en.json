@@ -95,6 +95,7 @@
 	"Your browser does not support some features needed by this game.<br>We are really sorry that you cannot play with this one.<br>You should try with a more modern browser.": "Your browser does not support some features needed by this game.\nWe are really sorry that you cannot play with this one.\nYou should try with a more modern browser.",
 	"Fight a Ghost": "Fight a Ghost",
 	"No ghost right now! Try again later.": "No ghost right now! Try again later.",
+	"You are not experiment enough. Try again later when you will be level 2.": "You are not experiment enough. Try again later when you will be level 2.",
 	"Ghost": "Ghost",
 	"White ghost" : "White ghost",
 	"Blue ghost" : "Blue ghost",
@@ -129,5 +130,11 @@
 	"You have given your name.": "You have given your name.",
 	"Reach %d to get next level.": "Reach %d to get next level.",
 	"Level Max": "Maximum level reached",
+	"level %d": "level %d",
+	"Beginner": "Beginner",
+	"Goblean student": "Goblean student",
+	"Goblean hunter": "Goblean hunter",
+	"Goblean explorer": "Goblean explorer",
+	"Goblean master": "Goblean master",
 	"": ""
 }
