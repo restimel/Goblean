@@ -1272,6 +1272,7 @@
                     break;
             }
         }
+        document.querySelector('credit-version').textContent = self.version;
 
         mainEls.locale.onclick = chooseLocale;
         mainEls.localeChooser.onclick = changeLocale;
