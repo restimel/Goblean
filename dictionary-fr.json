@@ -119,7 +119,7 @@
 	"a house": "une maison",
 	"a store": "un magasin",
 	"a wharehouse": "un entrepôt",
-	"You have captured more than %d Gobleans.<br><i>(only goblean captured with camera counts)</i>": "Vous avez capturé plus de %d Gobleans.<br><i>(seul les gobleans capturés la caméra sont comptés)</i>",
+	"You have captured more than %d Gobleans.<br><i>(only goblean captured with camera counts)</i>": "Vous avez capturé plus de %d Gobleans.<br><i>(seul les gobleans capturés avec la caméra sont comptés)</i>",
 	"New comer": "Nouvel arrivant ",
 	"Have learn to fight": "A appris à combattre",
 	"You have battled in more than %d fights.": "Vous avez affronté plus de %d combats.",
