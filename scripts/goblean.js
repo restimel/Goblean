@@ -116,7 +116,7 @@
             xp: [0, 2, 5, 10, 20, 50],
             threshold: [0, 1, 10, 50, 100, 500],
             className: ['ac-mystery', 'ac-gold'],
-            names: ['Secret', 'Master of Fatal Flying Guillotine Kick'],
+            names: ['Secret', 'May the force be with you', 'Master of Fatal Flying Guillotine Kick'],
             title: function(level) {
                 return _(this.names.get(level));
             },
@@ -169,6 +169,9 @@
     };
 
     const mainEls = {
+        unlock: document.querySelector('.unlocked-step'),
+        unlockTitle: document.querySelector('.unlocked-step header'),
+        unlockContent: document.querySelector('.unlocked-step .content'),
         mainTitle: document.querySelector('.main-title'),
         readyFight: document.getElementById('ready-fight'),
         messageText: document.querySelector('.text-message'),
@@ -296,6 +299,30 @@
             hide();
         }
     }
+
+    function unlock(title, content) {
+        unlock.messages.push({title, content});
+
+        unlock.displayMessage();
+    }
+    unlock.displayMessage = function() {
+        if (!unlock.timer && unlock.messages.length) {
+            const {title, content} = unlock.messages.shift();
+            mainEls.unlockTitle.textContent = title;
+            mainEls.unlockContent.textContent = content;
+            mainEls.unlock.classList.add('active');
+            unlock.timer = setTimeout(unlock.hideMessage, 5000);
+        }
+    };
+    unlock.hideMessage = function() {
+        mainEls.unlock.classList.remove('active');
+        setTimeout(function() {
+            unlock.timer = 0;
+            unlock.displayMessage();
+        }, 500);
+    };
+    unlock.timer = 0;
+    unlock.messages = [];
 
     function setMessage(text, addHistoricLog = false, keepI18n = false) {
         mainEls.attackChoice.classList.remove('active');
@@ -1324,7 +1351,10 @@
                 xp += achievement.xp.get(level);
             }
             level--;
-            gameStatistics.achievements[achievement.id] = level;
+            if ((gameStatistics.achievements[achievement.id] || 0) < level) {
+                gameStatistics.achievements[achievement.id] = level;
+                unlock(_('You have unlocked a new achievement'), achievement.title(level));
+            }
         }
 
         gameStatistics.xp = xp;
@@ -1334,13 +1364,19 @@
             lvl++;
         }
         lvl--;
+        const oldLvl = gameStatistics.playerLevel;
         gameStatistics.playerLevel = lvl;
 
         const mainTitle = [_('level %d', lvl), _(playerTitle.get(lvl), lvl)];
+        if (oldLvl !== lvl) {
+            unlock(_('Level up'), `${mainTitle[1]} (${mainTitle[0]})`);
+        }
         if (configuration.playerName) {
             mainTitle.unshift(configuration.playerName)
         }
         mainEls.mainTitle.textContent = mainTitle.join(' - ');
+
+        localStorage.setItem('gameStatistics', JSON.stringify(gameStatistics));
     }
 
     function localeChanged() {
@@ -1471,6 +1507,8 @@
             }
         }
         document.querySelector('.credit-version').textContent = self.version;
+
+        mainEls.unlock.onclick = unlock.hideMessage;
 
         mainEls.locale.onclick = chooseLocale;
         mainEls.localeChooser.onclick = changeLocale;

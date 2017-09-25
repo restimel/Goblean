@@ -4,13 +4,12 @@
 * Team
 * Adventure mode
 * survivor mode
+* Ghost
+	* notification
+
 
 * add EAN reader (quagga)
 	* use worker (?needed)
 
 * Animation de fin
-* Add user name (to author)
-
-* Add user experience
-	* Notification when level is increased
-	* Notification when achievement is reached
+* Add user name
