@@ -53,7 +53,7 @@
         playerName: ''
     };
 
-    const playerTitle = ['Beginner', 'Goblean student', 'Goblean hunter', 'Goblean explorer', 'Goblean master'];
+    const playerTitle = ['Beginner', 'Apprentice', 'Student in Goblean', 'Member of Goblean corporation', 'Goblean hunter', 'Goblean explorer', 'Goblean master'];
     const playerXP = [0, 10, 20, 50, 100];
 
     const gameStatistics = {
@@ -1309,6 +1309,7 @@
         document.getElementById('mode-auto-creation').checked = configuration.autoCreationSelect;
         document.getElementById('mode-auto-step').checked = configuration.autoStep;
         document.getElementById('fight-configuration').value = configuration.fightMode;
+        document.getElementById('playerName-configuration').value = configuration.playerName;
 
         mainEls.configurationMessage.innerHTML = '';
 
@@ -1327,15 +1328,18 @@
         configuration.autoCreationSelect = this.checked;
         localStorage.setItem('configuration', JSON.stringify(configuration));
     }
-
     function changeAutoStep() {
         configuration.autoStep = this.checked;
         localStorage.setItem('configuration', JSON.stringify(configuration));
     }
-
     function changeGameMode() {
         configuration.fightMode = this.value;
         localStorage.setItem('configuration', JSON.stringify(configuration));
+    }
+    function changePlayerName() {
+        configuration.playerName = this.value;
+        localStorage.setItem('configuration', JSON.stringify(configuration));
+        checkPlayerLevel();
     }
 
     function checkPlayerLevel() {
@@ -1448,6 +1452,7 @@
         document.getElementById('mode-auto-creation').onchange = changeAutoCreationSelect;
         document.getElementById('mode-auto-step').onchange = changeAutoStep;
         document.getElementById('fight-configuration').onchange = changeGameMode;
+        document.getElementById('playerName-configuration').onchange = changePlayerName;
 
         document.querySelector('.show-historic').onclick = function() {
             if (mainEls.lastLogs.classList.contains('active')) {
