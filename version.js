@@ -1,1 +1,1 @@
-self.version = '0.4.1';
+self.version = '0.4.2';

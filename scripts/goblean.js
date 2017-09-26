@@ -96,7 +96,7 @@
             xp: [0, 5, 10, 20, 50, 100],
             threshold: [0, 5, 20, 50, 100, 500],
             className: ['ac-mystery', 'ac-gold'],
-            names: ['New comer', 'Have learn to fight'],
+            names: ['New comer', 'Have learn to fight', 'Squire', 'Warrior', 'Battle warrior', 'Veteran warrior'],
             title: function(level) {
                 return _(this.names.get(level));
             },
@@ -109,6 +109,29 @@
                     return false;
                 }
                 return gameStatistics.nbFight >= this.threshold[level];
+            }
+        },
+        {
+            id: 'winner',
+            xp: [0, 5, 10, 20, 50, 100],
+            threshold: [0, 5, 20, 50, 100, 500],
+            className: ['ac-mystery', 'ac-gold'],
+            names: ['Secret', 'Have learn to win', 'Winner', 'Champion', 'Lord of war' , 'King of all battles'],
+            title: function(level) {
+                return _(this.names.get(level));
+            },
+            message: function(level) {
+                let value = this.threshold.get(level);
+                if (level === 0) {
+                    return _('secret award');
+                }
+                return _('You have win more than %d fights.<br><i>Success only with first player counts</i>', value);
+            },
+            condition: function(level) {
+                if (level >= this.threshold.length) {
+                    return false;
+                }
+                return gameStatistics.nbWin >= this.threshold[level];
             }
         },
         {
@@ -426,7 +449,7 @@
         currentFighter = fighter;
 
         let title = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
- 
+
         initializeStats({
             title: title,
             selected: currentFighter,
@@ -1274,6 +1297,10 @@
     }
 
     function initializeAchievement() {
+        let {nbAchievement, nbAchvReach} = checkPlayerLevel();
+
+        console.info(nbAchvReach + '/' + nbAchievement);
+
         mainEls.achievementsArea.innerHTML = '';
         for(let achievement of achievements) {
             const level = gameStatistics.achievements[achievement.id] || 0;
@@ -1344,6 +1371,8 @@
 
     function checkPlayerLevel() {
         let xp = 0;
+        let nbAchievement = 0;
+        let nbAchvReach = 0;
 
         for (let achievement of achievements) {
             const ln = achievement.threshold.length;
@@ -1359,6 +1388,8 @@
                 gameStatistics.achievements[achievement.id] = level;
                 unlock(_('You have unlocked a new achievement'), achievement.title(level));
             }
+            nbAchievement += ln -1;
+            nbAchvReach += level;
         }
 
         gameStatistics.xp = xp;
@@ -1381,6 +1412,11 @@
         mainEls.mainTitle.textContent = mainTitle.join(' - ');
 
         localStorage.setItem('gameStatistics', JSON.stringify(gameStatistics));
+
+        return {
+            nbAchievement: nbAchievement,
+            nbAchvReach: nbAchvReach
+        };
     }
 
     function localeChanged() {
