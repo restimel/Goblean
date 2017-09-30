@@ -916,25 +916,28 @@
             picture = null,
             fullVideo = false,
             canvasSize = configuration.pictureSize,
-            autoCapture = false
+            autoCapture = false,
+            isScan = false,
         } = options;
         let btnActiveTitle = options.btnActiveTitle || _('Take picture');
         let btnInactiveTitle = options.btnInactiveTitle || _('Take again');
         let btnFromCameraTitle = options.btnFromCameraTitle || _('Take picture from camera');
 
-        let streamVideo = elem.querySelector('.stream-video');
-        let streamCanvas = elem.querySelector('.stream-canvas');
-        let streamPicture = elem.querySelector('.picture-temp');
-        let takePicture = elem.querySelector('.take-picture');
-        let fileStream = elem.querySelector('.file-stream');
-        let codeStream = elem.querySelector('.code-stream');
-        let streamCode = elem.querySelector('.code-stream input');
+        const streamVideo = elem.querySelector('.stream-video');
+        const streamCanvas = elem.querySelector('.stream-canvas');
+        const streamPicture = elem.querySelector('.picture-temp');
+        const takePicture = elem.querySelector('.take-picture');
+        const fileStream = elem.querySelector('.file-stream');
+        const codeStream = elem.querySelector('.code-stream');
+        const streamCode = elem.querySelector('.code-stream input');
+        const scanner = elem.querySelector('.line-scanner');
 
         function initializeVideo() {
             prepareVideo.stopVideo();
 
             streamVideo.classList.toggle('active', supportMediaDevice);
             takePicture.classList.toggle('active', supportMediaDevice);
+            scanner.classList.toggle('active', supportMediaDevice && isScan);
 
             streamCanvas.width = canvasSize;
             streamCanvas.height = canvasSize;
@@ -989,6 +992,7 @@
             takePicture.dataset.i18n = btnInactiveTitle;
             streamVideo.classList.remove('active');
             streamPicture.classList.add('active');
+            scanner.classList.remove('active');
         }
 
         function takePhoto(autoTake) {
@@ -1144,6 +1148,7 @@
                             fullVideo: false,
                             canvasSize: 1000,
                             autoCapture: true,
+                            isScan: true,
                             btnActiveTitle: _('Scan picture'),
                             btnInactiveTitle: _('Scan again'),
                             callback: (src) => {
