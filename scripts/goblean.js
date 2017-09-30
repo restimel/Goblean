@@ -1155,7 +1155,7 @@
                                             this.fromCamera = true;
                                             success(true);
                                             if (configuration.autoStep) {
-                                                validateGobleanCreation();
+                                                setTimeout(validateGobleanCreation, 1000);
                                             }
                                         } else {
                                             success(false);
@@ -1422,7 +1422,7 @@
     function localeChanged() {
         mainEls.locale.src = 'img/locale-' + _.getLocale() + '.png';
         _.html();
-        document.querySelectorAll('.fighter-picture,.goblean-picture').forEach(el => el.title = el.alt = _('picture of your Goblean'));
+        Array.from(document.querySelectorAll('.fighter-picture,.goblean-picture')).forEach(el => el.title = el.alt = _('picture of your Goblean'));
         document.querySelector('.credit-authors').textContent =
             _('Thanks to %L for all they did to the Goblean game and the time they spent on it.', authors.concat([configuration.playerName]));
 

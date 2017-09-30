@@ -5,11 +5,10 @@
 * Adventure mode
 * survivor mode
 * Ghost
-	* notification
+	* notification (lvl 4)
 
 
 * add EAN reader (quagga)
 	* use worker (?needed)
 
 * Animation de fin
-* Add user name
