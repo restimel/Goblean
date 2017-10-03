@@ -119,6 +119,11 @@ class Fighter {
 	getGhost() {
 		let [hasGhost, ghost, code] = Fighter.isThereGhost();
 
+		if (this.gameStatistics.playerLevel < 2) {
+			this.name = '';
+			this._error = _('You are not experiment enough. Try again later when you will be level 2.');
+			return false;
+		} else
 		if (!hasGhost) {
 			this.name = '';
 			this._error = _('No ghost right now! Try again later.');

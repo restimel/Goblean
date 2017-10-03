@@ -8,7 +8,7 @@
 </head>
 <body>
 <header>
-    <span class="title" data-i18n="Goblean">Goblean</span>
+    <span class="title main-title">Goblean</span>
     <img class="locale" src="img/locale-en.png" width="32px" height="32px">
     <div class="locale-chooser"></div>
 </header>
@@ -168,6 +168,11 @@ data-message="<ul><li><b>Versus</b> - One Goblean fights another one</li><li><b>
             </label>
         </div>
         <div class="menu4">
+            <label><span data-i18n="Your name"></span>
+                <input id="playerName-configuration" type="text" data-message="Only to give a name on the greatest person who play at Goblean">
+            </label>
+        </div>
+        <div class="menu4">
             <label>
                 <input id="mode-auto" type="checkbox" data-message="The tactical choices will be chosen automatically">
                 <span data-i18n="auto-fight">auto-fight</span>
@@ -199,9 +204,15 @@ data-message="<ul><li><b>Versus</b> - One Goblean fights another one</li><li><b>
     <label class="file-stream"><span data-i18n="Import an image">Import an image</span><input type="file" class=""></label>
     <video class="stream-video" autoplay="true" loop="true">
     </video>
+    <div class="line-scanner inactive"></div>
     <canvas class="stream-canvas"></canvas>
     <img class="picture-temp" width="10000" height="10000">
     <button class="take-picture" data-i18n="Take picture">Take picture</button>
+</aside>
+
+<aside class="message unlocked-step">
+    <header>Test</header>
+    <p class="content">some text</p>
 </aside>
 
 <dialog id="warning-deletion">

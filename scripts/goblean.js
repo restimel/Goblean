@@ -53,6 +53,9 @@
         playerName: ''
     };
 
+    const playerTitle = ['Beginner', 'Apprentice', 'Student in Goblean', 'Member of Goblean corporation', 'Goblean hunter', 'Goblean explorer', 'Goblean master'];
+    const playerXP = [0, 10, 20, 50, 100];
+
     const gameStatistics = {
         nbFight: 0,
         nbWin: 0,
@@ -63,7 +66,8 @@
         },
         specialAttack: 0,
         achievements: {},
-        playerLevel: 0
+        playerLevel: 0,
+        xp: 0
     };
 
     const achievements = [
@@ -84,15 +88,15 @@
                 if (level >= this.threshold.length) {
                     return false;
                 }
-                return gameStatistics.nbGoblean > this.threshold[level];
+                return gameStatistics.nbGoblean >= this.threshold[level];
             }
         },
         {
             id: 'fighter',
-            xp: [0, 2, 5, 10, 20, 50],
+            xp: [0, 5, 10, 20, 50, 100],
             threshold: [0, 5, 20, 50, 100, 500],
             className: ['ac-mystery', 'ac-gold'],
-            names: ['New comer', 'Have learn to fight'],
+            names: ['New comer', 'Have learn to fight', 'Squire', 'Warrior', 'Battle warrior', 'Veteran warrior'],
             title: function(level) {
                 return _(this.names.get(level));
             },
@@ -104,7 +108,30 @@
                 if (level >= this.threshold.length) {
                     return false;
                 }
-                return gameStatistics.nbFight > this.threshold[level];
+                return gameStatistics.nbFight >= this.threshold[level];
+            }
+        },
+        {
+            id: 'winner',
+            xp: [0, 5, 10, 20, 50, 100],
+            threshold: [0, 5, 20, 50, 100, 500],
+            className: ['ac-mystery', 'ac-gold'],
+            names: ['Secret', 'Have learn to win', 'Winner', 'Champion', 'Lord of war' , 'King of all battles'],
+            title: function(level) {
+                return _(this.names.get(level));
+            },
+            message: function(level) {
+                let value = this.threshold.get(level);
+                if (level === 0) {
+                    return _('secret award');
+                }
+                return _('You have win more than %d fights.<br><i>Success only with first player counts</i>', value);
+            },
+            condition: function(level) {
+                if (level >= this.threshold.length) {
+                    return false;
+                }
+                return gameStatistics.nbWin >= this.threshold[level];
             }
         },
         {
@@ -112,7 +139,7 @@
             xp: [0, 2, 5, 10, 20, 50],
             threshold: [0, 1, 10, 50, 100, 500],
             className: ['ac-mystery', 'ac-gold'],
-            names: ['Secret', 'Master of Fatal Flying Guillotine Kick'],
+            names: ['Secret', 'May the force be with you', 'Master of Fatal Flying Guillotine Kick'],
             title: function(level) {
                 return _(this.names.get(level));
             },
@@ -127,7 +154,7 @@
                 if (level >= this.threshold.length) {
                     return false;
                 }
-                return gameStatistics.specialAttack > this.threshold[level];
+                return gameStatistics.specialAttack >= this.threshold[level];
             }
         },
         {
@@ -165,6 +192,10 @@
     };
 
     const mainEls = {
+        unlock: document.querySelector('.unlocked-step'),
+        unlockTitle: document.querySelector('.unlocked-step header'),
+        unlockContent: document.querySelector('.unlocked-step .content'),
+        mainTitle: document.querySelector('.main-title'),
         readyFight: document.getElementById('ready-fight'),
         messageText: document.querySelector('.text-message'),
         battleHistoric: document.querySelector('.battle-historic'),
@@ -291,6 +322,30 @@
             hide();
         }
     }
+
+    function unlock(title, content) {
+        unlock.messages.push({title, content});
+
+        unlock.displayMessage();
+    }
+    unlock.displayMessage = function() {
+        if (!unlock.timer && unlock.messages.length) {
+            const {title, content} = unlock.messages.shift();
+            mainEls.unlockTitle.textContent = title;
+            mainEls.unlockContent.textContent = content;
+            mainEls.unlock.classList.add('active');
+            unlock.timer = setTimeout(unlock.hideMessage, 5000);
+        }
+    };
+    unlock.hideMessage = function() {
+        mainEls.unlock.classList.remove('active');
+        setTimeout(function() {
+            unlock.timer = 0;
+            unlock.displayMessage();
+        }, 500);
+    };
+    unlock.timer = 0;
+    unlock.messages = [];
 
     function setMessage(text, addHistoricLog = false, keepI18n = false) {
         mainEls.attackChoice.classList.remove('active');
@@ -729,6 +784,7 @@
             f.setMode('rest');
         });
 
+        checkPlayerLevel();
         return;
     }
 
@@ -749,8 +805,13 @@
         }
 
         if (options.addGhost) {
+            const className = ['ghost'];
+            if (gameStatistics.playerLevel < 2) {
+                className.push('locked');
+            }
+
             addFirstItem.unshift({
-                name: _('Fight a Ghost'), isGhost: true, code: -2, DOMclass: ['ghost', 'locked']
+                name: _('Fight a Ghost'), isGhost: true, code: -2, DOMclass: className
             });
         }
 
@@ -861,25 +922,28 @@
             picture = null,
             fullVideo = false,
             canvasSize = configuration.pictureSize,
-            autoCapture = false
+            autoCapture = false,
+            isScan = false,
         } = options;
         let btnActiveTitle = options.btnActiveTitle || _('Take picture');
         let btnInactiveTitle = options.btnInactiveTitle || _('Take again');
         let btnFromCameraTitle = options.btnFromCameraTitle || _('Take picture from camera');
 
-        let streamVideo = elem.querySelector('.stream-video');
-        let streamCanvas = elem.querySelector('.stream-canvas');
-        let streamPicture = elem.querySelector('.picture-temp');
-        let takePicture = elem.querySelector('.take-picture');
-        let fileStream = elem.querySelector('.file-stream');
-        let codeStream = elem.querySelector('.code-stream');
-        let streamCode = elem.querySelector('.code-stream input');
+        const streamVideo = elem.querySelector('.stream-video');
+        const streamCanvas = elem.querySelector('.stream-canvas');
+        const streamPicture = elem.querySelector('.picture-temp');
+        const takePicture = elem.querySelector('.take-picture');
+        const fileStream = elem.querySelector('.file-stream');
+        const codeStream = elem.querySelector('.code-stream');
+        const streamCode = elem.querySelector('.code-stream input');
+        const scanner = elem.querySelector('.line-scanner');
 
         function initializeVideo() {
             prepareVideo.stopVideo();
 
             streamVideo.classList.toggle('active', supportMediaDevice);
             takePicture.classList.toggle('active', supportMediaDevice);
+            scanner.classList.toggle('active', supportMediaDevice && isScan);
 
             streamCanvas.width = canvasSize;
             streamCanvas.height = canvasSize;
@@ -934,6 +998,7 @@
             takePicture.dataset.i18n = btnInactiveTitle;
             streamVideo.classList.remove('active');
             streamPicture.classList.add('active');
+            scanner.classList.remove('active');
         }
 
         function takePhoto(autoTake) {
@@ -1089,6 +1154,7 @@
                             fullVideo: false,
                             canvasSize: 1000,
                             autoCapture: true,
+                            isScan: true,
                             btnActiveTitle: _('Scan picture'),
                             btnInactiveTitle: _('Scan again'),
                             callback: (src) => {
@@ -1100,7 +1166,7 @@
                                             this.fromCamera = true;
                                             success(true);
                                             if (configuration.autoStep) {
-                                                validateGobleanCreation();
+                                                setTimeout(validateGobleanCreation, 1000);
                                             }
                                         } else {
                                             success(false);
@@ -1246,6 +1312,10 @@
     }
 
     function initializeAchievement() {
+        let {nbAchievement, nbAchvReach} = checkPlayerLevel();
+
+        console.info(nbAchvReach + '/' + nbAchievement);
+
         mainEls.achievementsArea.innerHTML = '';
         for(let achievement of achievements) {
             const level = gameStatistics.achievements[achievement.id] || 0;
@@ -1281,6 +1351,7 @@
         document.getElementById('mode-auto-creation').checked = configuration.autoCreationSelect;
         document.getElementById('mode-auto-step').checked = configuration.autoStep;
         document.getElementById('fight-configuration').value = configuration.fightMode;
+        document.getElementById('playerName-configuration').value = configuration.playerName;
 
         mainEls.configurationMessage.innerHTML = '';
 
@@ -1299,23 +1370,78 @@
         configuration.autoCreationSelect = this.checked;
         localStorage.setItem('configuration', JSON.stringify(configuration));
     }
-
     function changeAutoStep() {
         configuration.autoStep = this.checked;
         localStorage.setItem('configuration', JSON.stringify(configuration));
     }
-
     function changeGameMode() {
         configuration.fightMode = this.value;
         localStorage.setItem('configuration', JSON.stringify(configuration));
+    }
+    function changePlayerName() {
+        configuration.playerName = this.value;
+        localStorage.setItem('configuration', JSON.stringify(configuration));
+        checkPlayerLevel();
+    }
+
+    function checkPlayerLevel() {
+        let xp = 0;
+        let nbAchievement = 0;
+        let nbAchvReach = 0;
+
+        for (let achievement of achievements) {
+            const ln = achievement.threshold.length;
+            let level = 0;
+            for (level = 1; level < ln; level++) {
+                if (!achievement.condition(level)) {
+                    break;
+                }
+                xp += achievement.xp.get(level);
+            }
+            level--;
+            if ((gameStatistics.achievements[achievement.id] || 0) < level) {
+                gameStatistics.achievements[achievement.id] = level;
+                unlock(_('You have unlocked a new achievement'), achievement.title(level));
+            }
+            nbAchievement += ln -1;
+            nbAchvReach += level;
+        }
+
+        gameStatistics.xp = xp;
+
+        let lvl = 0;
+        while (xp >= playerXP[lvl] && lvl < playerXP.length) {
+            lvl++;
+        }
+        lvl--;
+        const oldLvl = gameStatistics.playerLevel;
+        gameStatistics.playerLevel = lvl;
+
+        const mainTitle = [_('level %d', lvl), _(playerTitle.get(lvl), lvl)];
+        if (oldLvl !== lvl) {
+            unlock(_('Level up'), `${mainTitle[1]} (${mainTitle[0]})`);
+        }
+        if (configuration.playerName) {
+            mainTitle.unshift(configuration.playerName)
+        }
+        mainEls.mainTitle.textContent = mainTitle.join(' - ');
+
+        localStorage.setItem('gameStatistics', JSON.stringify(gameStatistics));
+
+        return {
+            nbAchievement: nbAchievement,
+            nbAchvReach: nbAchvReach
+        };
     }
 
     function localeChanged() {
         mainEls.locale.src = 'img/locale-' + _.getLocale() + '.png';
         _.html();
-        document.querySelectorAll('.fighter-picture,.goblean-picture').forEach(el => el.title = el.alt = _('picture of your Goblean'));
+        Array.from(document.querySelectorAll('.fighter-picture,.goblean-picture')).forEach(el => el.title = el.alt = _('picture of your Goblean'));
         document.querySelector('.credit-authors').textContent =
             _('Thanks to %L for all they did to the Goblean game and the time they spent on it.', authors.concat([configuration.playerName]));
+
+        checkPlayerLevel();
     }
 
     function chooseLocale() {
@@ -1377,6 +1503,7 @@
         document.getElementById('mode-auto-creation').onchange = changeAutoCreationSelect;
         document.getElementById('mode-auto-step').onchange = changeAutoStep;
         document.getElementById('fight-configuration').onchange = changeGameMode;
+        document.getElementById('playerName-configuration').onchange = changePlayerName;
 
         document.querySelector('.show-historic').onclick = function() {
             if (mainEls.lastLogs.classList.contains('active')) {
@@ -1436,6 +1563,8 @@
             }
         }
         document.querySelector('.credit-version').textContent = self.version;
+
+        mainEls.unlock.onclick = unlock.hideMessage;
 
         mainEls.locale.onclick = chooseLocale;
         mainEls.localeChooser.onclick = changeLocale;

@@ -35,6 +35,7 @@ body > header {
     z-index: 30;
     cursor: pointer;
 }
+.inactive:not(.active),
 .locale-chooser:not(.active) {
     display: none;
 }
@@ -102,6 +103,29 @@ body > header {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.unlocked-step {
+    position: fixed;
+    z-index: 100;
+    top: 8px;
+    left: 50%;
+    transform: translate(-50%, -110%) scale(0.5) ;
+    font-size: 1.5em;
+    background-color: #325961;
+    border: 4px solid #5598a5;
+    border-top: none;
+    border-bottom-left-radius: 1em;
+    border-bottom-right-radius: 1em;
+    color: #ddebee;
+    padding-left: 1em;
+    padding-right: 1em;
+    max-width: 100%;
+    transition: 500ms ease-in-out;
+}
+.unlocked-step.active {
+    transform: translate(-50%, 0);
 }
 
 .has-message {
@@ -118,15 +142,17 @@ body > header {
     border: 4px solid #5598a5;
     border-top-left-radius: 1em;
     border-top-right-radius: 1em;
+    color: #ddebee;
     padding-left: 1em;
     padding-right: 1em;
     max-width: 100%;
 }
 
-.has-message > .message > header {
+.message > header {
+    text-align: center;
     font-weight: bold;
 }
-.has-message > .message > .content {
+.message > .content {
     text-align: justify;
     margin-bottom: 0.5em;
 }
@@ -331,6 +357,22 @@ button.ok {
     background-color: #e1e6e7;
     border-color: #e1e6e7;;
 }*/
+@keyframes scan_line {
+    0%   {top:-95%;}
+    50%  {top:0%;}
+    100% {top:-95%;}
+}
+.line-scanner {
+    display: none;
+    width: 100%;
+    height: 0;
+    border: 1px solid red;
+    position: relative;
+    top: -50%;
+    animation-name: scan_line;
+    animation-duration: 11s;
+    animation-iteration-count: infinite;
+}
 
 .video-stream {
     z-index: 20;
