@@ -37,42 +37,47 @@ class Fighter {
 			picture: this.picture,
 			nbf: this.numberOfFight,
 			nbw: this.numberOfWin,
-			isGhost: this.isGhost
+			isGhost: this.isGhost,
+			update: this.update,
+			create: this.create
 		};
 	}
 
-	save() {
+	async save() {
 		if (this.isGhost) {
 			return;
 		}
 
-		let list = JSON.parse(localStorage.getItem('fighters') || '[]');
-		let idx = list.findIndex(f => f.code === this.code);
+		return store.gobleans.set(this.toJSON());
+		// let list = await store.gobleans.getAll();
+		// // let list = JSON.parse(localStorage.getItem('fighters') || '[]');
+		// let idx = list.findIndex(f => f.code === this.code);
 
-		if (idx === -1) {
-			list.push(this);
-			if (this.fromCamera) {
-				this.gameStatistics.nbGoblean++;
-				localStorage.setItem('gameStatistics', JSON.stringify(this.gameStatistics));
-			}
-		} else {
-			list[idx] = this;
-		}
+		// if (idx === -1) {
+		// 	list.push(this);
+		// 	if (this.fromCamera) {
+		// 		this.gameStatistics.nbGoblean++;
+		// 		localStorage.setItem('gameStatistics', JSON.stringify(this.gameStatistics));
+		// 	}
+		// } else {
+		// 	list[idx] = this;
+		// }
 
-		localStorage.setItem('fighters', JSON.stringify(list));
+		// localStorage.setItem('fighters', JSON.stringify(list));
 	}
 
-	remove() {
-		let list = JSON.parse(localStorage.getItem('fighters') || '[]');
-		let idx = list.findIndex(f => f.code === this.code);
+	async remove() {
+		return store.gobleans.delete(this.code);
+		// let list = JSON.parse(localStorage.getItem('fighters') || '[]');
+		// let idx = list.findIndex(f => f.code === this.code);
 
-		if (idx === -1) {
-			return;
-		} else {
-			list.splice(idx, 1);
-		}
+		// if (idx === -1) {
+		// 	return;
+		// } else {
+		// 	list.splice(idx, 1);
+		// }
 
-		localStorage.setItem('fighters', JSON.stringify(list));
+		// localStorage.setItem('fighters', JSON.stringify(list));
 	}
 
 	isValid() {
@@ -106,7 +111,7 @@ class Fighter {
 		let offset = code.length % 2;
 		let cKey = (10 - (code.slice(0, -1).reduce((sum, val, k) => {
 			let m = (k + offset) % 2 ? 1 : 3;
-			return sum + m * val; 
+			return sum + m * val;
 		}, 0) % 10)) % 10;
 		return key === cKey;
 	}
@@ -224,6 +229,12 @@ class Fighter {
 		return true;
 	}
 
+	addAttribute(name, attributes) {
+		if (typeof attributes[name] !== 'undefined') {
+			this[name] = attributes[name];
+		}
+	}
+
 	setAttributes(attributes = {}) {
 		if (attributes.name) {
 			this.name = attributes.name;
@@ -237,17 +248,12 @@ class Fighter {
 			this.setCode(attributes.code);
 		}
 
-		if (typeof attributes.nbf !== 'undefined') {
-			this.numberOfFight = attributes.nbf;
-		}
-
-		if (typeof attributes.nbw !== 'undefined') {
-			this.numberOfWin = attributes.nbw;
-		}
-
 		if (typeof attributes.fromCamera === 'boolean') {
 			this.fromCamera = attributes.fromCamera;
 		}
+
+		['nbf', 'nbw', 'update', 'create']
+			.forEach(n => this.addAttribute(n, attributes));
 
 		return this.isValid();
 	}
@@ -362,7 +368,7 @@ class Fighter {
 			w = 0;
 		}
 		this.ctx.ellipse(100, 100, 20+w/2, 55+w/2, 0, 0, 2*Math.PI);
-		
+
 		if (clip) {
 			this.ctx.clip();
 		} else {
@@ -509,7 +515,7 @@ class Fighter {
 		}
 
 		this.skipAttack();
-		
+
 		return this.listAttack.shift();
 	}
 
@@ -561,7 +567,7 @@ class Fighter {
 		this.stats.energy += dmg * this.stats.energyRestore / 6;
 
 		this.dmg += dmg;
-		this.stats.currentHp -= dmg; 
+		this.stats.currentHp -= dmg;
 
 		this.drawPicture();
 		opponent.haveDealtDamage(dmg, this);

@@ -335,10 +335,16 @@
         mainEls.choice4.textContent = list[4];
     }
 
-    function fillList(element, options) {
+    async function fillList(element, options) {
         let {callback, selected, addFirstItem} = options;
 
-        let list = options.list || JSON.parse(localStorage.getItem('fighters') || '[]');
+        let list = options.list;
+
+        if (!list) {
+            list = await store.gobleans.getAll('update', false);
+            // list = JSON.parse(localStorage.getItem('fighters') || '[]');
+        }
+
         list.sort((a, b) => b.nbw - a.nbw);
 
         if (list.length === 0) {
@@ -394,7 +400,7 @@
         currentFighter = fighter;
 
         let title = nb === 1 ? 'First Goblean fighter' : 'Second Goblean fighter';
- 
+
         initializeStats({
             title: title,
             selected: currentFighter,
@@ -1201,6 +1207,16 @@
         setView('createGoblean', true, true);
     }
 
+    async function closeGobleanEditor(goblean) {
+        await goblean.save();
+        if (typeof initializeGobleanCreation.callback === 'function') {
+            let callback = initializeGobleanCreation.callback;
+            initializeGobleanCreation.callback = null;
+            callback(goblean);
+        }
+        setView('', true, false);
+    }
+
     function validateGobleanCreation() {
         if (initializeGobleanCreation.step < 3) {
             gotoStep(initializeGobleanCreation.step + 1);
@@ -1221,13 +1237,7 @@
             name, picture, code, fromCamera
         });
         if (goblean.isValid()) {
-            goblean.save();
-            if (typeof initializeGobleanCreation.callback === 'function') {
-                let callback = initializeGobleanCreation.callback;
-                initializeGobleanCreation.callback = null;
-                callback(goblean);
-            }
-            setView('', true, false);
+            closeGobleanEditor(goblean);
         } else {
             gotoStep(1);
             mainEls.createGobleanMessage.classList.add('active');
@@ -1431,7 +1441,7 @@
         mainEls.localeChooser.onclick = changeLocale;
     }
 
-    function initialize() {
+    async function initialize() {
         i18n.configuration({
             alias: '_',
             localeSet: [
@@ -1487,6 +1497,15 @@
             return values.join(', ') + ' ' + _('and') + ' ' + lastValue;
         });
 
+        /* retro compatibility */
+        const gobleans = JSON.parse(localStorage.getItem('fighters') || '[]');
+        if (gobleans.length) {
+            for (const goblean of gobleans) {
+                store.gobleans.set(goblean);
+            }
+            localStorage.removeItem('fighters');
+        }
+
         const options = JSON.parse(localStorage.getItem('configuration') || '{}');
         Object.assign(configuration, options);
         Fighter.prototype.autoFight = configuration.autoFight ? 1 : 0;
@@ -1495,7 +1514,8 @@
         Object.assign(gameStatistics, stats);
         Fighter.prototype.gameStatistics = gameStatistics;
         if (gameStatistics.nbGoblean === 0) {
-            gameStatistics.nbGoblean = (JSON.parse(localStorage.getItem('fighters')) || []).filter(g=>!!g.fromCamera).length;
+            const gobleans = await store.gobleans.getAll();
+            gameStatistics.nbGoblean = gobleans.filter(g=>!!g.fromCamera).length;
         }
 
         let locales = _.getLocales({key: true, name: true});
