@@ -28,6 +28,7 @@ function upgradeDB(event) {
 			let objectStore = DB.createObjectStore(tableGoblean, {keyPath: 'code'});
 			objectStore.createIndex('index_code', 'code', {unique: true});
 			objectStore.createIndex('index_nbw', 'nbw', {unique: false});
+			objectStore.createIndex('index_nbf', 'nbf', {unique: false});
 			objectStore.createIndex('index_create', 'create', {unique: false});
 			objectStore.createIndex('index_update', 'update', {unique: false});
 			objectStore.createIndex('index_name', 'name', {unique: true});
@@ -176,4 +177,4 @@ self.store = {
 })();
 
 /* compatibility check */
-(self.compatibility || {}).indexDB = true;
+(self.compatibility || {}).indexedDB = true;

@@ -70,7 +70,7 @@
 	"Take picture from camera": "Prendre une photo depuis la caméra",
 	"picture of your Goblean": "photo de votre Goblean",
 	"Picture": "Photo",
-	"EAN code": "Code EAN",
+	"EAN code": "code EAN",
 	"Scan picture": "Analyser la photo",
 	"Scan again": "Refaire l'analyse",
 	"see last actions": "voir les dernières actions",
@@ -153,5 +153,14 @@
 	"Goblean hunter": "Chasseur de Goblean",
 	"Goblean explorer": "Explorateur Goblean",
 	"Goblean master": "Maître Goblean",
+	"This Goblean already exist (its name or its code is already in your team)": "Ce Goblean existe déjà (son nom ou son code est déjà présent dans votre équipe)",
+	"Search a Goblean": "Trouver un Goblean",
+	"Sort Goblean list": "Trier la liste des Gobleans",
+	"sort by %s": "trier par %s",
+	"last created": "date de création",
+	"last used": "dernier usage",
+	"name": "nom",
+	"number of fights": "nombre de combats",
+	"number of wins": "nombre de victoires",
 	"": ""
 }

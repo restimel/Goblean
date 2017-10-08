@@ -152,5 +152,14 @@
 	"Goblean hunter": "Goblean hunter",
 	"Goblean explorer": "Goblean explorer",
 	"Goblean master": "Goblean master",
+	"This Goblean already exist (its name or its code is already in your team)": "This Goblean already exist (its name or its code is already in your team)",
+	"Search a Goblean": "Search a Goblean",
+	"Sort Goblean list": "Sort Goblean list",
+	"sort by %s": "sort by %s",
+	"last created": "last created",
+	"last used": "last used",
+	"name": "name",
+	"number of fights": "number of fights",
+	"number of wins": "number of wins",
 	"": ""
 }

@@ -24,6 +24,8 @@
         };
     }
 
+    const debug = false;
+
     const authors = ['Gilles Masclef (Le Gobelin)', 'Benoît Mariat',
     'Anthony Oliveira', 'Clément Chrétien', 'Clotilde Masclef',
     'Rodolphe Peccatte', 'Charlotte Gros', 'Pierre Gaudé', 'Aurélien Martin'];
@@ -50,7 +52,9 @@
         fightMode: 'versus',
         timerAutoCapture: 1100,
         pictureSize: 300,
-        playerName: ''
+        playerName: '',
+        sortListBy: 'update',
+        sortAscOrder: false
     };
 
     const playerTitle = ['Beginner', 'Apprentice', 'Student in Goblean', 'Member of Goblean corporation', 'Goblean hunter', 'Goblean explorer', 'Goblean master'];
@@ -390,20 +394,34 @@
         mainEls.choice4.textContent = list[4];
     }
 
-    async function fillList(element, options) {
-        let {callback, selected, addFirstItem} = options;
+    async function fillList(element, options, search = '') {
+        let {callback, selected, addFirstItem, hideSearch} = options;
 
         let list = options.list;
+        let inputSearch;
 
-        if (!list) {
-            list = await store.gobleans.getAll('update', false);
-            // list = JSON.parse(localStorage.getItem('fighters') || '[]');
+        function changeSearch() {
+            let searchRequest = _.parse('%{esc:regex}s', inputSearch.value);
+            fillList(element, options, searchRequest);
+        }
+        fillList.search = changeSearch;
+
+        function changeSort() {
+            let sort = this.value;
+
+            configuration.sortListBy = sort;
+            fillList(element, options, search);
+            localStorage.setItem('configuration', JSON.stringify(configuration));
         }
 
-        list.sort((a, b) => b.nbw - a.nbw);
+        function changeOrder() {
+            configuration.sortAscOrder = !configuration.sortAscOrder;
+            fillList(element, options, search);
+            localStorage.setItem('configuration', JSON.stringify(configuration));
+        }
 
-        if (list.length === 0) {
-            list.push({name: _('no Goblean fighters yet'), nbw: 0, nbf: 0, code: 0, picture: ''});
+        if (!list) {
+            list = await store.gobleans.getAll(configuration.sortListBy, configuration.sortAscOrder);
         }
 
         if (selected === true) {
@@ -424,8 +442,57 @@
 
         element.innerHTML = '';
 
+        if (!hideSearch && list.length > 2) {
+            const el = document.createElement('div');
+            
+            inputSearch = document.createElement('input');
+            inputSearch.placeholder = _('Search a Goblean');
+            inputSearch.title = _('Search a Goblean');
+            inputSearch.value = search;
+            el.appendChild(inputSearch);
+
+            const searchBtn = document.createElement('button');
+            searchBtn.className = 'fa fa-search';
+            searchBtn.onclick = changeSearch;
+            el.appendChild(searchBtn);
+
+            const select = document.createElement('select');
+            select.title = _('Sort Goblean list');
+            select.oninput = changeSort;
+
+            const options = [['update', 'last used'], ['create', 'last created'], ['name', 'name'], ['code', 'EAN code'], ['nbw', 'number of wins'], ['nbf', 'number of fights']];
+            options.sort((a, b) => a[1] > b[1])
+
+            options.forEach(carac => {
+                let option = document.createElement('option');
+                option.value = carac[0];
+                option.textContent = _('sort by %s', _(carac[1]));
+                if (configuration.sortListBy === carac[0]) {
+                    option.selected = true;
+                }
+                select.add(option);
+            });
+            el.appendChild(select);
+
+            const button = document.createElement('button');
+            button.textContent = configuration.sortAscOrder ? 'A → Z' : 'Z → A';
+            button.onclick = changeOrder;
+            el.appendChild(button);
+
+            element.appendChild(el);
+        }
+
+        if (search) {
+            let rgx = new RegExp('.*' + search + '.*', 'i');
+            list = list.filter(l => rgx.test(l.name) || l.code === -1)
+        }
+
+        if (list.length === (addFirstItem ? 1 : 0)) {
+            list.push({name: _('no Goblean fighters yet'), nbw: 0, nbf: 0, code: 0, picture: ''});
+        }
+
         for (let goblean of list) {
-            let el = document.createElement('div');
+            const el = document.createElement('div');
             el.textContent = goblean.name;
             el.onclick = callback(goblean);
 
@@ -1140,7 +1207,7 @@
                     this.result = mainEls.gobleanCreationCode.value;
                     this.fromCamera = false;
                 };
-                mainEls.gobleanCreationCode.value = _.parse('%§', this.result);
+                mainEls.gobleanCreationCode.value = this.result;
                 mainEls.gobleanCreationCode.disabled = this.readOnly;
                 mainEls.gobleanCreationSideContent.innerHTML = '';
                 if (!this.readOnly) {
@@ -1274,12 +1341,22 @@
     }
 
     async function closeGobleanEditor(goblean) {
-        await goblean.save();
+        try {
+            await goblean.save();
+        } catch(e) {
+            mainEls.createGobleanMessage.classList.add('active');
+            mainEls.createGobleanMessage.textContent = _('This Goblean already exist (its name or its code is already in your team)');
+            return;
+        }
         if (typeof initializeGobleanCreation.callback === 'function') {
             let callback = initializeGobleanCreation.callback;
             initializeGobleanCreation.callback = null;
             callback(goblean);
         }
+
+        const gobleans = await store.gobleans.getAll();
+        gameStatistics.nbGoblean = gobleans.filter(g=>!!g.fromCamera).length;
+
         setView('', true, false);
     }
 
@@ -1380,14 +1457,18 @@
     }
     function changePlayerName() {
         configuration.playerName = this.value;
-        localStorage.setItem('configuration', JSON.stringify(configuration));
-        checkPlayerLevel();
+        checkPlayerLevel(true);
     }
 
-    function checkPlayerLevel() {
+    function checkPlayerLevel(save = false) {
         let xp = 0;
         let nbAchievement = 0;
         let nbAchvReach = 0;
+
+        if (save) {
+            localStorage.setItem('configuration', JSON.stringify(configuration));
+            localStorage.setItem('gameStatistics', JSON.stringify(gameStatistics));
+        }
 
         for (let achievement of achievements) {
             const ln = achievement.threshold.length;
@@ -1534,21 +1615,37 @@
                     }
                     break;
                 case 'stats':
+                    const isInInput = document.querySelector(':focus').tagName === 'INPUT';
                     switch (evt.keyCode) {
+                        case 8:
+                            if (!isInInput) {
+                                evt.preventDefault();
+                            }
+                            break;
                         case 13:
                             if (mainEls.warningDeletion.open) {
                                 mainEls.warningDeletion.querySelector('.btn-delete').click();
                                 evt.preventDefault();
+                            } else
+                            if (isInInput) {
+                                fillList.search();
                             }
                             break;
                         case 27:
                             if (mainEls.warningDeletion.open) {
                                 mainEls.warningDeletion.close();
+                            } else
+                            if (isInInput) {
+                                document.querySelector(':focus').value = '';
+                                fillList.search();
                             } else {
                                 setView('', true, false);
                             }
                             break;
                         case 46:
+                            if (isInInput) {
+                                //do nothing special
+                            } else
                             if (mainEls.warningDeletion.open) {
                                 mainEls.warningDeletion.querySelector('.btn-delete').click();
                                 evt.preventDefault();
@@ -1557,7 +1654,9 @@
                             }
                             break;
                         default:
-                            console.log(evt.keyCode)
+                            if (debug) {
+                                console.log(evt.keyCode)
+                            }
                     }
                     break;
             }
@@ -1629,10 +1728,21 @@
         /* retro compatibility */
         const gobleans = JSON.parse(localStorage.getItem('fighters') || '[]');
         if (gobleans.length) {
-            for (const goblean of gobleans) {
-                store.gobleans.set(goblean);
+            const currentList = await store.gobleans.getAll();
+
+            if (currentList.length === 0) {
+                let errors = [];
+                for (const goblean of gobleans) {
+                    try {
+                        await store.gobleans.set(goblean);
+                    } catch(e) {
+                        errors.push(goblean);
+                    }
+                }
+                console.warn('These gobleans cannot be added:', errors);
+            } else {
+                localStorage.removeItem('fighters');
             }
-            localStorage.removeItem('fighters');
         }
 
         const options = JSON.parse(localStorage.getItem('configuration') || '{}');
