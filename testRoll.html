@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+	<div id='test'>not executed<br></div>
+
+	<script>
+	var container = document.getElementById('test');
+
+
+function handleOrientation(evt) {
+	console.log(evt.type, '→absolute:', evt.absolute, 'alpha:', evt.alpha, 'beta:', evt.beta, 'gamma:', evt.gamma, 'acceleration:', evt.acceleration, 'rotationRate:', evt.rotationRate, evt);
+}
+
+function orChanged(evt) {
+	console.log(evt.type, evt);
+}
+
+function handleMotion(evt) {
+	console.log(evt.type, '→absolute:', evt.absolute, 'acceleration:', evt.acceleration, 'rotationRate:', evt.rotationRate, evt);
+}
+
+window.addEventListener("deviceorientation", handleOrientation, true);
+window.addEventListener("deviceorientationabsolute", handleOrientation, true);
+window.addEventListener("orientationchange", orChanged, true);
+// window.addEventListener("devicemotion", handleMotion, true);
+
+container.innerHTMl = 'check console'
+
+	</script>
+</body>
+</html>
