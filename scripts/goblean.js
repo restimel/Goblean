@@ -1610,6 +1610,10 @@
         document.querySelector('.credit-version').onclick = function() {
             configuration.easterEggVersion = true;
             checkPlayerLevel(true);
+            const text = this.textContent;
+            if (text.indexOf('?') === -1) {
+                this.textContent = text + ' ' + _('Do you want to contribute?');
+            }
         };
 
         document.querySelector('.show-historic').onclick = function() {
