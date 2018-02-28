@@ -162,6 +162,28 @@
             }
         },
         {
+            id: 'easterEggVersion',
+            xp: [0, 15],
+            threshold: [0, 1],
+            className: ['ac-mystery', 'ac-gold'],
+            names: ['Secret', 'Egg hunter'],
+            title: function (level) {
+                return _(this.names.get(level));
+            },
+            message: function (level) {
+                if (level === 0) {
+                    return _('secret award');
+                }
+                return _('You have found an egg.');
+            },
+            condition: function (level) {
+                if (level >= this.threshold.length) {
+                    return false;
+                }
+                return !!configuration.easterEggVersion;
+            }
+        },
+        {
             id: 'namedPlayer',
             xp: [0, 5],
             threshold: [0, 1],
@@ -1585,6 +1607,10 @@
         document.getElementById('mode-auto-step').onchange = changeAutoStep;
         document.getElementById('fight-configuration').onchange = changeGameMode;
         document.getElementById('playerName-configuration').onchange = changePlayerName;
+        document.querySelector('.credit-version').onclick = function() {
+            configuration.easterEggVersion = true;
+            checkPlayerLevel(true);
+        };
 
         document.querySelector('.show-historic').onclick = function() {
             if (mainEls.lastLogs.classList.contains('active')) {
