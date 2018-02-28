@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Goblean</title>
+    <link rel="stylesheet" type="text/css" href="css/goblean2.css">
+    <link rel="stylesheet" type="text/css" href="libs/font-awesome-4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<header>
+    <span class="title main-title">Goblean</span>
+    <img class="locale" src="img/locale-en.png" width="32px" height="32px">
+    <div class="locale-chooser"></div>
+</header>
+
+<section id="main-view" class="view active">
+    <h1 data-i18n="Goblean">Goblean</h1>
+    <nav>
+        <div class="menu4 gobleaena" data-i18n="Enter the Goble-aena">Enter the Goble-aena</div>
+        <div class="menu1 goblean-stats" data-i18n="Your Gobleans">Your Gobleans</div>
+        <div class="menu2 achievements" data-i18n="Achievements">Achievements</div>
+        <div class="menu1 configuration" data-i18n="Configuration">Configuration</div>
+        <div class="menu1 rules" data-i18n="Rules & Credits">Rules & Credits</div>
+    </nav>
+</section>
+<!-- <section id="add-fighter" class="view">
+    <h2 id="nb-fighter" data-i18n="First Goblean fighter">First Goblean fighter</h2>
+    <div class="list fighter-selection"></div>
+    <div class="fighter-creation">
+        <h3 data-i18n="Create your fighter">Create your fighter</h3>
+        <form id="fighter-creation">
+            <label><span data-i18n="Name:">Name:</span> <input id="fighter-name"></label>
+            <label><span data-i18n="Code:">Code:</span> <input id="fighter-code" required></label>
+            <img class="fighter-picture" alt="picture of your Goblean" width="124px" height="124px">
+            <button type="submit" data-i18n="Add it to the Goble-aena">Add it to the Goble-aena</button>
+        </form>
+    </div>
+    <div class="fighter-stats">
+        <label><span data-i18n="Name:">Name:</span> <span class="goblean-name"></span></label>
+        <label><span data-i18n="Code:">Code:</span> <span class="goblean-code"></span></label>
+        <img class="goblean-picture" alt="picture of your Goblean" width="124px" height="124px">
+        <button type="submit" class="active" data-i18n="Add it to the Goble-aena">Add it to the Goble-aena</button>
+    </div>
+    <aside id="ready-fight" data-i18n="This Goblean is ready to fight">This Goblean is ready to fight</aside>
+</section> -->
+<section id="battle" class="view preparation">
+    <div class="fighter fighter1">
+        <h3 class="fighter-name">?</h3>
+        <canvas class="fighter-canvas" width="200px" height="200px"></canvas>
+        <div class="ready1" data-i18n="Ready">Ready</div>
+    </div>
+    <div class="fighter fighter2">
+        <h3 class="fighter-name">?</h3>
+        <canvas class="fighter-canvas" width="200px" height="200px"></canvas>
+        <div class="ready2" data-i18n="Ready">Ready</div>
+    </div>
+    <div class="battle-historic">
+        <button class="show-historic"><span data-i18n="see last actions">see last actions</span></button>
+        <ul class="last-logs"></ul>
+    </div>
+    <div class="message">
+        <div class="text-message active"></div>
+        <div class="attack-choice">
+            <div class="choice choice1"></div>
+            <div class="choice choice2"></div>
+            <div class="choice choice3"></div>
+            <div class="choice choice4"></div>
+        </div>
+    </div>
+    <div class="attack-result"></div>
+    <div class="vs" data-i18n="VS">VS</div>
+    <button id="battle-ready" class="battle-btn" data-i18n="Fight">Fight</button>
+    <button id="battle-end" class="battle-btn back-home" data-i18n="Great job!">Great job!</button>
+    <aside id="winner" data-i18n="Winner">Winner</aside>
+</section>
+
+<section id="stats" class="view">
+    <div id="goblean-list" class="list"></div>
+    <div id="goblean-stat">
+        <h4 class="stat-title"></h4>
+        <label><span data-i18n="Code:">Code:</span> <span class="stat-code"></span></label><br>
+        <label><span data-i18n="Number of win:">Number of win:</span> <span class="stat-nbw"></span></label>
+        <label><span data-i18n="Number of fight:">Number of fight:</span> <span class="stat-nbf"></span></label>
+        <label><span data-i18n="Ratio:">Ratio:</span> <span class="stat-ratio"></span></label>
+        <canvas class="stat-picture" width="200px" height="200px"></canvas>
+        <footer class="footer-stats">
+            <button class="delete-goblean"><span class="fa fa-trash"></span></button>
+            <button class="edit-goblean"><span class="fa fa-pencil"></span></button>
+        </footer>
+    </div>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+        <button class="select-goblean ok" data-i18n="Ok">Ok</button>
+    </footer>
+</section>
+
+<section id="rules" class="view">
+    <h2 data-i18n="Rules">Rules</h2>
+    <p data-i18n="A Goblean is a creature which is supposedly legendary, polymorphe and may have different size. It has grat skills in hidding so many think they do not exist. We can easily recognize a Goblean with its tatoo: black vertical bars on a white square (oftenly called EAN code)."></p>
+    <p data-i18n="Goblean name is usually the name of the object it mimics."></p>
+    <br>
+    <h4 data-i18n="How to play?"></h4>
+    <p data-i18n="Enter the EAN code of the creature you have catched in this application and it will reveal its original form."></p>
+    <p data-i18n="Enter the EAN code of a second creature (catched by a friend) and let them fight"></p>
+    <p data-i18n="At each round you can select an attack which will be more or less powerful depending of your goblean stats and the defense of your opponent."></p>
+    <p data-i18n="If your Goblean survive, it will be declared champion of the Goble-aena. (Then it can be defied by another challenger)"></p>
+    <h2 data-i18n="Credits">Credits</h2>
+    <p data-i18n="Thanks for playing!"></p>
+    <p class="credit-authors"></p>
+    <p data-i18n="You are free to share this game around you."></p>
+    <h3><span data-i18n="Version"></span> <span class="credit-version"></span></h3>
+
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+    </footer>
+</section>
+
+<section id="achievements" class="view default-view has-message">
+    <h2 class="title" data-i18n="Achievements"></h2>
+    <nav class="achievements-menu"></nav>
+    <aside class="message"></aside>
+
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+    </footer>
+</section>
+
+<section id="step-creation" class="view default-view">
+    <h2 class="title"></h2>
+    <div class="content">
+        <div class="step-code active">
+            <label><span data-i18n="EAN code">EAN code</span><input class="code-goblean-creation" type="number"></label>
+            <div class="video"></div>
+        </div>
+        <div class="step-picture">
+            <div class="video"></div>
+        </div>
+        <div class="step-name">
+            <label><span data-i18n="Goblean name">Goblean Name</span><input class="name-goblean-creation" type="text" placeholder="name"></label>
+        </div>
+    </div>
+    <p class="message"></p>
+    <ol class="breadcrumb">
+        <li class="step-breadcrumb step-1 active" data-i18n="EAN code">EAN code</li>
+        <li class="step-arrow step-2"></li>
+        <li class="step-breadcrumb step-2" data-i18n="Picture">Picture</li>
+        <li class="step-arrow step-3"></li>
+        <li class="step-breadcrumb step-3" data-i18n="Name">Name</li>
+    </ol>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+        <button class="validate-create-goblean ok" data-i18n="Ok">Ok</button>
+    </footer>
+    <aside class="side-content"></aside>
+</section>
+
+<section id="options-configuration" class="view default-view has-message">
+    <h2 class="title" data-i18n="Configuration"></h2>
+    <nav class="configuration-menu">
+        <div class="menu4">
+            <label><span data-i18n="Game mode">Game mode</span>
+                <select id="fight-configuration"
+data-message="<ul><li><b>Versus</b> - One Goblean fights another one</li><li><b>Team vs Team</b> - A Goblean team fights another Goblean team <i>(must be unlocked)</i></li><li><b>Adventure</b> - Lets go on adventure <i>(must be unlocked)</i></li></ul>">
+                    <option value="versus" data-i18n="Versus">Versus</option>
+                    <option disabled value="team" data-i18n="Team vs Team">Team vs Team</option>
+                    <option disabled value="adventure" data-i18n="Adventure">Adventure</option>
+                </select>
+            </label>
+        </div>
+        <div class="menu4">
+            <label><span data-i18n="Your name"></span>
+                <input id="playerName-configuration" type="text" data-message="Only to give a name on the greatest person who play at Goblean">
+            </label>
+        </div>
+        <div class="menu4">
+            <label>
+                <input id="mode-auto" type="checkbox" data-message="The tactical choices will be chosen automatically">
+                <span data-i18n="auto-fight">auto-fight</span>
+            </label>
+        </div>
+    </nav>
+    <h2 class="title" data-i18n="Settings"></h2>
+    <nav class="configuration-menu">
+        <div class="menu4">
+            <label>
+                <input id="mode-auto-creation" type="checkbox" data-message="During Goblean selection, if you create a new Goblean, this one is immediately selected.">
+                <span data-i18n="Automatically select newly created Goblean"></span>
+            </label>
+        </div>
+        <div class="menu4">
+            <label>
+                <input id="mode-auto-step" type="checkbox" data-message="During Goblean creation, when your camera catch an EAN code or a picture, it jumps automatically to next step.">
+                <span data-i18n="Automatically go to next step"></span>
+            </label>
+        </div>
+    </nav>
+    <aside class="message"></aside>
+    <footer class="footer-view">
+        <button class="back-home" data-i18n="Back">Back</button>
+    </footer>
+</section>
+
+<aside id="video-section">
+    <label class="file-stream"><span data-i18n="Import an image">Import an image</span><input type="file" class=""></label>
+    <video class="stream-video" autoplay="true" loop="true">
+    </video>
+    <div class="line-scanner inactive"></div>
+    <canvas class="stream-canvas"></canvas>
+    <img class="picture-temp" width="10000" height="10000">
+    <button class="take-picture" data-i18n="Take picture">Take picture</button>
+</aside>
+
+<aside class="message unlocked-step">
+    <header>Test</header>
+    <p class="content">some text</p>
+</aside>
+
+<dialog id="warning-deletion">
+    <header></header>
+    <footer class="footer-dialog">
+        <button class="btn-cancel" data-i18n="Cancel">Cancel</button>
+        <button class="btn-delete" data-i18n="Delete">Delete</button>
+    </footer>
+</dialog>
+
+<aside id="compatibility-failure" class="hide" data-i18n="Your browser does not support some features needed by this game.<br>We are really sorry that you cannot play with this one.<br>You should try with a more modern browser.">
+    Your browser does not support some features needed by this game.<br>
+    We are really sorry that you cannot play with this one.<br>
+    You should try with a more modern browser.
+</aside>
+
+<script>self.compatibility = {};</script>
+<script src="version.js"></script>
+<script src="libs/quagga.min.js"></script>
+<script src="libs/i18n-js-formatter.full.min.js"></script>
+<script src="scripts/indexedDB.js"></script>
+<script src="scripts/fighter.js"></script>
+<script src="scripts/goblean.js"></script>
+<script>
+if (!compatibility.fighter || !compatibility.goblean) {
+    document.getElementById('compatibility-failure').className = 'active';
+}
+</script>
+</body>
+</html>
